@@ -1,5 +1,30 @@
+
+# IDE & System
 .idea/
 .vscode/
 *.log
 .DS_Store
 tmp/
+
+# Frontend (Node/Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.pnp
+frontend/.pnp.*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env*
+frontend/.vercel
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# Backend (Python)
+backend/__pycache__/
+backend/*.py[cod]
+backend/venv/
+backend/env/
+backend/.env
+backend/hess_protector.db
