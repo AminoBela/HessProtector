@@ -31,7 +31,7 @@ export function CoachSavedPlans({ savedPlans, onBack, onLoad, onDelete, language
 
     const [deletePlanId, setDeletePlanId] = useState<number | null>(null);
 
-    // FIX: Ensure savedPlans is an array
+
     const safeSavedPlans = Array.isArray(savedPlans) ? savedPlans : [];
 
     return (
@@ -58,7 +58,7 @@ export function CoachSavedPlans({ savedPlans, onBack, onLoad, onDelete, language
                 {safeSavedPlans.length === 0 && <p className="text-zinc-500 italic">{t.noPlans}</p>}
             </div>
 
-            {/* DELETE CONFIRMATION DIALOG */}
+
             <Dialog open={deletePlanId !== null} onOpenChange={(open) => !open && setDeletePlanId(null)}>
                 <DialogContent className="bg-zinc-950 border-white/10 text-white">
                     <DialogHeader>

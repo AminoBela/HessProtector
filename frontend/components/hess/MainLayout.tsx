@@ -34,7 +34,7 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
     const inputStyle = "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-12 rounded-xl px-4 font-medium shadow-inner";
     const selectStyle = "w-full h-12 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium";
 
-    // Select Language (default to fr if invalid)
+
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
     const SidebarItem = ({ id, icon: Icon, label }: any) => (

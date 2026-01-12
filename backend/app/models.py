@@ -51,7 +51,7 @@ class PromptRequest(BaseModel):
     days: int = 3
     meals: List[str] = ["lunch", "dinner"]
     language: str = "fr"
-    current_plan: Optional[str] = None # JSON string if re-adapting
+    current_plan: Optional[str] = None
     
 class PlanItem(BaseModel):
     name: str

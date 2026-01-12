@@ -13,7 +13,7 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT UNIQUE, hashed_password TEXT)''')
     
-    # Tables with user_id
+
     c.execute('''CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT, label TEXT, amount REAL, type TEXT, category TEXT, date TEXT, user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')
     c.execute('''CREATE TABLE IF NOT EXISTS pantry (id INTEGER PRIMARY KEY AUTOINCREMENT, item TEXT, qty TEXT, category TEXT, expiry TEXT, added_date TEXT, user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')
     c.execute('''CREATE TABLE IF NOT EXISTS recurring (id INTEGER PRIMARY KEY AUTOINCREMENT, label TEXT, amount REAL, day INTEGER, type TEXT, user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')

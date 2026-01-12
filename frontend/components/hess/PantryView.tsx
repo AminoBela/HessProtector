@@ -7,6 +7,22 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Trash2, ScanLine, Camera, Utensils, Package, Beef, Milk, Carrot, Wine, Home, Sparkles, Check, ThermometerSnowflake } from "lucide-react"
 import { Translations } from "@/lib/i18n";
+import { motion, Variants } from "framer-motion";
+
+const container: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } }
+};
 
 const getCategoryIcon = (cat: string) => {
     switch (cat) {
@@ -78,15 +94,15 @@ export function PantryView({
         setAddStatus('success');
         setTimeout(() => {
             setAddStatus('idle');
-            setScannedTotal(null); // Close dialog after showing success
+            setScannedTotal(null);
         }, 1500);
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-            {/* SCANNER & MANUAL ADD */}
+        <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-12 gap-8">
+
             <div className="md:col-span-4 space-y-8">
-                {/* SCANNER CARD */}
+
                 <Card className={`h-fit border-0 ${cardGlass} p-6 relative overflow-hidden`}>
                     {scanning && <div className="absolute inset-0 bg-black/80 z-20 flex flex-col items-center justify-center"><ScanLine className="w-16 h-16 text-emerald-400 animate-ping" /><p className="mt-4 font-bold text-emerald-400 uppercase tracking-widest animate-pulse">{t.pantry.scanning}</p></div>}
                     <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-zinc-400 font-bold">{t.pantry.scanBtn}</CardTitle></CardHeader>
@@ -100,7 +116,7 @@ export function PantryView({
                     </CardContent>
                 </Card>
 
-                {/* MANUAL ADD CARD */}
+
                 <Card className={`h-fit border-0 ${cardGlass} p-6`}>
                     <CardHeader><CardTitle className="text-sm uppercase tracking-widest text-zinc-400 font-bold">{t.pantry.addItem}</CardTitle></CardHeader>
                     <CardContent className="space-y-6">
@@ -130,7 +146,7 @@ export function PantryView({
                 </Card>
             </div>
 
-            {/* INVENTORY LIST */}
+
             <div className="md:col-span-8">
                 <Card className={`border-0 ${cardGlass} h-full`}>
                     <CardHeader><CardTitle className="text-xl font-black uppercase tracking-wider">{t.pantry.title}</CardTitle></CardHeader>
@@ -139,7 +155,7 @@ export function PantryView({
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {(data?.pantry || []).length === 0 ? <div className="col-span-2 text-center text-zinc-600 py-10 italic">{t.pantry.empty}</div> :
                                     (data?.pantry || []).map((p: any) => (
-                                        <div key={p.id} className={`flex justify-between items-center p-5 rounded-2xl border transition-all group ${isLight ? 'bg-white/40 border-emerald-900/5 hover:bg-white/80' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
+                                        <motion.div variants={item} key={p.id} className={`flex justify-between items-center p-5 rounded-2xl border transition-all group ${isLight ? 'bg-white/40 border-emerald-900/5 hover:bg-white/80' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
                                             <div className="flex items-center gap-5">
                                                 <div className={`p-4 rounded-xl ${isLight ? 'bg-emerald-100/50' : 'bg-black/40'}`}>{getCategoryIcon(p.category)}</div>
                                                 <div>
@@ -148,7 +164,7 @@ export function PantryView({
                                                 </div>
                                             </div>
                                             <Button variant="ghost" size="icon" onClick={() => handleDeletePantry(p.id)} className="text-zinc-600 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl"><Trash2 className="w-5 h-5" /></Button>
-                                        </div>
+                                        </motion.div>
                                     ))}
                             </div>
                         </ScrollArea>
@@ -156,7 +172,7 @@ export function PantryView({
                 </Card>
             </div>
 
-            {/* TOTAL DETECTED DIALOG */}
+
             <Dialog open={scannedTotal !== null} onOpenChange={(open) => !open && setScannedTotal(null)}>
                 <DialogContent className="bg-zinc-950 border-white/10 text-white">
                     <DialogHeader>
@@ -173,7 +189,8 @@ export function PantryView({
                         </Button>
                     </DialogFooter>
                 </DialogContent>
+
             </Dialog>
-        </div>
+        </motion.div >
     )
 }

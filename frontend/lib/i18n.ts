@@ -41,6 +41,22 @@ export const Translations = {
             settings: "Paramètres",
             analytics: "Analyses"
         },
+        analytics: {
+            title: "Analyses",
+            month: "Mois",
+            year: "Année",
+            kpi: {
+                income: "Revenus",
+                expense: "Dépenses",
+                net: "Net",
+                savings: "Épargne"
+            },
+            charts: {
+                daily: "Évolution Journalière",
+                category: "Par Catégorie"
+            },
+            topExpenses: "Top Dépenses"
+        },
         header: {
             dashboard: "Tableau de Bord",
             coach: "Coach Cuisine IA",
@@ -139,7 +155,13 @@ export const Translations = {
             amount: "Montant",
             add: "Ajouter",
             empty: "Aucune charge fixe. C'est louche...",
-            total: "Total Mensuel"
+            total: "Total Mensuel",
+            amountPlace: "Montant (€)",
+            dayPlace: "Jour (1-31)",
+            weekDays: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+            fixe: "Fixe",
+            sub: "Abonnement",
+            labelPlace: "Nom (Netflix, Loyer)"
         },
         history: {
             title: "Historique",
@@ -148,13 +170,37 @@ export const Translations = {
         },
         settings: {
             title: "Paramètres",
-            subtitle: "Personnalise ton expérience HessProtector.",
-            supermarket: "Supermarché Préféré (pour les prix)",
-            diet: "Régime Alimentaire",
-            theme: "Thème",
-            language: "Langue",
-            reset: "Réinitialiser les données",
-            save: "Enregistrer"
+            subtitle: "Gestion globale de ton compte et de tes préférences.",
+            tabs: {
+                general: "Général",
+                account: "Compte",
+                legal: "Légal & RGPD"
+            },
+            general: {
+                supermarket: "Supermarché Préféré (pour les prix)",
+                diet: "Régime Alimentaire",
+                theme: "Thème",
+                language: "Langue",
+                save: "Enregistrer"
+            },
+            account: {
+                title: "Sécurité du Compte",
+                email: "Email (Non modifiable)",
+                password: "Changer le mot de passe",
+                newPassword: "Nouveau mot de passe",
+                delete: "Supprimer le compte",
+                deleteDesc: "Action irréversible. Toutes vos données seront effacées.",
+                deleteConfirm: "Êtes-vous sûr de vouloir supprimer votre compte ?,Cette action est définitive.",
+                logout: "Se déconnecter"
+            },
+            legal: {
+                title: "Données & Confidentialité",
+                export: "Exporter mes données (JSON)",
+                exportDesc: "Téléchargez une copie complète de vos données.",
+                terms: "Conditions d'utilisation",
+                privacy: "Politique de confidentialité",
+                read: "Lire"
+            }
         },
         rank: {
             title: "Rang Actuel",
@@ -244,6 +290,22 @@ export const Translations = {
             history: "Historial",
             settings: "Ajustes",
             analytics: "Análisis"
+        },
+        analytics: {
+            title: "Análisis",
+            month: "Mes",
+            year: "Año",
+            kpi: {
+                income: "Ingresos",
+                expense: "Gastos",
+                net: "Neto",
+                savings: "Ahorro"
+            },
+            charts: {
+                daily: "Evolución Diaria",
+                category: "Por Categoría"
+            },
+            topExpenses: "Top Gastos"
         },
         header: {
             dashboard: "Panel Financiero",
@@ -343,7 +405,13 @@ export const Translations = {
             amount: "Monto",
             add: "Añadir",
             empty: "Sin gastos fijos. Sospechoso...",
-            total: "Total Mensual"
+            total: "Total Mensual",
+            amountPlace: "Monto (€)",
+            dayPlace: "Día (1-31)",
+            weekDays: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+            fixe: "Fijo",
+            sub: "Suscripción",
+            labelPlace: "Nombre (Netflix, Alquiler)"
         },
         history: {
             title: "Historial",
@@ -352,13 +420,37 @@ export const Translations = {
         },
         settings: {
             title: "Ajustes",
-            subtitle: "Personaliza tu experiencia HessProtector.",
-            supermarket: "Supermercado Favorito",
-            diet: "Dieta",
-            theme: "Tema",
-            language: "Idioma",
-            reset: "Reiniciar datos",
-            save: "Guardar Cambios"
+            subtitle: "Gestión global de tu cuenta y preferencias.",
+            tabs: {
+                general: "General",
+                account: "Cuenta",
+                legal: "Legal & RGPD"
+            },
+            general: {
+                supermarket: "Supermercado Favorito",
+                diet: "Dieta",
+                theme: "Tema",
+                language: "Idioma",
+                save: "Guardar Cambios"
+            },
+            account: {
+                title: "Seguridad de la Cuenta",
+                email: "Email (No modificable)",
+                password: "Cambiar contraseña",
+                newPassword: "Nueva contraseña",
+                delete: "Eliminar cuenta",
+                deleteDesc: "Acción irreversible. Todos tus datos serán borrados.",
+                deleteConfirm: "¿Seguro que quieres eliminar tu cuenta?,Esta acción es definitiva.",
+                logout: "Cerrar sesión"
+            },
+            legal: {
+                title: "Datos & Privacidad",
+                export: "Exportar mis datos (JSON)",
+                exportDesc: "Descarga una copia completa de tus datos.",
+                terms: "Términos de uso",
+                privacy: "Política de privacidad",
+                read: "Leer"
+            }
         },
         rank: {
             title: "Rango Actual",

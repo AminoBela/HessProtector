@@ -10,7 +10,7 @@ router = APIRouter()
 def setup_app(data: SetupData, current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
-    # Reset existing data for THIS user only
+
     c.execute("DELETE FROM transactions WHERE user_id=?", (current_user['id'],))
     c.execute("DELETE FROM recurring WHERE user_id=?", (current_user['id'],))
     c.execute("DELETE FROM profile WHERE user_id=?", (current_user['id'],))

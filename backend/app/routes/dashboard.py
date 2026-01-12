@@ -34,7 +34,7 @@ def get_dashboard(current_user: User = Depends(get_current_user)):
         if t['type'] == 'depense':
             categories[t['category']] = categories.get(t['category'], 0) + t['amount']
 
-    # HessXP Logic
+
     raw_xp = int(balance)
     goals_completed = len([g for g in goals if g['saved'] >= g['target']])
     total_xp = max(0, raw_xp + (goals_completed * 100))
@@ -79,14 +79,14 @@ def get_stats(year: str = str(date.today().year), current_user: User = Depends(g
     conn = get_db_connection()
     c = conn.cursor()
     
-    # Yearly Totals
+
     c.execute("SELECT SUM(amount) FROM transactions WHERE type='revenu' AND strftime('%Y', date) = ? AND user_id=?", (year, current_user['id']))
     total_income = c.fetchone()[0] or 0.0
     
     c.execute("SELECT SUM(amount) FROM transactions WHERE type != 'revenu' AND strftime('%Y', date) = ? AND user_id=?", (year, current_user['id']))
     total_expense = c.fetchone()[0] or 0.0
     
-    # Monthly Breakdown
+
     months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
     monthly_data = []
     

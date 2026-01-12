@@ -30,12 +30,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     
     if user is None:
         raise credentials_exception
-    return user # Returns sqlite3.Row
+    return user
 
 @router.post("/register", response_model=Token)
 async def register(user: UserCreate):
     conn = get_db_connection()
-    # Check if user exists
+
     existing = conn.execute('SELECT * FROM users WHERE username = ?', (user.username,)).fetchone()
     if existing:
         conn.close()
@@ -48,7 +48,7 @@ async def register(user: UserCreate):
     conn.commit()
     conn.close()
     
-    # Auto login
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires

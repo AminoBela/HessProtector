@@ -19,10 +19,10 @@ def get_monthly_analytics(year: str, month: str, current_user: User = Depends(ge
     conn = get_db_connection()
     c = conn.cursor()
 
-    # Ensure month is 0-padded
+
     m_str = month.zfill(2)
     
-    # 1. Daily Data (Evolution)
+
     try:
         num_days = calendar.monthrange(int(year), int(month))[1]
     except ValueError:
@@ -38,17 +38,17 @@ def get_monthly_analytics(year: str, month: str, current_user: User = Depends(ge
         exp = c.fetchone()[0] or 0.0
         daily_data.append({"day": d, "income": inc, "expense": exp})
 
-    # 2. Category Data (Pie Chart)
+
     c.execute("SELECT category, SUM(amount) as total FROM transactions WHERE type='depense' AND strftime('%Y', date)=? AND strftime('%m', date)=? AND user_id=? GROUP BY category", 
               (year, m_str, current_user['id']))
     cats = [{"name": row['category'], "value": row['total']} for row in c.fetchall()]
     
-    # 3. Top Expenses
+
     c.execute("SELECT label, amount, date FROM transactions WHERE type='depense' AND strftime('%Y', date)=? AND strftime('%m', date)=? AND user_id=? ORDER BY amount DESC LIMIT 5", 
               (year, m_str, current_user['id']))
     top = [dict(row) for row in c.fetchall()]
     
-    # 4. Global Stats for this month
+
     total_inc = sum(d['income'] for d in daily_data)
     total_exp = sum(d['expense'] for d in daily_data)
     
@@ -68,10 +68,10 @@ def get_monthly_analytics(year: str, month: str, current_user: User = Depends(ge
 
 @router.post("/api/analytics/audit")
 def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_user)):
-    # Fetch Data
+
     data = get_monthly_analytics(req.year, req.month, current_user)
     
-    # Init Gemini
+
     GEMINI_KEY = os.getenv("GEMINI_API_KEY")
     if GEMINI_KEY:
         genai.configure(api_key=GEMINI_KEY)

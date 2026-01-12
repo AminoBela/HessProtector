@@ -48,7 +48,7 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    // Effect to handle AI response and stop loading
+
     useEffect(() => {
         if (generatedPrompt) {
             try {
@@ -137,7 +137,7 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
         )
     }
 
-    // Show loading while parsing the prompt
+
     if (generatedPrompt && !parsedData) {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-180px)]">

@@ -59,7 +59,7 @@ export function CoachResults({
         setTimeout(() => setShowSaveSuccess(false), 3000);
     }
 
-    // Defensive check
+
     if (!parsedData) return null;
 
     const updateMeal = (index: number, type: 'lunch' | 'dinner', val: string) => {
@@ -77,9 +77,9 @@ export function CoachResults({
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
-            {/* LEFT COLUMN: MEALS */}
+
             <div className="lg:col-span-2 space-y-6">
-                {/* TOOLBAR */}
+
                 <div className={`flex justify-between items-center p-3 rounded-2xl border backdrop-blur-md sticky top-0 z-30 shadow-2xl ${isLight ? 'bg-white/80 border-emerald-900/10' : 'bg-zinc-950/80 border-white/10'}`}>
                     <Button variant="ghost" className="text-zinc-400 hover:text-emerald-500" onClick={onBack}>
                         <ArrowLeft className="w-5 h-5 mr-2" /> {common.back}
@@ -101,7 +101,7 @@ export function CoachResults({
                     </div>
                 </div>
 
-                {/* SAVE DIALOG */}
+
                 <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
                     <DialogContent className="bg-zinc-950 border-white/10 text-white">
                         <DialogHeader>
@@ -125,7 +125,7 @@ export function CoachResults({
                     </DialogContent>
                 </Dialog>
 
-                {/* ANALYSIS CARD */}
+
                 <div className={`${isLight ? 'bg-emerald-100 border-emerald-200' : 'bg-emerald-900/20 border-emerald-500/20'} border p-5 rounded-3xl backdrop-blur-md relative overflow-hidden`}>
                     {updating && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10"><Loader2 className="w-8 h-8 text-emerald-400 animate-spin" /></div>}
                     <div className="flex items-start gap-4">
@@ -134,7 +134,7 @@ export function CoachResults({
                     </div>
                 </div>
 
-                {/* MEALS GRID */}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                     {updating && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-3xl"><span className="text-white font-bold animate-pulse">{common.update}</span></div>}
                     {parsedData.meals.map((day, idx) => (
@@ -178,7 +178,7 @@ export function CoachResults({
                 </div>
             </div>
 
-            {/* RIGHT COLUMN: SHOPPING */}
+
             <div className="lg:col-span-1">
                 <div className={`sticky top-24 ${cardGlass} p-0 flex flex-col max-h-[calc(100vh-100px)] relative`}>
                     {updating && <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 rounded-3xl" />}

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.database import get_db_connection
 from app.models import PromptRequest, PlanItem, User
-from app.routes.dashboard import get_dashboard # Re-using logic
+from app.routes.dashboard import get_dashboard
 from app.routes.auth import get_current_user
 from datetime import date
 import google.generativeai as genai
@@ -17,11 +17,11 @@ def generate_smart_prompt(req: PromptRequest, current_user: User = Depends(get_c
     p = d['profile']
     inv = ', '.join([f"{i['item']} ({i['qty']})" for i in d['pantry']])
     
-    # Contexte Financier enrichi (5 dernières transactions + factures)
+
     recent_tx = transactions[:5]
     upcoming_bills = sum(r['amount'] for r in recurring if r['day'] > date.today().day)
     
-    # Prompt optimisé Coach V2 (JSON Strict)
+
     db_context = f"""
     Profil: {p['supermarket']}, Régime: {p['diet']}.
     Budget Restant (Mois): {req.budget}€.
@@ -30,10 +30,7 @@ def generate_smart_prompt(req: PromptRequest, current_user: User = Depends(get_c
     Inventaire Frigo (Ingrédients à utiliser): {inv}.
     """
     
-    # Re-init Gemini key locally just in case, though main should handle it
-    GEMINI_KEY = os.getenv("GEMINI_API_KEY")
-    if GEMINI_KEY:
-        genai.configure(api_key=GEMINI_KEY)
+
 
     model = genai.GenerativeModel('gemini-2.0-flash')
     
@@ -65,7 +62,7 @@ def generate_smart_prompt(req: PromptRequest, current_user: User = Depends(get_c
     }}
     """
     
-    # Intégration des paramètres utilisateur et mode Re-Adaptation
+
     user_instruction = f"CREATE A PLAN FOR {req.days} DAYS. MEALS/DAY: {', '.join(req.meals)}."
     
     final_prompt = f"{system_prompt}\n\nUSER REQUEST: {user_instruction}\n\nFINANCIAL CONTEXT:\n{db_context}"
@@ -75,7 +72,7 @@ def generate_smart_prompt(req: PromptRequest, current_user: User = Depends(get_c
 
     response = model.generate_content(final_prompt)
     
-    # Nettoyage JSON si Gemini ajoute du markdown
+
     clean_json = response.text.replace("```json", "").replace("```", "").strip()
     
     return {"prompt": clean_json}

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Depends
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from app.database import get_db_connection
 from app.models import PantryItem, User
 from app.routes.auth import get_current_user
+from app.repositories.common_repos import PantryRepository
 from datetime import date
 import google.generativeai as genai
 import json
@@ -9,24 +10,29 @@ import os
 
 router = APIRouter()
 
-@router.post("/api/pantry")
-def add_item(item: PantryItem, current_user: User = Depends(get_current_user)):
+def get_pantry_repo():
     conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-              (item.item, item.qty, item.category, item.expiry, str(date.today()), current_user['id']))
-    conn.commit()
-    conn.close()
+    try:
+        yield PantryRepository(conn)
+    finally:
+        conn.close()
+
+@router.post("/api/pantry")
+def add_item(item: PantryItem, 
+             current_user: User = Depends(get_current_user),
+             repo: PantryRepository = Depends(get_pantry_repo)):
+    repo.add(item, current_user['id'])
     return {"status": "ok"}
 
 @router.delete("/api/pantry/{id}")
-def del_item(id: int, current_user: User = Depends(get_current_user)):
-    conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("DELETE FROM pantry WHERE id=? AND user_id=?", (id, current_user['id']))
-    conn.commit()
-    conn.close()
+def del_item(id: int, 
+             current_user: User = Depends(get_current_user),
+             repo: PantryRepository = Depends(get_pantry_repo)):
+    success = repo.delete(id, current_user['id'])
+    if not success:
+        raise HTTPException(status_code=404, detail="Item not found")
     return {"status": "ok"}
+
 
 @router.post("/api/scan-receipt")
 async def scan_receipt(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
@@ -34,9 +40,7 @@ async def scan_receipt(file: UploadFile = File(...), current_user: User = Depend
     try:
         content = await file.read()
         
-        # Configuration Gemini (Assuming init in main or re-init here if stateless)
-        # It's safer to configure it again or rely on env being loaded in main
-        GEMINI_KEY = os.getenv("GEMINI_API_KEY")
+
         if GEMINI_KEY:
             genai.configure(api_key=GEMINI_KEY)
             
@@ -66,7 +70,7 @@ async def scan_receipt(file: UploadFile = File(...), current_user: User = Depend
         ])
         
         text = response.text.strip()
-        # Clean potential markdown
+
         if text.startswith("```"):
             text = text.split("\n", 1)[1]
             if text.endswith("```"):
@@ -74,11 +78,11 @@ async def scan_receipt(file: UploadFile = File(...), current_user: User = Depend
 
         data = json.loads(text)
         
-        # If the AI returns just a list (old format compatibility), wrap it
+
         if isinstance(data, list):
             data = {"items": data, "total_amount": None}
 
-        # Add items to DB
+
         conn = get_db_connection()
         c = conn.cursor()
         

@@ -20,7 +20,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
     const [setupProfile, setSetupProfile] = useState({ supermarket: "Lidl", diet: "Aucun" })
     const [tempBill, setTempBill] = useState({ label: "", amount: "", day: "", type: "Fixe" })
 
-    // Using defaults - ideally this would prop drill language
+
     const t = Translations.fr.setup;
 
     const inputStyle = "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-12 rounded-xl px-4 font-medium shadow-inner";

@@ -3,6 +3,22 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Progress } from "@/components/ui/progress"
 import { Wallet, Zap, TrendingUp } from "lucide-react"
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { motion, Variants } from "framer-motion";
+
+const container: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } }
+};
 
 interface DashboardViewProps {
     data: any;
@@ -34,16 +50,16 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
 
     const annualData = statsData?.monthly_data || [];
 
-    // Date Logic
+
     const today = new Date();
     const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const daysRemaining = Math.max(1, daysInMonth - today.getDate() + 1); // +1 to include today
+    const daysRemaining = Math.max(1, daysInMonth - today.getDate() + 1);
     const perDay = (data?.balance || 0) / daysRemaining;
 
     if (!data) return <div className="p-8 text-center text-emerald-500 animate-pulse">{t.loading}...</div>;
 
     return (
-        <>
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
             <div className="flex justify-between items-center mb-6">
                 <div></div>
                 <div className={`p-1 rounded-xl flex gap-1 ${isLight ? 'bg-white/50 border border-emerald-900/10' : 'bg-black/40 border border-white/10'}`}>
@@ -60,12 +76,12 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <Card className={`md:col-span-2 relative border-0 ${cardGlass} min-h-[320px] flex flex-col justify-between`}>
+                <motion.div variants={item} className={`md:col-span-2 relative border-0 ${cardGlass} min-h-[320px] flex flex-col justify-between p-6`}>
                     <div className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none mix-blend-screen ${isLight ? 'bg-emerald-500/10' : 'bg-emerald-500/20'}`}></div>
-                    <CardHeader>
+                    <CardHeader className="p-0">
                         <CardTitle className={`${cardTitleColor} text-sm uppercase font-bold tracking-[0.3em]`}>{t.netBalance} ({t.annual} {statsYear})</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0 mt-6">
                         <div className="flex items-baseline gap-2">
                             <span className={`text-6xl md:text-8xl font-black tracking-tighter ${bigNumberColor}`}>{statsData ? statsData.net_result.toFixed(2) : '...'}</span>
                             <span className="text-3xl text-emerald-400 font-thin">€</span>
@@ -82,8 +98,8 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
                             </div>
                         </div>
                     </CardContent>
-                </Card>
-                <Card className={`border-0 flex flex-col justify-center gap-10 p-10 ${cardGlass}`}>
+                </motion.div>
+                <motion.div variants={item} className={`border-0 flex flex-col justify-center gap-10 p-10 ${cardGlass}`}>
                     <div className="flex justify-between items-end">
                         <span className={`${cardTitleColor} text-sm font-bold uppercase tracking-widest`}>{t.perDay} ({daysRemaining}{t.daysLeft})</span>
                         <span className="text-5xl font-thin text-cyan-300 tracking-tighter">{perDay.toFixed(2)}€</span>
@@ -92,11 +108,11 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
                         <Progress value={Math.min((perDay / 20) * 100, 100)} className={`h-3 rounded-full ${isLight ? 'bg-slate-200' : 'bg-black/50'}`} indicatorColor="bg-cyan-500" />
                         <div className={`flex justify-between text-xs uppercase font-black tracking-widest ${subTextColor}`}><span>0€</span><span>{t.target}: 20€</span></div>
                     </div>
-                </Card>
+                </motion.div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className={`border-0 ${cardGlass} h-[400px]`}>
+                <motion.div variants={item} className={`border-0 ${cardGlass} h-[400px]`}>
                     <CardHeader>
                         <CardTitle className={`text-xs uppercase tracking-[0.2em] font-bold ${subTextColor}`}>{t.evolution} {statsYear}</CardTitle>
                     </CardHeader>
@@ -114,8 +130,8 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
                             </ResponsiveContainer>
                         ) : <div className={`h-full flex items-center justify-center ${subTextColor}`}>{t.loading}</div>}
                     </CardContent>
-                </Card>
-                <Card className={`border-0 ${cardGlass} h-[400px]`}>
+                </motion.div>
+                <motion.div variants={item} className={`border-0 ${cardGlass} h-[400px]`}>
                     <CardHeader>
                         <CardTitle className={`text-xs uppercase tracking-[0.2em] font-bold ${subTextColor}`}>{t.activities}</CardTitle>
                     </CardHeader>
@@ -139,8 +155,8 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
                             </div>
                         </ScrollArea>
                     </CardContent>
-                </Card>
+                </motion.div>
             </div>
-        </>
+        </motion.div>
     )
 }

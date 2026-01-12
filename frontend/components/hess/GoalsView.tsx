@@ -6,6 +6,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Trash2, Target, Timer, Wallet } from "lucide-react"
 import { differenceInDays } from "date-fns"
 import { Translations } from "@/lib/i18n";
+import { motion, Variants } from "framer-motion";
+
+const container: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 50, damping: 20 } }
+};
 
 interface GoalsViewProps {
     data: any;
@@ -43,7 +59,7 @@ export function GoalsView({ data, goalForm, setGoalForm, handleAddGoal, handleDe
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-12 gap-8">
             <div className="md:col-span-4">
                 <Card className={`h-fit border-0 ${cardGlass}`}>
                     <CardHeader>
@@ -82,38 +98,40 @@ export function GoalsView({ data, goalForm, setGoalForm, handleAddGoal, handleDe
                     const needed = parseFloat(g.target) - parseFloat(g.saved);
                     const perMonth = daysRemaining > 0 ? (needed / (daysRemaining / 30)).toFixed(2) : 0;
                     return (
-                        <Card key={g.id} className={`border-0 ${cardGlass} p-2`}>
-                            <CardContent className="p-6">
-                                <div className="flex justify-between mb-2">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`p-3 rounded-xl ${g.priority === 'Haute' ? 'bg-rose-500/20 text-rose-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
-                                            <Target className="w-6 h-6" />
+                        <motion.div variants={item} key={g.id}>
+                            <Card className={`border-0 ${cardGlass} p-2`}>
+                                <CardContent className="p-6">
+                                    <div className="flex justify-between mb-2">
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-3 rounded-xl ${g.priority === 'Haute' ? 'bg-rose-500/20 text-rose-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                                                <Target className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className={`font-black text-xl ${bigTextColor}`}>{g.label}</h3>
+                                                <p className={`text-xs uppercase font-bold tracking-widest ${labelColor}`}>{g.deadline ? `Pour le ${g.deadline}` : 'Pas de date'} • {g.priority}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className={`font-black text-xl ${bigTextColor}`}>{g.label}</h3>
-                                            <p className={`text-xs uppercase font-bold tracking-widest ${labelColor}`}>{g.deadline ? `Pour le ${g.deadline}` : 'Pas de date'} • {g.priority}</p>
+                                        <Trash2 className={`w-5 h-5 cursor-pointer ${trashColor}`} onClick={() => handleDeleteGoal(g.id)} />
+                                    </div>
+                                    <div className="mt-6 mb-2 flex justify-between text-sm font-bold">
+                                        <span className={bigTextColor}>{parseFloat(g.saved).toFixed(2)}€</span>
+                                        <span className={labelColor}>{parseFloat(g.target).toFixed(2)}€</span>
+                                    </div>
+                                    <Progress value={(g.saved / g.target) * 100} className={`h-4 rounded-full ${progressBg}`} indicatorColor={g.priority === 'Haute' ? 'bg-rose-500' : 'bg-indigo-500'} />
+                                    <div className={`mt-4 flex gap-4 text-xs font-medium p-3 rounded-lg border ${infoBoxStyle}`}>
+                                        <div className="flex items-center gap-2">
+                                            <Timer className="w-4 h-4" /> Reste {daysRemaining} jours
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Wallet className="w-4 h-4" /> Mettre {perMonth}€ / mois
                                         </div>
                                     </div>
-                                    <Trash2 className={`w-5 h-5 cursor-pointer ${trashColor}`} onClick={() => handleDeleteGoal(g.id)} />
-                                </div>
-                                <div className="mt-6 mb-2 flex justify-between text-sm font-bold">
-                                    <span className={bigTextColor}>{parseFloat(g.saved).toFixed(2)}€</span>
-                                    <span className={labelColor}>{parseFloat(g.target).toFixed(2)}€</span>
-                                </div>
-                                <Progress value={(g.saved / g.target) * 100} className={`h-4 rounded-full ${progressBg}`} indicatorColor={g.priority === 'Haute' ? 'bg-rose-500' : 'bg-indigo-500'} />
-                                <div className={`mt-4 flex gap-4 text-xs font-medium p-3 rounded-lg border ${infoBoxStyle}`}>
-                                    <div className="flex items-center gap-2">
-                                        <Timer className="w-4 h-4" /> Reste {daysRemaining} jours
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <Wallet className="w-4 h-4" /> Mettre {perMonth}€ / mois
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
                     )
                 })}
             </div>
-        </div>
+        </motion.div>
     )
 }

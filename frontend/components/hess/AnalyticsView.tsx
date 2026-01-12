@@ -20,7 +20,7 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
     const [loading, setLoading] = useState(false);
     const { token } = useAuth();
 
-    // Audit State
+
     const [audit, setAudit] = useState<string | null>(null);
     const [auditLoading, setAuditLoading] = useState(false);
 
@@ -35,10 +35,10 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
 
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
-    // Fetch Data
+
     const fetchAnalytics = useCallback(async () => {
         setLoading(true);
-        setAudit(null); // Reset audit when date changes
+        setAudit(null);
         try {
             const res = await fetch(`http://localhost:8000/api/analytics/monthly?year=${year}&month=${month}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -81,7 +81,7 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
         }
     }
 
-    // Chart Colors
+
     const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'];
 
     if (!data) return <div className="p-10 text-center animate-pulse">{t.common.loading}...</div>;
@@ -93,12 +93,12 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
 
     return (
         <div className="space-y-8 pb-20">
-            {/* Header / Selectors */}
+
             <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
                 <div className="flex gap-4">
                     <Select value={month} onValueChange={setMonth}>
                         <SelectTrigger className={selectStyle}>
-                            <SelectValue placeholder="Mois" />
+                            <SelectValue placeholder={t.analytics?.month || "Mois"} />
                         </SelectTrigger>
                         <SelectContent>
                             {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
@@ -109,7 +109,7 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
 
                     <Select value={year} onValueChange={setYear}>
                         <SelectTrigger className={selectStyle}>
-                            <SelectValue placeholder="Année" />
+                            <SelectValue placeholder={t.analytics?.year || "Année"} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="2024">2024</SelectItem>
@@ -125,7 +125,7 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
                 </div>
             </div>
 
-            {/* AUDIT SECTION */}
+
             {audit && (
                 <Card className={`border-0 ${cardGlass} border-l-4 border-l-indigo-500 overflow-hidden`}>
                     <CardHeader className={`border-b ${isLight ? 'border-indigo-100 bg-indigo-50/50' : 'border-white/5 bg-white/5'}`}>
@@ -137,18 +137,18 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
                     <CardContent className="p-8">
                         <div className={`space-y-4 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
                             {audit.split('\n').map((line, i) => {
-                                // Headlines (##)
+
                                 if (line.startsWith('## ')) return <h3 key={i} className={`text-xl font-black mt-6 mb-2 ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>{line.replace('## ', '')}</h3>;
-                                // Sub-headlines (###)
+
                                 if (line.startsWith('### ')) return <h4 key={i} className={`text-lg font-bold mt-4 mb-2 ${isLight ? 'text-slate-800' : 'text-white'}`}>{line.replace('### ', '')}</h4>;
-                                // Bullet points
+
                                 if (line.trim().startsWith('- ')) return (
                                     <li key={i} className="ml-4 list-none flex items-start gap-2">
                                         <span className="text-indigo-500 mt-1.5">•</span>
                                         <span dangerouslySetInnerHTML={{ __html: line.replace('- ', '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}></span>
                                     </li>
                                 );
-                                // Bold Text handling for normal lines
+
                                 return <p key={i} dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} className="leading-relaxed"></p>;
                             })}
                         </div>
@@ -156,31 +156,31 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
                 </Card>
             )}
 
-            {/* KPI CARDS */}
+
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card className={`border-0 ${cardGlass} p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform`}>
-                    <div><p className="text-xs font-bold uppercase text-emerald-500 mb-1 tracking-wider">Revenus</p><p className="text-3xl font-black">{stats.income.toFixed(2)}€</p></div>
+                    <div><p className="text-xs font-bold uppercase text-emerald-500 mb-1 tracking-wider">{t.analytics?.kpi.income || "Revenus"}</p><p className="text-3xl font-black">{stats.income.toFixed(2)}€</p></div>
                     <TrendingUp className="w-10 h-10 text-emerald-500/20 self-end" />
                 </Card>
                 <Card className={`border-0 ${cardGlass} p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform`}>
-                    <div><p className="text-xs font-bold uppercase text-rose-500 mb-1 tracking-wider">Dépenses</p><p className="text-3xl font-black">{stats.expense.toFixed(2)}€</p></div>
+                    <div><p className="text-xs font-bold uppercase text-rose-500 mb-1 tracking-wider">{t.analytics?.kpi.expense || "Dépenses"}</p><p className="text-3xl font-black">{stats.expense.toFixed(2)}€</p></div>
                     <TrendingDown className="w-10 h-10 text-rose-500/20 self-end" />
                 </Card>
                 <Card className={`border-0 ${cardGlass} p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform`}>
-                    <div><p className="text-xs font-bold uppercase text-blue-500 mb-1 tracking-wider">Net</p><p className={`text-3xl font-black ${stats.net >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{stats.net.toFixed(2)}€</p></div>
+                    <div><p className="text-xs font-bold uppercase text-blue-500 mb-1 tracking-wider">{t.analytics?.kpi.net || "Net"}</p><p className={`text-3xl font-black ${stats.net >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>{stats.net.toFixed(2)}€</p></div>
                     <Wallet className="w-10 h-10 text-blue-500/20 self-end" />
                 </Card>
                 <Card className={`border-0 ${cardGlass} p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform`}>
-                    <div><p className="text-xs font-bold uppercase text-purple-500 mb-1 tracking-wider">Épargne</p><p className="text-3xl font-black">{stats.savings_rate.toFixed(1)}%</p></div>
+                    <div><p className="text-xs font-bold uppercase text-purple-500 mb-1 tracking-wider">{t.analytics?.kpi.savings || "Épargne"}</p><p className="text-3xl font-black">{stats.savings_rate.toFixed(1)}%</p></div>
                     <PiggyBank className="w-10 h-10 text-purple-500/20 self-end" />
                 </Card>
             </div>
 
-            {/* CHARTS */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* DAILY EVOLUTION */}
+
                 <Card className={`border-0 ${cardGlass} h-[400px]`}>
-                    <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">Évolution Journalière</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">{t.analytics?.charts.daily || "Évolution Journalière"}</CardTitle></CardHeader>
                     <CardContent className="h-[320px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={daily_data}>
@@ -198,9 +198,9 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
                     </CardContent>
                 </Card>
 
-                {/* CATEGORIES PIE */}
+
                 <Card className={`border-0 ${cardGlass} min-h-[400px]`}>
-                    <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">Par Catégorie</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">{t.analytics?.charts.category || "Par Catégorie"}</CardTitle></CardHeader>
                     <CardContent>
                         <div className="h-[250px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -226,9 +226,9 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
                 </Card>
             </div>
 
-            {/* TOP EXPENSES */}
+
             <Card className={`border-0 ${cardGlass}`}>
-                <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">Top Dépenses</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-sm uppercase tracking-widest opacity-50">{t.analytics?.topExpenses || "Top Dépenses"}</CardTitle></CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 gap-2">
                         {top_expenses.map((t: any, i: number) => (

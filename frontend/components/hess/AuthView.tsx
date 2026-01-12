@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-// Removed unused Tabs imports
+
 import { Lock, User, Mail, ArrowRight, Loader2 } from "lucide-react";
 import { Translations } from "@/lib/i18n";
 
@@ -62,7 +62,7 @@ export function AuthView({ onLogin, onRegister, language, theme }: AuthViewProps
 
     return (
         <div className="flex items-center justify-center min-h-screen px-4 font-sans overflow-hidden">
-            {/* Background Elements to add depth */}
+
             <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
             <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-700" />
 
