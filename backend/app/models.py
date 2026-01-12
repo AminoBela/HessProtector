@@ -2,6 +2,23 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import date
 
+class User(BaseModel):
+    username: str
+    email: str | None = None
+
+class UserCreate(User):
+    password: str
+    
+class UserInDB(User):
+    hashed_password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
+
 class Transaction(BaseModel):
     label: str; amount: float; type: str; category: str = "Autre"; date: str = str(date.today())
     

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Depends
 from app.database import get_db_connection
-from app.models import PantryItem
+from app.models import PantryItem, User
+from app.routes.auth import get_current_user
 from datetime import date
 import google.generativeai as genai
 import json
@@ -9,25 +10,26 @@ import os
 router = APIRouter()
 
 @router.post("/api/pantry")
-def add_pantry(p: PantryItem):
+def add_item(item: PantryItem, current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date) VALUES (?, ?, ?, ?, ?)", (p.item, p.qty, p.category, p.expiry, str(date.today())))
+    c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
+              (item.item, item.qty, item.category, item.expiry, str(date.today()), current_user['id']))
     conn.commit()
     conn.close()
     return {"status": "ok"}
 
 @router.delete("/api/pantry/{id}")
-def del_pantry(id: int):
+def del_item(id: int, current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("DELETE FROM pantry WHERE id=?", (id,))
+    c.execute("DELETE FROM pantry WHERE id=? AND user_id=?", (id, current_user['id']))
     conn.commit()
     conn.close()
     return {"status": "ok"}
 
 @router.post("/api/scan-receipt")
-async def scan_receipt(file: UploadFile = File(...)):
+async def scan_receipt(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
     """Analyse REELLE du ticket avec Gemini Vision"""
     try:
         content = await file.read()
@@ -40,29 +42,55 @@ async def scan_receipt(file: UploadFile = File(...)):
             
         model = genai.GenerativeModel('gemini-2.0-flash')
         
-        prompt = "Analyze this receipt image. Extract items in this VALID JSON format ONLY: [{'item': 'Name', 'qty': 'Quantity', 'category': 'Category (Frais, Sec, Boisson, Hygiène)', 'expiry': 'YYYY-MM-DD (estimate)'}]. Return ONLY the JSON list."
+        prompt = """
+        You are an expert Receipt Scanner. 
+        Analyze this image and extract purchased items AND the total amount.
+        Return ONLY a valid JSON object. No markdown.
+        Structure:
+        {
+            "items": [
+                {
+                    "item": "Product Name", 
+                    "qty": 1 (integer), 
+                    "category": "Viandes" | "Legumes" | "Laitiers" | "Epicerie" | "Boisson" | "Surgeles" | "Hygiene" | "Maison" | "Autre", 
+                    "expiry": "YYYY-MM-DD" (Estimate expiry based on type)
+                }
+            ],
+            "total_amount": 12.50 (float, or null if not found)
+        }
+        """
         
         response = model.generate_content([
             {'mime_type': file.content_type, 'data': content},
             prompt
         ])
         
-        # Nettoyage
-        json_text = response.text.replace("```json", "").replace("```", "").strip()
-        detected_items = json.loads(json_text)
+        text = response.text.strip()
+        # Clean potential markdown
+        if text.startswith("```"):
+            text = text.split("\n", 1)[1]
+            if text.endswith("```"):
+                text = text.rsplit("\n", 1)[0]
+
+        data = json.loads(text)
         
-        # Sauvegarde
+        # If the AI returns just a list (old format compatibility), wrap it
+        if isinstance(data, list):
+            data = {"items": data, "total_amount": None}
+
+        # Add items to DB
         conn = get_db_connection()
         c = conn.cursor()
-        for item in detected_items:
+        
+        for item in data.get("items", []):
             cat = item.get('category', 'Autre')
             exp = item.get('expiry', '')
-            c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date) VALUES (?, ?, ?, ?, ?)",
-                      (item['item'], item['qty'], cat, exp, str(date.today())))
+            c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
+                      (item['item'], item['qty'], cat, exp, str(date.today()), current_user['id']))
         conn.commit()
         conn.close()
         
-        return {"status": "scanned", "items": detected_items}
+        return {"items": data.get("items", []), "total_amount": data.get("total_amount")}
         
     except Exception as e:
         print(f"Error Gemini Vision: {e}")

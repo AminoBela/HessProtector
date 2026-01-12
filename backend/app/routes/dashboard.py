@@ -1,18 +1,29 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.database import get_db_connection
+from app.models import User
+from app.routes.auth import get_current_user
 from datetime import date
 
 router = APIRouter()
 
 @router.get("/api/dashboard")
-def get_dashboard():
+def get_dashboard(current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM transactions ORDER BY date DESC, id DESC"); transactions = [dict(row) for row in c.fetchall()]
-    c.execute("SELECT * FROM pantry ORDER BY expiry ASC"); pantry = [dict(row) for row in c.fetchall()]
-    c.execute("SELECT * FROM recurring ORDER BY day ASC"); recurring = [dict(row) for row in c.fetchall()]
-    c.execute("SELECT * FROM goals ORDER BY priority DESC"); goals = [dict(row) for row in c.fetchall()]
-    c.execute("SELECT * FROM profile"); profile = c.fetchone()
+    c.execute("SELECT * FROM transactions WHERE user_id=? ORDER BY date DESC, id DESC", (current_user['id'],))
+    transactions = [dict(row) for row in c.fetchall()]
+    
+    c.execute("SELECT * FROM pantry WHERE user_id=? ORDER BY expiry ASC", (current_user['id'],))
+    pantry = [dict(row) for row in c.fetchall()]
+    
+    c.execute("SELECT * FROM recurring WHERE user_id=? ORDER BY day ASC", (current_user['id'],))
+    recurring = [dict(row) for row in c.fetchall()]
+    
+    c.execute("SELECT * FROM goals WHERE user_id=? ORDER BY priority DESC", (current_user['id'],))
+    goals = [dict(row) for row in c.fetchall()]
+    
+    c.execute("SELECT * FROM profile WHERE user_id=?", (current_user['id'],))
+    profile = c.fetchone()
     conn.close()
 
     balance = sum(t['amount'] if t['type'] == 'revenu' else -t['amount'] for t in transactions)
@@ -36,35 +47,37 @@ def get_dashboard():
 
     rank_name, next_rank_xp = get_rank(total_xp)
 
-    return { "is_setup": profile is not None, "balance": balance, "safe_balance": balance - upcoming_bills, "upcoming_bills": upcoming_bills, "transactions": transactions, "pantry": pantry, "recurring": recurring, "goals": goals, "categories": categories, "profile": dict(profile) if profile else None,
+    monthly_burn = sum(r['amount'] for r in recurring)
+
+    return { "is_setup": profile is not None, "balance": balance, "safe_balance": balance - upcoming_bills, "upcoming_bills": upcoming_bills, "monthly_burn": monthly_burn, "transactions": transactions, "pantry": pantry, "recurring": recurring, "goals": goals, "categories": categories, "profile": dict(profile) if profile else None,
              "xp": total_xp, "rank": rank_name, "next_rank_xp": next_rank_xp }
 
-@app_get_ai_export_route = "/api/ai-export" # Using router in next lines
+
 @router.get("/api/ai-export")
-def get_ai(): 
-    d = get_dashboard()
+def get_ai(current_user: User = Depends(get_current_user)): 
+    d = get_dashboard(current_user)
     return {"role":"Coach", "profile":d['profile'], "balance":d['balance'], "pantry":d['pantry']}
 
 @router.get("/api/dashboard/years")
-def get_years():
+def get_years(current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("SELECT DISTINCT strftime('%Y', date) as year FROM transactions ORDER BY year DESC")
+    c.execute("SELECT DISTINCT strftime('%Y', date) as year FROM transactions WHERE user_id=? ORDER BY year DESC", (current_user['id'],))
     years = [row[0] for row in c.fetchall() if row[0] is not None]
     conn.close()
     if not years: years = [str(date.today().year)]
     return years
 
 @router.get("/api/dashboard/stats")
-def get_stats(year: str = str(date.today().year)):
+def get_stats(year: str = str(date.today().year), current_user: User = Depends(get_current_user)):
     conn = get_db_connection()
     c = conn.cursor()
     
     # Yearly Totals
-    c.execute("SELECT SUM(amount) FROM transactions WHERE type='revenu' AND strftime('%Y', date) = ?", (year,))
+    c.execute("SELECT SUM(amount) FROM transactions WHERE type='revenu' AND strftime('%Y', date) = ? AND user_id=?", (year, current_user['id']))
     total_income = c.fetchone()[0] or 0.0
     
-    c.execute("SELECT SUM(amount) FROM transactions WHERE type != 'revenu' AND strftime('%Y', date) = ?", (year,))
+    c.execute("SELECT SUM(amount) FROM transactions WHERE type != 'revenu' AND strftime('%Y', date) = ? AND user_id=?", (year, current_user['id']))
     total_expense = c.fetchone()[0] or 0.0
     
     # Monthly Breakdown
@@ -72,9 +85,9 @@ def get_stats(year: str = str(date.today().year)):
     monthly_data = []
     
     for m in months:
-        c.execute("SELECT SUM(amount) FROM transactions WHERE type='revenu' AND strftime('%Y', date) = ? AND strftime('%m', date) = ?", (year, m))
+        c.execute("SELECT SUM(amount) FROM transactions WHERE type='revenu' AND strftime('%Y', date) = ? AND strftime('%m', date) = ? AND user_id=?", (year, m, current_user['id']))
         inc = c.fetchone()[0] or 0.0
-        c.execute("SELECT SUM(amount) FROM transactions WHERE type != 'revenu' AND strftime('%Y', date) = ? AND strftime('%m', date) = ?", (year, m))
+        c.execute("SELECT SUM(amount) FROM transactions WHERE type != 'revenu' AND strftime('%Y', date) = ? AND strftime('%m', date) = ? AND user_id=?", (year, m, current_user['id']))
         exp = c.fetchone()[0] or 0.0
         monthly_data.append({"month": m, "income": inc, "expense": exp, "net": inc - exp})
         

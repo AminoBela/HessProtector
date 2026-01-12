@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from app.database import init_db
-from app.routes import dashboard, transactions, pantry, recurring, goals, coach, settings
+from app.routes import dashboard, transactions, pantry, recurring, goals, coach, settings, analytics, auth
 
 load_dotenv()
 
@@ -31,6 +31,7 @@ app.add_middleware(
 )
 
 # Routes
+app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(transactions.router)
 app.include_router(pantry.router)
@@ -38,3 +39,4 @@ app.include_router(recurring.router)
 app.include_router(goals.router)
 app.include_router(coach.router)
 app.include_router(settings.router)
+app.include_router(analytics.router)

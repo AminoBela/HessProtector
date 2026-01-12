@@ -38,7 +38,9 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
     const today = new Date();
     const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
     const daysRemaining = Math.max(1, daysInMonth - today.getDate() + 1); // +1 to include today
-    const perDay = data.balance / daysRemaining;
+    const perDay = (data?.balance || 0) / daysRemaining;
+
+    if (!data) return <div className="p-8 text-center text-emerald-500 animate-pulse">{t.loading}...</div>;
 
     return (
         <>
@@ -131,7 +133,7 @@ export function DashboardView({ data, barData, COLORS, language, theme, statsDat
                                                 <div className={`text-xs uppercase font-bold tracking-wider ${subTextColor}`}>{tx.date} • {tx.category}</div>
                                             </div>
                                         </div>
-                                        <span className={`font-mono text-xl font-bold ${tx.type === 'revenu' ? 'text-emerald-500' : 'text-rose-500'}`}>{tx.type === 'revenu' ? '+' : '-'}{tx.amount}€</span>
+                                        <span className={`font-mono text-xl font-bold ${tx.type === 'revenu' ? 'text-emerald-500' : 'text-rose-500'}`}>{tx.type === 'revenu' ? '+' : '-'}{parseFloat(tx.amount).toFixed(2)}€</span>
                                     </div>
                                 ))}
                             </div>

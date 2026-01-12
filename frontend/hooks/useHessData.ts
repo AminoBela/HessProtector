@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useHessData() {
+export function useHessData(token: string | null) {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [statsYear, setStatsYear] = useState(new Date().getFullYear().toString());
@@ -21,50 +21,107 @@ export function useHessData() {
     const [generatedPrompt, setGeneratedPrompt] = useState("");
     const [scanning, setScanning] = useState(false);
 
+    const [scannedTotal, setScannedTotal] = useState<number | null>(null);
+
+    const authHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+
     const refresh = () => {
-        fetch('http://127.0.0.1:8000/api/dashboard')
-            .then(res => res.json())
+        if (!token) return;
+        fetch('http://127.0.0.1:8000/api/dashboard', { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => {
+                if (res.status === 401) {
+                    window.dispatchEvent(new Event('hess:logout'));
+                    return Promise.reject("Unauthorized"); // Reject to skip next .then
+                }
+                return res.json();
+            })
             .then(d => {
                 setData(d);
                 setLoading(false);
-                if (d.profile) setSettingsForm(d.profile);
+                if (d?.profile) setSettingsForm(d.profile);
+            })
+            .catch(e => {
+                if (e !== "Unauthorized") console.error("Refresh error:", e);
             });
-        fetch('http://127.0.0.1:8000/api/dashboard/years')
-            .then(res => res.json())
-            .then(y => setYears(y));
+
+        fetch('http://127.0.0.1:8000/api/dashboard/years', { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => {
+                if (res.status === 401) return Promise.reject("Unauthorized");
+                return res.json();
+            })
+            .then(y => setYears(y))
+            .catch(e => {
+                if (e !== "Unauthorized") console.error("Years error:", e);
+            });
+
         refreshStats();
     };
 
     const refreshStats = () => {
-        fetch(`http://127.0.0.1:8000/api/dashboard/stats?year=${statsYear}`)
-            .then(res => res.json())
-            .then(s => setStatsData(s));
+        if (!token) return;
+        fetch(`http://127.0.0.1:8000/api/dashboard/stats?year=${statsYear}`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => {
+                if (res.status === 401) return Promise.reject("Unauthorized");
+                return res.json();
+            })
+            .then(s => setStatsData(s))
+            .catch(e => {
+                if (e !== "Unauthorized") console.error("Stats error:", e);
+            });
     };
 
-    useEffect(() => { refresh(); }, []);
-    useEffect(() => { refreshStats(); }, [statsYear]);
+    useEffect(() => {
+        if (token) {
+            refresh();
+        } else {
+            setLoading(false); // Stop loading if no token
+        }
+    }, [token]);
+
+    useEffect(() => { refreshStats(); }, [statsYear, token]);
 
     // Actions
-    const handleAddTx = async () => { if (!txForm.amount) return; await fetch('http://127.0.0.1:8000/api/transaction', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...txForm, amount: parseFloat(txForm.amount) }) }); refresh(); };
-    const handleDeleteTx = async (id: number) => { if (confirm("Supprimer ?")) await fetch(`http://127.0.0.1:8000/api/transaction/${id}`, { method: 'DELETE' }); refresh(); };
+    const handleAddTx = async (overrideForm?: any) => {
+        const form = overrideForm || txForm;
+        if (!form.amount) return;
+        await fetch('http://127.0.0.1:8000/api/transaction', { method: 'POST', headers: authHeaders, body: JSON.stringify({ ...form, amount: parseFloat(form.amount) }) });
+        refresh();
+    };
+    const handleDeleteTx = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/transaction/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); refresh(); };
+    const handleUpdateTx = async (id: number, form: any) => { await fetch(`http://127.0.0.1:8000/api/transaction/${id}`, { method: 'PUT', headers: authHeaders, body: JSON.stringify({ ...form, amount: parseFloat(form.amount) }) }); refresh(); };
 
-    const handleAddPantry = async () => { if (!pantryForm.item) return; await fetch('http://127.0.0.1:8000/api/pantry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pantryForm) }); setPantryForm({ item: "", qty: "", category: "Autre", expiry: "" }); refresh(); };
-    const handleDeletePantry = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/pantry/${id}`, { method: 'DELETE' }); refresh(); };
+    const handleAddPantry = async () => { if (!pantryForm.item) return; await fetch('http://127.0.0.1:8000/api/pantry', { method: 'POST', headers: authHeaders, body: JSON.stringify(pantryForm) }); setPantryForm({ item: "", qty: "", category: "Autre", expiry: "" }); refresh(); };
+    const handleDeletePantry = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/pantry/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); refresh(); };
 
-    const handleAddRec = async () => { if (!recForm.label) return; await fetch('http://127.0.0.1:8000/api/recurring', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...recForm, amount: parseFloat(recForm.amount), day: parseInt(recForm.day) }) }); setRecForm({ label: "", amount: "", day: "1", type: "Fixe" }); refresh(); };
-    const handleDeleteRec = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/recurring/${id}`, { method: 'DELETE' }); refresh(); };
+    const handleAddRec = async () => { if (!recForm.label) return; await fetch('http://127.0.0.1:8000/api/recurring', { method: 'POST', headers: authHeaders, body: JSON.stringify({ ...recForm, amount: parseFloat(recForm.amount), day: parseInt(recForm.day) }) }); setRecForm({ label: "", amount: "", day: "1", type: "Fixe" }); refresh(); };
+    const handleDeleteRec = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/recurring/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); refresh(); };
 
-    const handleAddGoal = async () => { if (!goalForm.label) return; await fetch('http://127.0.0.1:8000/api/goals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...goalForm, target: parseFloat(goalForm.target), saved: parseFloat(goalForm.saved) }) }); setGoalForm({ label: "", target: "", saved: "0", deadline: "", priority: "Moyenne" }); refresh(); };
-    const handleDeleteGoal = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/goals/${id}`, { method: 'DELETE' }); refresh(); };
+    const handleAddGoal = async () => { if (!goalForm.label) return; await fetch('http://127.0.0.1:8000/api/goals', { method: 'POST', headers: authHeaders, body: JSON.stringify({ ...goalForm, target: parseFloat(goalForm.target), saved: parseFloat(goalForm.saved) }) }); setGoalForm({ label: "", target: "", saved: "0", deadline: "", priority: "Moyenne" }); refresh(); };
+    const handleDeleteGoal = async (id: number) => { await fetch(`http://127.0.0.1:8000/api/goals/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } }); refresh(); };
 
-    const updateSettings = async () => { await fetch('http://127.0.0.1:8000/api/profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settingsForm) }); alert("Profil mis à jour !"); refresh(); };
+    const updateSettings = async () => { await fetch('http://127.0.0.1:8000/api/profile', { method: 'PUT', headers: authHeaders, body: JSON.stringify(settingsForm) }); refresh(); };
 
     const handleUploadReceipt = async (e: any) => {
         if (!e.target.files[0]) return;
         setScanning(true);
         const formData = new FormData();
         formData.append("file", e.target.files[0]);
-        await fetch('http://127.0.0.1:8000/api/scan-receipt', { method: 'POST', body: formData });
+        // Note: FormData does not need Content-Type header, it sets it automatically with boundary.
+        // But we DO need Auth header. 
+        const res = await fetch('http://127.0.0.1:8000/api/scan-receipt', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+        });
+        const json = await res.json();
+
+        if (json.total_amount) {
+            setScannedTotal(json.total_amount);
+        }
+
         setScanning(false);
         refresh();
     };
@@ -73,7 +130,7 @@ export function useHessData() {
         setGeneratedPrompt("");
         const res = await fetch('http://127.0.0.1:8000/api/smart-prompt', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: authHeaders,
             body: JSON.stringify({
                 type: "shopping",
                 budget: groceryBudget[0],
@@ -90,12 +147,12 @@ export function useHessData() {
     return {
         data, loading, refresh,
         statsYear, setStatsYear, years, statsData,
-        txForm, setTxForm, handleAddTx, handleDeleteTx,
+        txForm, setTxForm, handleAddTx, handleDeleteTx, handleUpdateTx,
         pantryForm, setPantryForm, handleAddPantry, handleDeletePantry,
         recForm, setRecForm, handleAddRec, handleDeleteRec,
         goalForm, setGoalForm, handleAddGoal, handleDeleteGoal,
         settingsForm, setSettingsForm, updateSettings,
-        scanning, handleUploadReceipt,
+        scanning, handleUploadReceipt, scannedTotal, setScannedTotal,
         groceryBudget, setGroceryBudget,
         planDays, setPlanDays,
         planMeals, setPlanMeals,
