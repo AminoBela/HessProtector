@@ -11,6 +11,10 @@ load_dotenv()
 
 app = FastAPI()
 
+@app.get("/")
+def read_root():
+    return {"message": "HessProtector Backend is running"}
+
 # Gemini Config
 GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 if GEMINI_KEY:
