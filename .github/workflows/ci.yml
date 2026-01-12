@@ -35,6 +35,7 @@ jobs:
         
     - name: Test with Pytest
       run: |
+        export PYTHONPATH=$PYTHONPATH:.
         pytest
 
   frontend-ci:
@@ -57,7 +58,7 @@ jobs:
       run: npm install --legacy-peer-deps
       
     - name: Lint
-      run: npm run lint
+      run: npx next lint
       
     - name: Test
       run: npm test
