@@ -58,7 +58,7 @@ jobs:
       run: npm install --legacy-peer-deps
       
     - name: Lint
-      run: npx next lint
+      run: npx next lint --dir .
       
     - name: Test
       run: npm test
