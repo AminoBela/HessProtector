@@ -31,7 +31,8 @@ def get_dashboard(current_user: User = Depends(get_current_user)):
     upcoming_bills = sum(r['amount'] for r in recurring if r['day'] > today_day)
     categories = {}
     for t in transactions:
-        if t['type'] == 'depense': categories[t['category']] = categories.get(t['category'], 0) + t['amount']
+        if t['type'] == 'depense':
+            categories[t['category']] = categories.get(t['category'], 0) + t['amount']
 
     # HessXP Logic
     raw_xp = int(balance)
@@ -39,10 +40,14 @@ def get_dashboard(current_user: User = Depends(get_current_user)):
     total_xp = max(0, raw_xp + (goals_completed * 100))
 
     def get_rank(xp):
-        if xp < 500: return "La Hess", 500
-        if xp < 2000: return "Débrouillard", 2000
-        if xp < 5000: return "Économe", 5000
-        if xp < 10000: return "Investisseur", 10000
+        if xp < 500:
+            return "La Hess", 500
+        if xp < 2000:
+            return "Débrouillard", 2000
+        if xp < 5000:
+            return "Économe", 5000
+        if xp < 10000:
+            return "Investisseur", 10000
         return "Rentier", 999999
 
     rank_name, next_rank_xp = get_rank(total_xp)
@@ -65,7 +70,8 @@ def get_years(current_user: User = Depends(get_current_user)):
     c.execute("SELECT DISTINCT strftime('%Y', date) as year FROM transactions WHERE user_id=? ORDER BY year DESC", (current_user['id'],))
     years = [row[0] for row in c.fetchall() if row[0] is not None]
     conn.close()
-    if not years: years = [str(date.today().year)]
+    if not years:
+        years = [str(date.today().year)]
     return years
 
 @router.get("/api/dashboard/stats")

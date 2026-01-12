@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.database import get_db_connection
-from app.models import UserCreate, Token, User
+from app.models import UserCreate, Token
 from app.auth_utils import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import timedelta
 from jose import JWTError, jwt

@@ -1,7 +1,7 @@
 import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional
-from jose import JWTError, jwt
+from jose import jwt
 import os
 
 # SECRET KEY (should be in .env, fallback for dev)

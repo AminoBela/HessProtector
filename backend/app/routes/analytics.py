@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from app.database import get_db_connection
 from app.models import BaseModel, User
 from app.routes.auth import get_current_user
-from datetime import date
+
 import google.generativeai as genai
 import os
 import calendar
@@ -25,7 +25,7 @@ def get_monthly_analytics(year: str, month: str, current_user: User = Depends(ge
     # 1. Daily Data (Evolution)
     try:
         num_days = calendar.monthrange(int(year), int(month))[1]
-    except:
+    except ValueError:
         num_days = 30
         
     daily_data = []

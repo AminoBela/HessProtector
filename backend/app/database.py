@@ -1,5 +1,5 @@
 import sqlite3
-import os
+
 
 DB_FILE = "hess_protector.db"
 
