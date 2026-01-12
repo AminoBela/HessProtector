@@ -58,7 +58,7 @@ jobs:
       run: npm install --legacy-peer-deps
       
     - name: Lint
-      run: npm run lint
+      run: npx eslint . --ext .ts,.tsx,.js,.jsx
       
     - name: Test
       run: npm test
