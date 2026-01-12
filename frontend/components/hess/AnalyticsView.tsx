@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -36,11 +36,7 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
     // Fetch Data
-    useEffect(() => {
-        if (token) fetchAnalytics();
-    }, [year, month, token]);
-
-    const fetchAnalytics = async () => {
+    const fetchAnalytics = useCallback(async () => {
         setLoading(true);
         setAudit(null); // Reset audit when date changes
         try {
@@ -56,7 +52,11 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
         } finally {
             setLoading(false);
         }
-    };
+    }, [year, month, token]);
+
+    useEffect(() => {
+        if (token) fetchAnalytics();
+    }, [fetchAnalytics, token]);
 
     const runAudit = async () => {
         if (!token) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Loader2 } from "lucide-react";
 import { Translations } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,7 +65,7 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
         }
     }, [generatedPrompt]);
 
-    const fetchSavedPlans = async () => {
+    const fetchSavedPlans = useCallback(async () => {
         try {
             const res = await fetch('http://127.0.0.1:8000/api/plans', {
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -77,11 +77,11 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
         } catch (e) {
             console.error(e);
         }
-    }
+    }, [token]);
 
     useEffect(() => {
         if (showSaved && token) fetchSavedPlans();
-    }, [showSaved, token]);
+    }, [showSaved, token, fetchSavedPlans]);
 
     const handleSavePlan = async (name: string) => {
         if (!name.trim() || !parsedData || !token) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export function useHessData(token: string | null) {
     const [data, setData] = useState<any>(null);
@@ -28,7 +28,20 @@ export function useHessData(token: string | null) {
         'Authorization': `Bearer ${token}`
     };
 
-    const refresh = () => {
+    const refreshStats = useCallback(() => {
+        if (!token) return;
+        fetch(`http://127.0.0.1:8000/api/dashboard/stats?year=${statsYear}`, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => {
+                if (res.status === 401) return Promise.reject("Unauthorized");
+                return res.json();
+            })
+            .then(s => setStatsData(s))
+            .catch(e => {
+                if (e !== "Unauthorized") console.error("Stats error:", e);
+            });
+    }, [token, statsYear]);
+
+    const refresh = useCallback(() => {
         if (!token) return;
         fetch('http://127.0.0.1:8000/api/dashboard', { headers: { 'Authorization': `Bearer ${token}` } })
             .then(res => {
@@ -58,20 +71,7 @@ export function useHessData(token: string | null) {
             });
 
         refreshStats();
-    };
-
-    const refreshStats = () => {
-        if (!token) return;
-        fetch(`http://127.0.0.1:8000/api/dashboard/stats?year=${statsYear}`, { headers: { 'Authorization': `Bearer ${token}` } })
-            .then(res => {
-                if (res.status === 401) return Promise.reject("Unauthorized");
-                return res.json();
-            })
-            .then(s => setStatsData(s))
-            .catch(e => {
-                if (e !== "Unauthorized") console.error("Stats error:", e);
-            });
-    };
+    }, [token, refreshStats]);
 
     useEffect(() => {
         if (token) {
@@ -79,9 +79,9 @@ export function useHessData(token: string | null) {
         } else {
             setLoading(false); // Stop loading if no token
         }
-    }, [token]);
+    }, [token, refresh]);
 
-    useEffect(() => { refreshStats(); }, [statsYear, token]);
+    useEffect(() => { refreshStats(); }, [statsYear, token, refreshStats]);
 
     // Actions
     const handleAddTx = async (overrideForm?: any) => {
