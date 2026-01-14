@@ -15,7 +15,7 @@ export const ApiService = {
                 window.dispatchEvent(new Event('hess:logout'));
                 throw new Error("Unauthorized");
             }
-            throw new Error(`API Error: ${res.statusText}`);
+            throw new Error(`API Error: ${res.statusText} (${res.status}) - ${endpoint}`);
         }
         return res.json();
     },

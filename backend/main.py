@@ -1,5 +1,5 @@
 import os
-import google.generativeai as genai
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -16,11 +16,7 @@ def read_root():
     return {"message": "HessProtector Backend is running"}
 
 # Gemini Config
-GEMINI_KEY = os.getenv("GEMINI_API_KEY")
-if GEMINI_KEY:
-    genai.configure(api_key=GEMINI_KEY)
-else:
-    print("WARNING: GEMINI_API_KEY not found in .env")
+
 
 # Init Database
 init_db()

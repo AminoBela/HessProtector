@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import PageTransition from "@/components/ui/PageTransition"
-import { RecurringView } from "@/components/hess/RecurringView"
-import { PantryView } from "@/components/hess/PantryView"
-import { DashboardView } from "@/components/hess/DashboardView"
-import { GoalsView } from "@/components/hess/GoalsView"
-import { CoachView } from "@/components/hess/CoachView"
-import { SettingsView } from "@/components/hess/SettingsView"
-import { HistoryView } from "@/components/hess/HistoryView"
-import { SetupWizard } from "@/components/hess/SetupWizard"
-import { MainLayout } from "@/components/hess/MainLayout"
-import { AnalyticsView } from "@/components/hess/AnalyticsView"
-import { AuthView } from "@/components/hess/AuthView" // [NEW]
+import { RecurringView } from "@/components/hess/features/recurring/RecurringView"
+import { PantryView } from "@/components/hess/features/pantry/PantryView"
+import { DashboardView } from "@/components/hess/features/dashboard/DashboardView"
+import { GoalsView } from "@/components/hess/features/goals/GoalsView"
+import { CoachView } from "@/components/hess/features/coach/CoachView"
+import { SettingsView } from "@/components/hess/features/settings/SettingsView"
+import { HistoryView } from "@/components/hess/features/history/HistoryView"
+import { SetupWizard } from "@/components/hess/features/setup/SetupWizard"
+import { MainLayout } from "@/components/hess/common/MainLayout"
+import { AnalyticsView } from "@/components/hess/features/analytics/AnalyticsView"
+import { AuthView } from "@/components/hess/features/auth/AuthView"
 import { useHessData } from "@/hooks/useHessData"
 import { useAuth } from "@/hooks/useAuth"
 import { Translations } from "@/lib/i18n"
@@ -21,9 +21,19 @@ import { useTransactions } from "@/hooks/domain/useTransactions"
 import { usePantry } from "@/hooks/domain/usePantry"
 import { useRecurring } from "@/hooks/domain/useRecurring"
 import { useGoals } from "@/hooks/domain/useGoals"
+import { PrivacyProvider } from "@/context/PrivacyContext"
+import { MarketView } from "@/components/hess/features/market/MarketView"
+import { buyTheme, equipTheme } from "@/services/transactionService"
 
 // --- CONFIGURATION DESIGN ---
 const COLORS = ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e'];
+const gradients: any = {
+    default: "bg-gradient-to-br from-emerald-900 via-zinc-900 to-black",
+    gold: "bg-gradient-to-br from-yellow-700 via-amber-900 to-black",
+    cyber: "bg-gradient-to-br from-purple-900 via-pink-900 to-black",
+    matrix: "bg-gradient-to-br from-green-900 via-black to-emerald-900",
+    neon: "bg-gradient-to-br from-blue-900 via-cyan-900 to-black",
+};
 
 // ... imports remain ...
 
@@ -74,7 +84,26 @@ export default function Home() {
         await scanReceipt(e.target.files[0]);
     };
 
-    // ... rest of component
+    const handleBuyTheme = async (item: any) => {
+        if (!token) return;
+        try {
+            await buyTheme(item.id, item.price, token);
+            refresh(); // Refresh to update XP and unlocked themes
+        } catch (e) {
+            console.error(e);
+            alert("Erreur lors de l'achat ou fonds insuffisants");
+        }
+    }
+
+    const handleEquipTheme = async (item: any) => {
+        if (!token) return;
+        try {
+            await equipTheme(item.id, 0, token);
+            refresh(); // Refresh to update active theme
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     const [activeTab, setActiveTab] = useState("dashboard")
     const [openTx, setOpenTx] = useState(false)
@@ -83,18 +112,11 @@ export default function Home() {
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
     // -- THEME BACKGROUNDS --
-    const isLight = theme === 'light';
-    const bg = isLight ? (
-        <div className="fixed inset-0 -z-10 bg-[#eef2ef]">
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-emerald-50/50 to-emerald-100/20"></div>
-            <div className="absolute inset-0 bg-opacity-30 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-multiply opacity-10"></div>
-        </div>
+    const activeGradient = data?.active_theme ? gradients[data.active_theme] : gradients.default;
+    const bg = theme === 'dark' ? (
+        <div className={`fixed inset-0 -z-10 ${activeGradient || gradients.default} transition-colors duration-1000`}></div>
     ) : (
-        <div className="fixed inset-0 -z-10 bg-black">
-            <style jsx global>{`input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {-webkit-appearance: none; margin: 0;} input[type=number] {-moz-appearance: textfield;} @keyframes fluid {0% {background-position: 0% 50%} 50% {background-position: 100% 50%} 100% {background-position: 0% 50%}} .animate-fluid {animation: fluid 20s ease infinite; background-size: 400% 400%;}`}</style>
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-950 to-black animate-fluid"></div>
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-        </div>
+        <div className="fixed inset-0 -z-10 bg-slate-50"></div>
     );
 
     // 1. Check Auth Loading
@@ -125,52 +147,56 @@ export default function Home() {
     const barData = data ? Object.keys(data.categories).map(k => ({ name: k, montant: data.categories[k] })) : [];
 
     return (
-        <MainLayout
-            activeTab={activeTab} setActiveTab={setActiveTab}
-            data={data}
-            theme={theme} setTheme={setTheme}
-            language={language} setLanguage={setLanguage}
-            bg={bg}
-            openTx={openTx} setOpenTx={setOpenTx}
-            txForm={txForm} setTxForm={setTxForm}
-            handleAddTx={() => { addTransaction(); setOpenTx(false); }}
-            user={user} logout={logout}
-        >
-            <AnimatePresence mode="wait">
-                <PageTransition key={activeTab} className="space-y-8">
-                    {activeTab === 'dashboard' && <DashboardView data={data} barData={barData} COLORS={COLORS} language={language} theme={theme} statsData={statsData} years={years} statsYear={statsYear} setStatsYear={setStatsYear} t={t.dashboard} />}
-                    {activeTab === 'analytics' && <AnalyticsView language={language} theme={theme} activeTab={activeTab} />}
-                    {activeTab === 'recurring' && <RecurringView data={data} recForm={recForm} setRecForm={setRecForm} handleAddRec={addRecurring} handleDeleteRec={deleteRecurring} language={language} theme={theme} />}
-                    {activeTab === 'pantry' && <PantryView
-                        data={data}
-                        pantryForm={pantryForm}
-                        setPantryForm={setPantryForm}
-                        handleAddPantry={addPantryItem}
-                        handleDeletePantry={deletePantryItem}
-                        scanning={scanning}
-                        handleUploadReceipt={handleUploadReceipt}
-                        language={language}
-                        theme={theme}
-                        scannedTotal={scannedTotal}
-                        setScannedTotal={setScannedTotal}
-                        handleAddTx={(form) => { addTransaction(form); }}
-                    />}
-                    {activeTab === 'goals' && <GoalsView data={data} goalForm={goalForm} setGoalForm={setGoalForm} handleAddGoal={addGoal} handleDeleteGoal={deleteGoal} language={language} theme={theme} />}
-                    {activeTab === 'coach' && <CoachView
-                        data={data}
-                        groceryBudget={groceryBudget} setGroceryBudget={setGroceryBudget}
-                        generatePrompt={async (json) => generatePrompt(language, planMeals, json)}
-                        generatedPrompt={generatedPrompt}
-                        planDays={planDays} setPlanDays={setPlanDays}
-                        planMeals={planMeals} setPlanMeals={setPlanMeals}
-                        language={language}
-                        onBack={() => { setGeneratedPrompt(""); }}
-                        theme={theme}
-                    />}
-                    {activeTab === 'settings' && <SettingsView settingsForm={settingsForm} setSettingsForm={setSettingsForm} updateSettings={updateSettings} language={language} theme={theme} token={token} logout={logout} />}
-                    {activeTab === 'history' && <HistoryView data={data} handleDeleteTx={deleteTransaction} handleUpdateTx={updateTransaction as any} language={language} theme={theme} />}
-                </PageTransition>
-            </AnimatePresence>
-        </MainLayout>
+        <PrivacyProvider>
+            <MainLayout
+                activeTab={activeTab} setActiveTab={setActiveTab}
+                data={data}
+                theme={theme} setTheme={setTheme}
+                language={language} setLanguage={setLanguage}
+                bg={bg}
+                openTx={openTx} setOpenTx={setOpenTx}
+                txForm={txForm} setTxForm={setTxForm}
+                handleAddTx={() => { addTransaction(); setOpenTx(false); }}
+                user={user} logout={logout}
+            >
+                <AnimatePresence mode="wait">
+                    <PageTransition key={activeTab} className="space-y-8">
+                        {activeTab === 'dashboard' && <DashboardView data={data} barData={barData} COLORS={COLORS} language={language} theme={theme} statsData={statsData} years={years} statsYear={statsYear} setStatsYear={setStatsYear} t={t.dashboard} />}
+                        {activeTab === 'analytics' && <AnalyticsView language={language} theme={theme} activeTab={activeTab} />}
+                        {activeTab === 'recurring' && <RecurringView data={data} recForm={recForm} setRecForm={setRecForm} handleAddRec={addRecurring} handleDeleteRec={deleteRecurring} language={language} theme={theme} />}
+                        {activeTab === 'pantry' && <PantryView
+                            data={data}
+                            pantryForm={pantryForm}
+                            setPantryForm={setPantryForm}
+                            handleAddPantry={addPantryItem}
+                            handleDeletePantry={deletePantryItem}
+                            scanning={scanning}
+                            handleUploadReceipt={handleUploadReceipt}
+                            language={language}
+                            theme={theme}
+                            scannedTotal={scannedTotal}
+                            setScannedTotal={setScannedTotal}
+                            handleAddTx={(form) => { addTransaction(form); }}
+                        />}
+                        {activeTab === 'goals' && <GoalsView data={data} goalForm={goalForm} setGoalForm={setGoalForm} handleAddGoal={addGoal} handleDeleteGoal={deleteGoal} language={language} theme={theme} />}
+                        {activeTab === 'coach' && <CoachView
+                            data={data}
+                            groceryBudget={groceryBudget} setGroceryBudget={setGroceryBudget}
+                            generatePrompt={generatePrompt}
+                            generatedPrompt={generatedPrompt}
+                            planDays={planDays} setPlanDays={setPlanDays}
+                            planMeals={planMeals} setPlanMeals={setPlanMeals}
+                            language={language}
+                            onBack={() => { setGeneratedPrompt(""); }}
+                            theme={theme}
+                            token={token || ""}
+                        />}
+                        {activeTab === 'market' && <MarketView data={data} language={language} theme={theme} onBuy={handleBuyTheme} onEquip={handleEquipTheme} />}
+                        {activeTab === 'settings' && <SettingsView settingsForm={settingsForm} setSettingsForm={setSettingsForm} updateSettings={updateSettings} language={language} theme={theme} token={token} logout={logout} />}
+                        {activeTab === 'history' && <HistoryView data={data} handleDeleteTx={deleteTransaction} handleUpdateTx={updateTransaction as any} language={language} theme={theme} />}
+                    </PageTransition>
+                </AnimatePresence>
+            </MainLayout>
+        </PrivacyProvider>
     )
 }

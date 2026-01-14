@@ -128,20 +128,36 @@ export function useHessData(token: string | null) {
 
     const generatePrompt = async (language: string, planMeals: string[], currentPlanJson?: string) => {
         setGeneratedPrompt("");
-        const res = await fetch('http://127.0.0.1:8000/api/smart-prompt', {
-            method: 'POST',
-            headers: authHeaders,
-            body: JSON.stringify({
-                type: "shopping",
-                budget: groceryBudget[0],
-                days: planDays[0],
-                meals: planMeals,
-                language: language,
-                current_plan: currentPlanJson
-            })
-        });
-        const json = await res.json();
-        setGeneratedPrompt(json.prompt);
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/smart-prompt', {
+                method: 'POST',
+                headers: authHeaders,
+                body: JSON.stringify({
+                    type: "meal_plan",
+                    budget: groceryBudget[0],
+                    days: planDays[0],
+                    meals: planMeals,
+                    language: language,
+                    current_plan: currentPlanJson
+                })
+            });
+            const json = await res.json();
+
+            if (json.error) {
+                console.error("Coach Error:", json.error);
+                // Optionally let the UI know about the error?
+                // For now, at least log it so user can see it in console.
+                return;
+            }
+
+            if (json.prompt) {
+                // If it's already an object, stringify it for the View which expects string
+                const promptStr = typeof json.prompt === 'string' ? json.prompt : JSON.stringify(json.prompt);
+                setGeneratedPrompt(promptStr);
+            }
+        } catch (e) {
+            console.error("Generator Failed:", e);
+        }
     };
 
     return {

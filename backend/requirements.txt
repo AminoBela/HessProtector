@@ -3,11 +3,10 @@ uvicorn
 pydantic
 python-multipart
 websockets
-google-generativeai
+google-genai
 python-dotenv
 passlib[bcrypt]
 python-jose[cryptography]
-python-multipart
 bcrypt
 pytest
 httpx

@@ -27,3 +27,23 @@ export const TransactionService = {
         return ApiService.put(`/transaction/${id}`, tx, token);
     }
 };
+
+export const updateProfile = async (profile: any, token: string) => {
+    return ApiService.put('/profile', profile, token);
+}
+
+export const getLimits = async (token: string) => {
+    return ApiService.get('/budget-limits', token);
+}
+
+export const saveLimit = async (limit: { category: string, amount: number }, token: string) => {
+    return ApiService.post('/budget-limits', limit, token);
+}
+
+export const buyTheme = async (itemId: string, price: number, token: string) => {
+    return ApiService.post('/market/buy', { id: itemId, price }, token);
+}
+
+export const equipTheme = async (itemId: string, price: number, token: string) => {
+    return ApiService.post('/market/equip', { id: itemId, price }, token);
+}

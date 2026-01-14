@@ -1,31 +1,29 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.database import get_db_connection
+from fastapi import APIRouter, Depends
 from app.models import RecurringItem, User
 from app.routes.auth import get_current_user
-from app.repositories.common_repos import RecurringRepository
+from app.core.dependencies import get_recurring_repository
+from app.repositories import RecurringRepository
 
 router = APIRouter()
 
-def get_recurring_repo():
-    conn = get_db_connection()
-    try:
-        yield RecurringRepository(conn)
-    finally:
-        conn.close()
 
 @router.post("/api/recurring")
-def add_rec(rec: RecurringItem, 
-            current_user: User = Depends(get_current_user),
-            repo: RecurringRepository = Depends(get_recurring_repo)):
-    repo.add(rec, current_user['id'])
-    return {"status": "ok"}
+def add_recurring(
+    rec: RecurringItem,
+    current_user: User = Depends(get_current_user),
+    repo: RecurringRepository = Depends(get_recurring_repository)
+):
+    """Add a recurring payment"""
+    repo.create(rec, current_user['id'])
+    return {"status": "added"}
+
 
 @router.delete("/api/recurring/{id}")
-def del_rec(id: int, 
-            current_user: User = Depends(get_current_user),
-            repo: RecurringRepository = Depends(get_recurring_repo)):
+def delete_recurring(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    repo: RecurringRepository = Depends(get_recurring_repository)
+):
+    """Delete a recurring payment"""
     success = repo.delete(id, current_user['id'])
-    if not success:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return {"status": "ok"}
-
+    return {"status": "deleted" if success else "not_found"}

@@ -1,41 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException
-from app.database import get_db_connection
+from fastapi import APIRouter, Depends
 from app.models import Transaction, User
 from app.routes.auth import get_current_user
-from app.repositories.transaction_repo import TransactionRepository
+from app.core.dependencies import get_transaction_repository
+from app.repositories import TransactionRepository
 
 router = APIRouter()
 
-def get_transaction_repo():
-    conn = get_db_connection()
-    try:
-        yield TransactionRepository(conn)
-    finally:
-        conn.close()
 
-@router.post("/api/transaction")
-def add_tx(tx: Transaction, 
-           current_user: User = Depends(get_current_user),
-           repo: TransactionRepository = Depends(get_transaction_repo)):
+@router.post("/api/transactions")
+def add_transaction(
+    tx: Transaction,
+    current_user: User = Depends(get_current_user),
+    repo: TransactionRepository = Depends(get_transaction_repository)
+):
+    """Add a new transaction"""
     repo.create(tx, current_user['id'])
-    return {"status": "ok"}
+    return {"status": "created"}
 
-@router.delete("/api/transaction/{id}")
-def del_tx(id: int, 
-           current_user: User = Depends(get_current_user),
-           repo: TransactionRepository = Depends(get_transaction_repo)):
+
+@router.delete("/api/transactions/{id}")
+def delete_transaction(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    repo: TransactionRepository = Depends(get_transaction_repository)
+):
+    """Delete a transaction"""
     success = repo.delete(id, current_user['id'])
-    if not success:
-        raise HTTPException(status_code=404, detail="Transaction not found")
-    return {"status": "ok"}
+    return {"status": "deleted" if success else "not_found"}
 
-@router.put("/api/transaction/{id}")
-def update_tx(id: int, 
-              tx: Transaction, 
-              current_user: User = Depends(get_current_user),
-              repo: TransactionRepository = Depends(get_transaction_repo)):
+
+@router.put("/api/transactions/{id}")
+def update_transaction(
+    id: int,
+    tx: Transaction,
+    current_user: User = Depends(get_current_user),
+    repo: TransactionRepository = Depends(get_transaction_repository)
+):
+    """Update a transaction"""
     success = repo.update(id, tx, current_user['id'])
-    if not success:
-        raise HTTPException(status_code=404, detail="Transaction not found")
-    return {"status": "ok"}
-
+    return {"status": "updated" if success else "not_found"}

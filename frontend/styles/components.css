@@ -1,0 +1,17 @@
+@layer components {
+    .card-glass {
+        @apply backdrop-blur-md border shadow-lg rounded-3xl overflow-hidden transition-all duration-500 transform-gpu;
+    }
+
+    .card-glass-light {
+        @apply border-emerald-900/5 hover:bg-white/80;
+        background-color: rgba(255, 255, 255, 0.7) !important;
+        color: rgb(30 41 59) !important;
+    }
+
+    .card-glass-dark {
+        @apply border-white/5 hover:bg-zinc-900/50;
+        background-color: rgba(24, 24, 27, 0.4) !important;
+        color: rgb(255 255 255) !important;
+    }
+}

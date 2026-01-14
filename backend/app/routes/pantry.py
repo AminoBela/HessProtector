@@ -1,101 +1,91 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
-from app.database import get_db_connection
+from fastapi import APIRouter, Depends, UploadFile, File
 from app.models import PantryItem, User
 from app.routes.auth import get_current_user
-from app.repositories.common_repos import PantryRepository
-from datetime import date
-import google.generativeai as genai
-import json
+from app.core.dependencies import get_pantry_repository
+from app.repositories import PantryRepository
 import os
+from google import genai
+import json
 
 router = APIRouter()
 
-def get_pantry_repo():
-    conn = get_db_connection()
-    try:
-        yield PantryRepository(conn)
-    finally:
-        conn.close()
 
 @router.post("/api/pantry")
-def add_item(item: PantryItem, 
-             current_user: User = Depends(get_current_user),
-             repo: PantryRepository = Depends(get_pantry_repo)):
-    repo.add(item, current_user['id'])
-    return {"status": "ok"}
+def add_pantry(
+    item: PantryItem,
+    current_user: User = Depends(get_current_user),
+    repo: PantryRepository = Depends(get_pantry_repository)
+):
+    """Add an item to pantry"""
+    repo.create(item, current_user['id'])
+    return {"status": "added"}
+
 
 @router.delete("/api/pantry/{id}")
-def del_item(id: int, 
-             current_user: User = Depends(get_current_user),
-             repo: PantryRepository = Depends(get_pantry_repo)):
+def delete_pantry(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    repo: PantryRepository = Depends(get_pantry_repository)
+):
+    """Delete a pantry item"""
     success = repo.delete(id, current_user['id'])
-    if not success:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return {"status": "ok"}
+    return {"status": "deleted" if success else "not_found"}
 
 
 @router.post("/api/scan-receipt")
-async def scan_receipt(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
-    """Analyse REELLE du ticket avec Gemini Vision"""
+async def scan_receipt(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """Scan a receipt image using Gemini Vision"""
     try:
+        # Read file content
         content = await file.read()
         
-
-        if GEMINI_KEY:
-            genai.configure(api_key=GEMINI_KEY)
-            
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Initialize Gemini client
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            return {"error": "GEMINI_API_KEY not configured"}
         
+        client = genai.Client(api_key=api_key)
+        
+        # Upload file to Gemini
+        uploaded_file = client.files.upload(path=file.filename, config={"display_name": file.filename})
+        
+        # Request analysis
         prompt = """
-        You are an expert Receipt Scanner. 
-        Analyze this image and extract purchased items AND the total amount.
-        Return ONLY a valid JSON object. No markdown.
-        Structure:
+        Analyze this receipt image and extract:
+        1. Total amount (just the number, e.g., "42.50")
+        2. List of items with quantities
+        
+        Return ONLY valid JSON:
         {
+            "total": "42.50",
             "items": [
-                {
-                    "item": "Product Name", 
-                    "qty": 1 (integer), 
-                    "category": "Viandes" | "Legumes" | "Laitiers" | "Epicerie" | "Boisson" | "Surgeles" | "Hygiene" | "Maison" | "Autre", 
-                    "expiry": "YYYY-MM-DD" (Estimate expiry based on type)
-                }
-            ],
-            "total_amount": 12.50 (float, or null if not found)
+                {"item": "Tomates", "qty": "500g", "category": "Légumes"},
+                {"item": "Pain", "qty": "1", "category": "Boulangerie"}
+            ]
         }
         """
         
-        response = model.generate_content([
-            {'mime_type': file.content_type, 'data': content},
-            prompt
-        ])
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=[prompt, uploaded_file]
+        )
         
+        # Parse response
         text = response.text.strip()
-
-        if text.startswith("```"):
-            text = text.split("\n", 1)[1]
-            if text.endswith("```"):
-                text = text.rsplit("\n", 1)[0]
-
-        data = json.loads(text)
+        start = text.find('{')
+        end = text.rfind('}') + 1
+        if start != -1 and end > start:
+            text = text[start:end]
         
-
-        if isinstance(data, list):
-            data = {"items": data, "total_amount": None}
-
-
-        conn = get_db_connection()
-        c = conn.cursor()
+        result = json.loads(text)
         
-        for item in data.get("items", []):
-            cat = item.get('category', 'Autre')
-            exp = item.get('expiry', '')
-            c.execute("INSERT INTO pantry (item, qty, category, expiry, added_date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-                      (item['item'], item['qty'], cat, exp, str(date.today()), current_user['id']))
-        conn.commit()
-        conn.close()
+        # Clean up uploaded file
+        client.files.delete(name=uploaded_file.name)
         
-        return {"items": data.get("items", []), "total_amount": data.get("total_amount")}
+        return result
         
     except Exception as e:
-        print(f"Error Gemini Vision: {e}")
-        return {"status": "error", "message": str(e)}
+        return {"error": str(e)}

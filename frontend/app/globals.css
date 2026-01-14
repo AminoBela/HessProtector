@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../styles/components.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,7 +120,24 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Hide spin buttons for chrome/safari/edge/opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+  /* Force hide */
+}
+
+/* Hide spin buttons for firefox */
+input[type=number] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+  /* Standard property */
 }
