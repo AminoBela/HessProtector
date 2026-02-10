@@ -9,6 +9,11 @@ class BaseRepository(ABC):
         self.conn = conn
         self.conn.row_factory = Row
 
+    def close(self):
+        """Close the database connection"""
+        if self.conn:
+            self.conn.close()
+
     @abstractmethod
     def get_by_id(self, id: int, user_id: int) -> Optional[dict]:
         pass

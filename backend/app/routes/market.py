@@ -47,20 +47,26 @@ def buy_item(
         if current_xp < price:
             raise HTTPException(status_code=400, detail=f"Insufficient XP (have {current_xp}, need {price})")
         
-        # Check if already owned
-        c.execute("SELECT id FROM user_themes WHERE user_id = ? AND theme_id = ?", 
-                 (current_user['id'], item_id))
-        if c.fetchone():
+        # Check if already owned via profile.unlocked_themes
+        c.execute("SELECT unlocked_themes FROM profile WHERE user_id = ?", (current_user['id'],))
+        profile_row = c.fetchone()
+        unlocked = profile_row['unlocked_themes'].split(',') if profile_row and profile_row['unlocked_themes'] else ['default']
+        
+        if item_id in unlocked:
             raise HTTPException(status_code=400, detail="Already owned")
         
-        # Unlock the theme
-        c.execute("INSERT INTO user_themes (user_id, theme_id) VALUES (?, ?)", 
+        # Unlock the theme in profile.unlocked_themes
+        unlocked.append(item_id)
+        c.execute("UPDATE profile SET unlocked_themes = ? WHERE user_id = ?",
+                  (','.join(unlocked), current_user['id']))
+        
+        # Also insert into user_themes for consistency
+        c.execute("INSERT OR IGNORE INTO user_themes (user_id, theme_id) VALUES (?, ?)", 
                  (current_user['id'], item_id))
         
         conn.commit()
         
-        new_xp = current_xp 
-        return {"status": "purchased", "item_id": item_id, "new_xp": new_xp}
+        return {"status": "purchased", "item_id": item_id, "new_xp": current_xp}
     finally:
         conn.close()
 
@@ -77,11 +83,13 @@ def equip_item(
     c = conn.cursor()
     
     try:
-        # Check if user owns this theme (or it's default)
+        # Check if user owns this theme (via profile.unlocked_themes)
         if item_id != 'default':
-            c.execute("SELECT id FROM user_themes WHERE user_id = ? AND theme_id = ?", 
-                     (current_user['id'], item_id))
-            if not c.fetchone():
+            c.execute("SELECT unlocked_themes FROM profile WHERE user_id = ?", (current_user['id'],))
+            profile_row = c.fetchone()
+            unlocked = profile_row['unlocked_themes'].split(',') if profile_row and profile_row['unlocked_themes'] else ['default']
+            
+            if item_id not in unlocked:
                 raise HTTPException(status_code=400, detail="Theme not owned")
         
         # Equip theme

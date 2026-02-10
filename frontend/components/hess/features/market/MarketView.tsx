@@ -47,9 +47,10 @@ export function MarketView({ data, language, theme, onBuy, onEquip }: MarketView
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {THEMES.map((themeItem) => {
-                    const isOwned = data.unlocked_themes?.includes(themeItem.id) || themeItem.id === 'default';
-                    const isEquipped = data.active_theme === themeItem.id;
-                    const canAfford = (data.xp || 0) >= themeItem.price; // Just visual check
+                    const unlockedList = (data.profile?.unlocked_themes || 'default').split(',');
+                    const isOwned = unlockedList.includes(themeItem.id) || themeItem.id === 'default';
+                    const isEquipped = (data.profile?.active_theme || data.active_theme) === themeItem.id;
+                    const canAfford = (data.xp || 0) >= themeItem.price;
 
                     // Simple rank check logic (mock)
                     const rankLevels: any = { "Mendiant": 0, "Investisseur": 1, "Rentier": 2 };

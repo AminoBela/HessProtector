@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
+import { AnimatePresence } from "framer-motion"
 import PageTransition from "@/components/ui/PageTransition"
 import { RecurringView } from "@/components/hess/features/recurring/RecurringView"
 import { PantryView } from "@/components/hess/features/pantry/PantryView"
@@ -24,6 +24,7 @@ import { useGoals } from "@/hooks/domain/useGoals"
 import { PrivacyProvider } from "@/context/PrivacyContext"
 import { MarketView } from "@/components/hess/features/market/MarketView"
 import { buyTheme, equipTheme } from "@/services/transactionService"
+import { ApiService } from "@/services/apiClient"
 
 // --- CONFIGURATION DESIGN ---
 const COLORS = ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e'];
@@ -35,14 +36,12 @@ const gradients: any = {
     neon: "bg-gradient-to-br from-blue-900 via-cyan-900 to-black",
 };
 
-// ... imports remain ...
-
 export default function Home() {
     const { user, token, loading: authLoading, login, register, logout } = useAuth();
     const [language, setLanguage] = useState("fr");
     const [theme, setTheme] = useState("dark");
 
-    // 1. Data Fetching (Legacy/Core)
+    // Data Fetching (core dashboard, stats, coach, settings)
     const {
         data, loading: dataLoading, refresh,
         statsYear, setStatsYear, years, statsData,
@@ -53,45 +52,34 @@ export default function Home() {
         generatedPrompt, setGeneratedPrompt, generatePrompt,
     } = useHessData(token);
 
-    // 2. Modular Hooks (Action/Form Management)
+    // Modular Domain Hooks
     const { txForm, setTxForm, addTransaction, deleteTransaction, updateTransaction } = useTransactions(token, refresh);
     const { pantryForm, setPantryForm, addPantryItem, deletePantryItem, scanReceipt, scanning, scannedTotal, setScannedTotal } = usePantry(token, refresh);
-    // Note: usePantry returns pantryForm. I need to check scannedTotal.
-    // Wait, usePantry hook I updated:
-    // returns { pantryForm, setPantryForm, addPantryItem, deletePantryItem, scanReceipt, loading, error }
-    // It DOES NOT return `scannedTotal` or `setScannedTotal`. I missed that in usePantry update.
-    // useHessData had `scannedTotal` state.
-    // I should add `scannedTotal` to usePantry or handle it here.
-    // Let's assume for now I will use usePantry as is and verify.
-    // Actually, `PantryView` expects `scannedTotal`.
-    // I need to update usePantry to handle scannedTotal first or keep it in page.tsx?
-    // Better to keep it in usePantry.
-
     const { recForm, setRecForm, addRecurring, deleteRecurring } = useRecurring(token, refresh);
     const { goalForm, setGoalForm, addGoal, deleteGoal } = useGoals(token, refresh);
-
-    // Scanned Total State (Temporary fix if not in hook, or I update hook now)
-    // Actually, I should update usePantry to expose scannedTotal.
-    // I'll proceed with this replace but mark a todo for scannedTotal or add it if usePantry supports it?
-    // I'll add a useState for scannedTotal here for now, or use the one from usePantry if I add it.
-    // Let's check usePantry content again. It does NOT have scannedTotal.
-    // I will add [scannedTotal, setScannedTotal] locally here for now to avoid breaking build,
-    // but the `scanReceipt` function in usePantry returns the result.
-    // So I can set it here:
 
     const handleUploadReceipt = async (e: any) => {
         if (!e.target.files[0]) return;
         await scanReceipt(e.target.files[0]);
     };
 
+    const [buying, setBuying] = useState(false);
     const handleBuyTheme = async (item: any) => {
-        if (!token) return;
+        if (!token || buying) return;
+        setBuying(true);
         try {
             await buyTheme(item.id, item.price, token);
-            refresh(); // Refresh to update XP and unlocked themes
-        } catch (e) {
-            console.error(e);
-            alert("Erreur lors de l'achat ou fonds insuffisants");
+            refresh();
+        } catch (e: any) {
+            const msg = e?.message || "";
+            if (msg.includes("Bad Request")) {
+                // Could be "Already owned" or "Insufficient XP" — refresh to sync UI
+                refresh();
+            } else {
+                console.error(e);
+            }
+        } finally {
+            setBuying(false);
         }
     }
 
@@ -99,7 +87,7 @@ export default function Home() {
         if (!token) return;
         try {
             await equipTheme(item.id, 0, token);
-            refresh(); // Refresh to update active theme
+            refresh();
         } catch (e) {
             console.error(e);
         }
@@ -108,11 +96,12 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState("dashboard")
     const [openTx, setOpenTx] = useState(false)
 
-    // -- TRANSLATIONS --
+    // Translations
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
 
-    // -- THEME BACKGROUNDS --
-    const activeGradient = data?.active_theme ? gradients[data.active_theme] : gradients.default;
+    // Theme Backgrounds
+    const currentTheme = data?.profile?.active_theme || 'default';
+    const activeGradient = gradients[currentTheme] || gradients.default;
     const bg = theme === 'dark' ? (
         <div className={`fixed inset-0 -z-10 ${activeGradient || gradients.default} transition-colors duration-1000`}></div>
     ) : (
@@ -138,8 +127,7 @@ export default function Home() {
     // 4. Authenticated & Data Loaded but Not Setup
     if (data && !data.is_setup) {
         return <SetupWizard bg={bg} onFinish={async (setupData) => {
-            const h = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
-            await fetch('http://127.0.0.1:8000/api/setup', { method: 'POST', headers: h, body: JSON.stringify(setupData) });
+            await ApiService.post('/setup', setupData, token);
             refresh();
         }} />
     }

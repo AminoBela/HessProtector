@@ -21,15 +21,7 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS profile (id INTEGER PRIMARY KEY AUTOINCREMENT, supermarket TEXT, diet TEXT, initial_balance REAL, active_theme TEXT DEFAULT 'default', unlocked_themes TEXT DEFAULT 'default', user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')
     c.execute('''CREATE TABLE IF NOT EXISTS plans (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, content_json TEXT, created_at TEXT, user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')
     c.execute('''CREATE TABLE IF NOT EXISTS budget_limits (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, amount REAL, user_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id))''')
+    c.execute('''CREATE TABLE IF NOT EXISTS user_themes (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, theme_id TEXT, FOREIGN KEY(user_id) REFERENCES users(id))''')
     
-    # Auto-Create Admin
-    from app.auth_utils import get_password_hash
-    admin = c.execute("SELECT * FROM users WHERE username='admin'").fetchone()
-    if not admin:
-        print("Creating default admin account (user: admin, pass: admin123)...")
-        hashed = get_password_hash("admin123")
-        c.execute("INSERT INTO users (username, email, hashed_password) VALUES (?, ?, ?)", 
-                  ("admin", "admin@hessprotector.com", hashed))
-
     conn.commit()
     conn.close()

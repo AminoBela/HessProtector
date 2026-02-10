@@ -86,7 +86,7 @@ def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_u
         
     client = genai.Client(api_key=GEMINI_KEY)
     
-    lang_instruction = "Respond in French." if req.language == 'fr' else "Respond in Spanish."
+    lang_instruction = "Respond in French." if req.language == 'fr' else "Respond in English."
     
     prompt = f"""
     You are a brutally honest but helpful Financial Auditor.

@@ -16,15 +16,15 @@ export const TransactionService = {
     },
 
     add: async (tx: Transaction, token: string) => {
-        return ApiService.post('/transaction', tx, token);
+        return ApiService.post('/transactions', tx, token);
     },
 
     delete: async (id: number, token: string) => {
-        return ApiService.delete(`/transaction/${id}`, token);
+        return ApiService.delete(`/transactions/${id}`, token);
     },
 
     update: async (id: number, tx: Transaction, token: string) => {
-        return ApiService.put(`/transaction/${id}`, tx, token);
+        return ApiService.put(`/transactions/${id}`, tx, token);
     }
 };
 

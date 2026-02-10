@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const AUTH_BASE_URL = API_BASE_URL.replace('/api', '');
+
 export function useAuth() {
     const [user, setUser] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -27,7 +30,7 @@ export function useAuth() {
         formData.append("password", password);
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/auth/login', {
+            const res = await fetch(`${AUTH_BASE_URL}/auth/login`, {
                 method: 'POST',
                 body: formData
             });
@@ -50,7 +53,7 @@ export function useAuth() {
 
     const register = async (username: string, password: string, email: string) => {
         try {
-            const res = await fetch('http://127.0.0.1:8000/auth/register', {
+            const res = await fetch(`${AUTH_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password, email })

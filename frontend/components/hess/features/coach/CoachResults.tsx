@@ -8,6 +8,7 @@ import { Translations } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { container } from "@/lib/animations";
 import { RecipeModal } from "./RecipeModal";
+import { ApiService } from "@/services/apiClient";
 
 interface CoachResponse {
     analysis: string;
@@ -95,25 +96,15 @@ export function CoachResults({
         setRecipeLoading(true);
 
         try {
-            // const token = localStorage.getItem('token'); // Removed manual fetch
-            const res = await fetch('http://127.0.0.1:8000/api/smart-prompt', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    type: "recipe",
-                    budget: 0, // Irrelevant
-                    days: 1, // Irrelevant
-                    meals: [dish],
-                    language: language
-                })
-            });
-            const data = await res.json();
+            const data = await ApiService.post('/smart-prompt', {
+                type: "recipe",
+                budget: 0,
+                days: 1,
+                meals: [dish],
+                language: language
+            }, token || '');
             if (data.prompt) {
                 setRecipe(data.prompt);
-                // Update Cache
                 setRecipeCache(prev => ({ ...prev, [dish]: data.prompt }));
             }
         } catch (e) {

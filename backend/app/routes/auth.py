@@ -34,6 +34,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/register", response_model=Token)
 async def register(user: UserCreate):
+    if len(user.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
     conn = get_db_connection()
 
     existing = conn.execute('SELECT * FROM users WHERE username = ?', (user.username,)).fetchone()

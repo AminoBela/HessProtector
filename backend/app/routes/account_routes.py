@@ -43,7 +43,7 @@ async def delete_account(current_user=Depends(get_current_user)):
     conn = get_db_connection()
     try:
 
-        tables = ["transactions", "pantry", "recurring", "goals", "profile", "plans"]
+        tables = ["transactions", "pantry", "recurring", "goals", "profile", "plans", "budget_limits", "user_themes"]
         for table in tables:
             conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (user_id,))
             

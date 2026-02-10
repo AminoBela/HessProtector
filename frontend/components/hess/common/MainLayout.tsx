@@ -30,7 +30,7 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
     const textColor = isLight ? "text-slate-800" : "text-white";
     const sidebarBg = isLight ? "bg-white/80 border-emerald-900/5 shadow-xl" : "bg-zinc-950/40 border-white/5";
     const sidebarText = isLight ? "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50" : "text-zinc-500 hover:text-white hover:bg-white/5";
-    const sidebarActive = isLight ? "bg-emerald-500 text-white shadow-emerald-200" : "bg-white text-black font-extrabold shadow-[0_0_30px_rgba(255,255,255,0.4)]";
+    const sidebarActive = isLight ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-white text-black font-extrabold shadow-lg shadow-white/20";
 
     const inputStyle = isLight
         ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-14 rounded-xl px-4 font-medium shadow-inner"
@@ -44,7 +44,7 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
     const { isBlurred, toggleBlur } = usePrivacy();
 
     const SidebarItem = ({ id, icon: Icon, label }: any) => (
-        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-4 px-2 py-4 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}><Icon className={`w-6 h-6 ${activeTab === id ? (isLight ? 'text-white' : 'text-black') : 'group-hover:text-emerald-400 transition-colors'}`} /> <span className="hidden md:block text-sm uppercase tracking-wider font-bold">{label}</span></button>
+        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}><Icon className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? (isLight ? 'text-white' : 'text-black') : 'group-hover:text-emerald-400 transition-colors'}`} /> <span className="hidden md:block text-sm uppercase tracking-wider font-bold">{label}</span></button>
     )
 
     return (
@@ -53,7 +53,7 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
             <aside className={`w-20 md:w-80 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}>
                 <div className="h-24 flex items-center justify-center md:justify-start gap-4 mb-4"><div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg"><ShieldCheck className="w-7 h-7 text-black" /></div><div className="hidden md:block"><h1 className={`font-black text-2xl tracking-tighter ${textColor}`}>Hess<span className="text-emerald-500">Protector</span></h1></div></div>
 
-                <div className="flex-1 space-y-2 overflow-y-auto scrollbar-hide px-4">
+                <div className="flex-1 space-y-1.5 overflow-y-auto scrollbar-hide px-3 py-2">
                     <SidebarItem id="dashboard" icon={LayoutDashboard} label={t.sidebar.dashboard} />
                     <SidebarItem id="analytics" icon={ChartPie} label={t.sidebar.analytics} />
                     <SidebarItem id="coach" icon={Bot} label={t.sidebar.coach} />

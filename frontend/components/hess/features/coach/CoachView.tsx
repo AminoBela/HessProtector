@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CoachGenerator } from "./CoachGenerator";
 import { CoachSavedPlans } from "./CoachSavedPlans";
 import { CoachResults } from "./CoachResults";
+import { ApiService } from "@/services/apiClient";
 
 interface CoachViewProps {
     data: any;
@@ -67,14 +68,10 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
     }, [generatedPrompt]);
 
     const fetchSavedPlans = useCallback(async () => {
+        if (!token) return;
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/plans', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const json = await res.json();
-                setSavedPlans(json);
-            }
+            const json = await ApiService.get('/plans', token);
+            setSavedPlans(json);
         } catch (e) {
             console.error(e);
         }
@@ -88,14 +85,7 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
         if (!name.trim() || !parsedData || !token) return;
         setSaving(true);
         try {
-            await fetch('http://127.0.0.1:8000/api/plans', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name, content: JSON.stringify(parsedData) })
-            });
+            await ApiService.post('/plans', { name, content: JSON.stringify(parsedData) }, token);
         } catch (e) { console.error("Error saving", e); }
         setSaving(false);
     }
@@ -103,10 +93,7 @@ export function CoachView({ data, groceryBudget, setGroceryBudget, generatePromp
     const handleDeletePlan = async (id: number) => {
         if (!token) return;
         try {
-            await fetch(`http://127.0.0.1:8000/api/plans/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            await ApiService.delete(`/plans/${id}`, token);
             fetchSavedPlans();
         } catch (e) { console.error("Error deleting", e); }
     }

@@ -43,7 +43,7 @@ export const SUPERMARKETS = [
 
 export const LANGUAGES = {
     FR: 'fr',
-    ES: 'es',
+    EN: 'en',
 } as const
 
 export const CACHE_KEYS = {
