@@ -5,12 +5,17 @@ from typing import Optional
 
 class ProfileRepository(BaseRepository):
     """Repository for user profile operations"""
-    
+
     def _do_create(self, profile_data: dict, user_id: int) -> int:
         c = self.conn.cursor()
         c.execute(
             "INSERT INTO profiles (user_id, supermarket, diet, initial_balance) VALUES (?, ?, ?, ?)",
-            (user_id, profile_data.get('supermarket', ''), profile_data.get('diet', ''), profile_data.get('initial_balance', 0))
+            (
+                user_id,
+                profile_data.get("supermarket", ""),
+                profile_data.get("diet", ""),
+                profile_data.get("initial_balance", 0),
+            ),
         )
         self.conn.commit()
         return c.lastrowid
@@ -38,7 +43,7 @@ class ProfileRepository(BaseRepository):
         c = self.conn.cursor()
         c.execute(
             "UPDATE profile SET supermarket=?, diet=?, active_theme=? WHERE user_id=?",
-            (profile.supermarket, profile.diet, profile.active_theme, user_id)
+            (profile.supermarket, profile.diet, profile.active_theme, user_id),
         )
         self.conn.commit()
         return c.rowcount > 0
@@ -56,10 +61,13 @@ class ProfileRepository(BaseRepository):
         c.execute("SELECT unlocked_themes FROM profile WHERE user_id=?", (user_id,))
         row = c.fetchone()
         if row:
-            unlocked = row[0].split(',') if row[0] else []
+            unlocked = row[0].split(",") if row[0] else []
             if theme not in unlocked:
                 unlocked.append(theme)
-                c.execute("UPDATE profile SET unlocked_themes=? WHERE user_id=?", (','.join(unlocked), user_id))
+                c.execute(
+                    "UPDATE profile SET unlocked_themes=? WHERE user_id=?",
+                    (",".join(unlocked), user_id),
+                )
                 self.conn.commit()
                 return True
         return False

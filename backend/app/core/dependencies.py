@@ -6,7 +6,6 @@ def get_dashboard_service():
     try:
         yield service
     finally:
-        # Close all repository connections held by the service
         service.transaction_repo.close()
         service.pantry_repo.close()
         service.recurring_repo.close()

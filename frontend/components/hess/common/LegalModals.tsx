@@ -1,56 +1,70 @@
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface LegalModalProps {
-    title: string;
-    trigger: React.ReactNode;
-    content: string;
-    isLight: boolean;
+  title: string;
+  trigger: React.ReactNode;
+  content: string;
+  isLight: boolean;
 }
 
-export function LegalModal({ title, trigger, content, isLight }: LegalModalProps) {
-    const glass = isLight
-        ? "bg-white/90 backdrop-blur-xl border-emerald-900/10 text-slate-800"
-        : "bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white";
+export function LegalModal({
+  title,
+  trigger,
+  content,
+  isLight,
+}: LegalModalProps) {
+  const glass = isLight
+    ? "bg-white/90 backdrop-blur-xl border-emerald-900/10 text-slate-800"
+    : "bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white";
 
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                {trigger}
-            </DialogTrigger>
-            <DialogContent className={`max-w-2xl max-h-[80vh] ${glass} border-0 shadow-2xl rounded-3xl`}>
-                <DialogHeader>
-                    <DialogTitle className={`text-2xl font-black uppercase tracking-tight ${isLight ? 'text-emerald-700' : 'text-emerald-500'}`}>{title}</DialogTitle>
-                </DialogHeader>
-                <ScrollArea className="h-[60vh] w-full pr-4">
-                    <div className="space-y-4 text-sm leading-relaxed p-2">
-                        {content.split('\n').map((line, i) => (
-                            <p key={i} className={`${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
-                                {line.split(/(\*\*.*?\*\*)/).map((part, j) =>
-                                    part.startsWith('**') && part.endsWith('**') ? (
-                                        <strong key={j} className="font-black text-emerald-500">{part.slice(2, -2)}</strong>
-                                    ) : (
-                                        part
-                                    )
-                                )}
-                            </p>
-                        ))}
-                    </div>
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
-    )
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent
+        className={`max-w-2xl max-h-[80vh] ${glass} border-0 shadow-2xl rounded-3xl`}
+      >
+        <DialogHeader>
+          <DialogTitle
+            className={`text-2xl font-black uppercase tracking-tight ${isLight ? "text-emerald-700" : "text-emerald-500"}`}
+          >
+            {title}
+          </DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh] w-full pr-4">
+          <div className="space-y-4 text-sm leading-relaxed p-2">
+            {content.split("\n").map((line, i) => (
+              <p
+                key={i}
+                className={`${isLight ? "text-slate-600" : "text-zinc-400"}`}
+              >
+                {line.split(/(\*\*.*?\*\*)/).map((part, j) =>
+                  part.startsWith("**") && part.endsWith("**") ? (
+                    <strong key={j} className="font-black text-emerald-500">
+                      {part.slice(2, -2)}
+                    </strong>
+                  ) : (
+                    part
+                  ),
+                )}
+              </p>
+            ))}
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export const LEGAL_TEXT = {
-    privacy: `
+  privacy: `
 **Politique de Confidentialité - HessProtector**
 
 1. **Collecte des Données**
@@ -76,7 +90,7 @@ export const LEGAL_TEXT = {
 5. **Cookies**
    Nous utilisons uniquement des cookies techniques nécessaires au maintien de votre session.
     `,
-    terms: `
+  terms: `
 **Conditions Générales d'Utilisation**
 
 1. **Acceptation**
@@ -93,5 +107,5 @@ export const LEGAL_TEXT = {
 
 5. **Modification**
    Nous nous réservons le droit de modifier ces conditions à tout moment. Les utilisateurs seront notifiés des changements importants.
-    `
+    `,
 };

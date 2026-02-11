@@ -11,10 +11,10 @@ router = APIRouter()
 def add_recurring(
     rec: RecurringItem,
     current_user: User = Depends(get_current_user),
-    repo: RecurringRepository = Depends(get_recurring_repository)
+    repo: RecurringRepository = Depends(get_recurring_repository),
 ):
     """Add a recurring payment"""
-    repo.create(rec, current_user['id'])
+    repo.create(rec, current_user["id"])
     return {"status": "added"}
 
 
@@ -22,8 +22,8 @@ def add_recurring(
 def delete_recurring(
     id: int,
     current_user: User = Depends(get_current_user),
-    repo: RecurringRepository = Depends(get_recurring_repository)
+    repo: RecurringRepository = Depends(get_recurring_repository),
 ):
     """Delete a recurring payment"""
-    success = repo.delete(id, current_user['id'])
+    success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}

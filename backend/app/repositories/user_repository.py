@@ -4,12 +4,12 @@ from typing import Optional, List
 
 class UserRepository(BaseRepository):
     """Repository for user operations"""
-    
+
     def _do_create(self, user, user_id: int) -> int:
         c = self.conn.cursor()
         c.execute(
             "INSERT INTO users (username, email, hashed_password) VALUES (?, ?, ?)",
-            (user.username, user.email, user.hashed_password)
+            (user.username, user.email, user.hashed_password),
         )
         self.conn.commit()
         return c.lastrowid
@@ -41,7 +41,9 @@ class UserRepository(BaseRepository):
     def update_password(self, user_id: int, hashed_password: str) -> bool:
         """Update user password"""
         c = self.conn.cursor()
-        c.execute("UPDATE users SET hashed_password=? WHERE id=?", (hashed_password, user_id))
+        c.execute(
+            "UPDATE users SET hashed_password=? WHERE id=?", (hashed_password, user_id)
+        )
         self.conn.commit()
         return c.rowcount > 0
 

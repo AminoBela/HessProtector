@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HessProtector — Gestion Budget & Nutrition",
-  description: "Application de gestion budget, garde-manger et nutrition propulsée par l'IA.",
+  description:
+    "Application de gestion budget, garde-manger et nutrition propulsée par l'IA.",
 };
 
 export default function RootLayout({

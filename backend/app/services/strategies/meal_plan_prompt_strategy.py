@@ -1,22 +1,30 @@
-"""
-Meal Plan Prompt Strategy
-"""
 from app.services.strategies.prompt_strategy import PromptStrategy
 from typing import Dict
 
 
 class MealPlanPromptStrategy(PromptStrategy):
-    """Strategy for building meal plan prompts"""
-    
     def build_prompt(self, request, context: Dict) -> str:
-        """Build meal plan prompt"""
-        p = context.get('profile', {})
-        inv = ', '.join([f"{i['item']} ({i['qty']})" for i in context.get('pantry', [])])
-        goals_str = ', '.join([f"{g['label']} (Target: {g['target']}€)" for g in context.get('goals', [])]) or "Aucun objectif défini"
-        
-        lang_instruction = "Respond in French." if request.language == 'fr' else "Respond in Spanish (Español)."
-        meals_str = ', '.join(request.meals).upper()
-        
+        p = context.get("profile", {})
+        inv = ", ".join(
+            [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
+        )
+        goals_str = (
+            ", ".join(
+                [
+                    f"{g['label']} (Target: {g['target']}€)"
+                    for g in context.get("goals", [])
+                ]
+            )
+            or "Aucun objectif défini"
+        )
+
+        lang_instruction = (
+            "Respond in French."
+            if request.language == "fr"
+            else "Respond in Spanish (Español)."
+        )
+        meals_str = ", ".join(request.meals).upper()
+
         prompt = f"""
         You are the 'HessProtector Chef', an elite AI financial and nutrition coach.
         Your Mission: Create a delicious, healthy meal plan that STRICTLY fits the user's budget and inventory.
@@ -44,10 +52,10 @@ class MealPlanPromptStrategy(PromptStrategy):
         }}
         
         USER REQUEST: CREATE A PLAN FOR {request.days} DAYS. MEALS PER DAY: {meals_str}.
-        Profile: {p.get('supermarket', 'N/A')}, Diet: {p.get('diet', 'N/A')}
+        Profile: {p.get("supermarket", "N/A")}, Diet: {p.get("diet", "N/A")}
         """
-        
+
         if request.current_plan:
-            prompt += f"\n\nCURRENT PLAN (USER EDITED): {request.current_plan}\nINSTRUCTION: Re-calculate ONLY 'shopping_list' and 'total_estimated_cost'. DO NOT change meals."
-        
+            prompt += f"\n\nCURRENT PLAN (USER EDITED): {request.current_plan}\nCRITICAL INSTRUCTION: The user has manually modified the meals. You MUST IGNORE the 'shopping_list' in the provided JSON. You MUST GENERATE A NEW 'shopping_list' and 'total_estimated_cost' that matches the NEW meals. DO NOT change the meals, they are fixed."
+
         return prompt

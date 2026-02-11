@@ -11,10 +11,10 @@ router = APIRouter()
 def add_goal(
     goal: GoalItem,
     current_user: User = Depends(get_current_user),
-    repo: GoalsRepository = Depends(get_goals_repository)
+    repo: GoalsRepository = Depends(get_goals_repository),
 ):
     """Add a financial goal"""
-    repo.create(goal, current_user['id'])
+    repo.create(goal, current_user["id"])
     return {"status": "added"}
 
 
@@ -22,8 +22,8 @@ def add_goal(
 def delete_goal(
     id: int,
     current_user: User = Depends(get_current_user),
-    repo: GoalsRepository = Depends(get_goals_repository)
+    repo: GoalsRepository = Depends(get_goals_repository),
 ):
     """Delete a financial goal"""
-    success = repo.delete(id, current_user['id'])
+    success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}

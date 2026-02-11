@@ -11,10 +11,10 @@ router = APIRouter()
 def add_transaction(
     tx: Transaction,
     current_user: User = Depends(get_current_user),
-    repo: TransactionRepository = Depends(get_transaction_repository)
+    repo: TransactionRepository = Depends(get_transaction_repository),
 ):
     """Add a new transaction"""
-    repo.create(tx, current_user['id'])
+    repo.create(tx, current_user["id"])
     return {"status": "created"}
 
 
@@ -22,10 +22,10 @@ def add_transaction(
 def delete_transaction(
     id: int,
     current_user: User = Depends(get_current_user),
-    repo: TransactionRepository = Depends(get_transaction_repository)
+    repo: TransactionRepository = Depends(get_transaction_repository),
 ):
     """Delete a transaction"""
-    success = repo.delete(id, current_user['id'])
+    success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}
 
 
@@ -34,8 +34,8 @@ def update_transaction(
     id: int,
     tx: Transaction,
     current_user: User = Depends(get_current_user),
-    repo: TransactionRepository = Depends(get_transaction_repository)
+    repo: TransactionRepository = Depends(get_transaction_repository),
 ):
     """Update a transaction"""
-    success = repo.update(id, tx, current_user['id'])
+    success = repo.update(id, tx, current_user["id"])
     return {"status": "updated" if success else "not_found"}

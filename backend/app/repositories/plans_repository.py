@@ -4,12 +4,12 @@ from typing import List, Optional
 
 class PlansRepository(BaseRepository):
     """Repository for saved meal plans"""
-    
+
     def _do_create(self, plan_data: dict, user_id: int) -> int:
         c = self.conn.cursor()
         c.execute(
             "INSERT INTO saved_plans (user_id, name, content, created_at) VALUES (?, ?, ?, datetime('now'))",
-            (user_id, plan_data.get('name', ''), plan_data.get('content', ''))
+            (user_id, plan_data.get("name", ""), plan_data.get("content", "")),
         )
         self.conn.commit()
         return c.lastrowid

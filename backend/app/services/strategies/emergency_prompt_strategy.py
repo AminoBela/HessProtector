@@ -3,7 +3,6 @@ from typing import Dict
 
 
 class EmergencyPromptStrategy(PromptStrategy):
-    
     def build_prompt(self, request, context: Dict) -> str:
         return f"""
         Rôle : Tu es un Gestionnaire de Crise Financière Impitoyable pour un étudiant fauché.
@@ -13,7 +12,7 @@ class EmergencyPromptStrategy(PromptStrategy):
         
         Infos Financières :
         - Reste à vivre : {request.budget}€
-        - Régime : {', '.join(request.meals) if request.meals else 'Non spécifié'} (info contextuelle)
+        - Régime : {", ".join(request.meals) if request.meals else "Non spécifié"} (info contextuelle)
         
         Format de réponse attendu (JSON uniquement) :
         {{

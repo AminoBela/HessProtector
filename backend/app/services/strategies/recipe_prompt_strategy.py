@@ -1,19 +1,26 @@
 """
 Recipe Prompt Strategy
 """
+
 from app.services.strategies.prompt_strategy import PromptStrategy
 from typing import Dict
 
 
 class RecipePromptStrategy(PromptStrategy):
     """Strategy for building recipe prompts"""
-    
+
     def build_prompt(self, request, context: Dict) -> str:
         """Build recipe prompt"""
         dish = request.meals[0] if request.meals else "Unknown Dish"
-        inv = ', '.join([f"{i['item']} ({i['qty']})" for i in context.get('pantry', [])])
-        lang_instruction = "Respond in French." if request.language == 'fr' else "Respond in Spanish (Español)."
-        
+        inv = ", ".join(
+            [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
+        )
+        lang_instruction = (
+            "Respond in French."
+            if request.language == "fr"
+            else "Respond in Spanish (Español)."
+        )
+
         return f"""
         You are a Michelin Star Chef compatible with a student budget.
         TASK: Generate a detailed, easy-to-follow recipe for: "{dish}".

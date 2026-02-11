@@ -5,13 +5,13 @@ from typing import List, Optional
 
 class BudgetRepository(BaseRepository):
     """Repository for budget limits"""
-    
+
     def _do_create(self, budget, user_id: int) -> int:
         """Create a budget limit for a category"""
         c = self.conn.cursor()
         c.execute(
             "INSERT INTO budget_limits (user_id, category, amount) VALUES (?, ?, ?)",
-            (user_id, budget.category, budget.amount)
+            (user_id, budget.category, budget.amount),
         )
         self.conn.commit()
         return c.lastrowid
@@ -31,7 +31,10 @@ class BudgetRepository(BaseRepository):
     def get_by_category(self, category: str, user_id: int) -> Optional[dict]:
         """Get budget limit for a specific category"""
         c = self.conn.cursor()
-        c.execute("SELECT * FROM budget_limits WHERE category=? AND user_id=?", (category, user_id))
+        c.execute(
+            "SELECT * FROM budget_limits WHERE category=? AND user_id=?",
+            (category, user_id),
+        )
         return self._row_to_dict(c.fetchone())
 
     def update(self, id: int, budget: BudgetLimit, user_id: int) -> bool:
@@ -39,7 +42,7 @@ class BudgetRepository(BaseRepository):
         c = self.conn.cursor()
         c.execute(
             "UPDATE budget_limits SET category=?, amount=? WHERE id=? AND user_id=?",
-            (budget.category, budget.amount, id, user_id)
+            (budget.category, budget.amount, id, user_id),
         )
         self.conn.commit()
         return c.rowcount > 0
