@@ -1,17 +1,18 @@
 @layer components {
     .card-glass {
-        @apply backdrop-blur-md border shadow-lg rounded-3xl overflow-hidden transition-all duration-500 transform-gpu;
+        @apply backdrop-blur-xl border shadow-xl rounded-3xl overflow-hidden transition-all duration-500 transform-gpu;
     }
 
     .card-glass-light {
-        @apply border-emerald-900/5 hover:bg-white/80;
-        background-color: rgba(255, 255, 255, 0.7) !important;
+        @apply border-slate-200/60 hover:border-slate-300/80 hover:shadow-2xl;
+        background-color: rgba(255, 255, 255, 0.88) !important;
         color: rgb(30 41 59) !important;
     }
 
     .card-glass-dark {
-        @apply border-white/5 hover:bg-zinc-900/50;
-        background-color: rgba(24, 24, 27, 0.4) !important;
+        @apply border-white/[0.08] hover:border-white/[0.12] hover:shadow-2xl;
+        background-color: rgba(24, 24, 27, 0.72) !important;
         color: rgb(255 255 255) !important;
+        box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
     }
 }

@@ -64,13 +64,13 @@ export function HistoryView({ data, handleDeleteTx, handleUpdateTx, language, th
     const editColor = isLight ? "text-slate-400 hover:text-blue-500" : "text-zinc-600 hover:text-blue-400";
 
     return (
-        <motion.div variants={container} initial="hidden" animate="show">
+        <div>
             <Card className={`border-0 ${cardGlass}`}>
                 <CardContent className="p-8">
                     <ScrollArea className="h-[600px] pr-4">
                         <div className="space-y-3">
                             {(data?.transactions || []).length === 0 ? <div className={`text-center mt-10 ${subTextColor}`}>Aucun historique</div> : (data?.transactions || []).map((tx: any) => (
-                                <motion.div variants={item} key={tx.id} className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-all gap-4 ${itemBg}`}>
+                                <div key={tx.id} className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-all gap-4 ${itemBg}`}>
                                     <div className="flex items-center gap-5">
                                         <div className={`p-3 rounded-xl ${tx.type === 'revenu' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}>
                                             <TrendingUp className="w-5 h-5" />
@@ -93,7 +93,7 @@ export function HistoryView({ data, handleDeleteTx, handleUpdateTx, language, th
                                             </Button>
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             ))}
                         </div>
                     </ScrollArea>
@@ -153,7 +153,7 @@ export function HistoryView({ data, handleDeleteTx, handleUpdateTx, language, th
                     </Dialog>
                 </CardContent>
             </Card>
-        </motion.div>
+        </div>
     )
 
 }

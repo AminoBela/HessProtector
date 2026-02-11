@@ -23,7 +23,7 @@ class CoachService(metaclass=Singleton):
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment")
         self.client = genai.Client(api_key=self.api_key)
-        self.model = 'gemini-2.0-flash-exp'
+        self.model = 'gemini-2.0-flash'
         
         self.strategies = {
             "emergency": EmergencyPromptStrategy(),

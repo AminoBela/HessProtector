@@ -78,7 +78,7 @@ export function SettingsView({ settingsForm, setSettingsForm, updateSettings, la
 
     useEffect(() => {
         if (token && activeTab === 'budget') {
-            ApiService.get('/settings/limits', token).then(setLimits).catch(console.error);
+            ApiService.get('/budget-limits', token).then(setLimits).catch(console.error);
         }
     }, [token, activeTab]);
 
@@ -86,7 +86,7 @@ export function SettingsView({ settingsForm, setSettingsForm, updateSettings, la
         if (!token || !limitForm.category || !limitForm.amount) return;
         setLimitStatus('saving');
         try {
-            await ApiService.post('/settings/limits', { ...limitForm, amount: parseFloat(limitForm.amount) }, token);
+            await ApiService.post('/budget-limits', { ...limitForm, amount: parseFloat(limitForm.amount) }, token);
             setLimits(prev => {
                 const existing = prev.find(l => l.category === limitForm.category);
                 if (existing) return prev.map(l => l.category === limitForm.category ? { ...l, amount: parseFloat(limitForm.amount) } : l);
@@ -444,8 +444,8 @@ export function SettingsView({ settingsForm, setSettingsForm, updateSettings, la
                                             <Shield className="w-4 h-4" /> Bouclier Budgétaire
                                         </h3>
                                         <div className="flex gap-4 items-end mb-6">
-                                            <div className="flex-1 space-y-2">
-                                                <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Catégorie</label>
+                                            <div className="flex-1 flex flex-col">
+                                                <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1 mb-3">Catégorie</label>
                                                 <Input
                                                     className={inputStyle}
                                                     placeholder="Ex: Alimentation"
@@ -453,8 +453,8 @@ export function SettingsView({ settingsForm, setSettingsForm, updateSettings, la
                                                     onChange={e => setLimitForm({ ...limitForm, category: e.target.value })}
                                                 />
                                             </div>
-                                            <div className="w-32 space-y-2">
-                                                <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Limite (€)</label>
+                                            <div className="w-32 flex flex-col">
+                                                <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1 mb-3">Limite (€)</label>
                                                 <Input
                                                     type="number"
                                                     className={inputStyle}

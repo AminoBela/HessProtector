@@ -13,6 +13,7 @@ interface MainLayoutProps {
     data: any;
     theme: string;
     setTheme: (theme: string) => void;
+    activeColorTheme?: string;
     language: string;
     setLanguage: (lang: string) => void;
     bg: React.ReactNode;
@@ -25,12 +26,46 @@ interface MainLayoutProps {
     logout: () => void;
 }
 
-export function MainLayout({ children, activeTab, setActiveTab, data, theme, setTheme, language, setLanguage, bg, openTx, setOpenTx, txForm, setTxForm, handleAddTx, user, logout }: MainLayoutProps) {
+const themeColors: any = {
+    default: {
+        lightActive: "bg-emerald-500/15 text-emerald-700 shadow-sm",
+        lightHover: "text-slate-400 hover:text-emerald-600 hover:bg-emerald-500/8",
+        darkActive: "bg-emerald-500/20 text-emerald-300 shadow-sm shadow-emerald-500/10",
+        darkHover: "text-zinc-500 hover:text-emerald-300 hover:bg-emerald-500/8",
+    },
+    neon: {
+        lightActive: "bg-blue-500/15 text-blue-700 shadow-sm",
+        lightHover: "text-slate-400 hover:text-blue-600 hover:bg-blue-500/8",
+        darkActive: "bg-blue-500/20 text-blue-300 shadow-sm shadow-blue-500/10",
+        darkHover: "text-zinc-500 hover:text-blue-300 hover:bg-blue-500/8",
+    },
+    gold: {
+        lightActive: "bg-amber-500/15 text-amber-700 shadow-sm",
+        lightHover: "text-slate-400 hover:text-amber-600 hover:bg-amber-500/8",
+        darkActive: "bg-amber-500/20 text-amber-300 shadow-sm shadow-amber-500/10",
+        darkHover: "text-zinc-500 hover:text-amber-300 hover:bg-amber-500/8",
+    },
+    cyber: {
+        lightActive: "bg-fuchsia-500/15 text-fuchsia-700 shadow-sm",
+        lightHover: "text-slate-400 hover:text-fuchsia-600 hover:bg-fuchsia-500/8",
+        darkActive: "bg-fuchsia-500/20 text-fuchsia-300 shadow-sm shadow-fuchsia-500/10",
+        darkHover: "text-zinc-500 hover:text-fuchsia-300 hover:bg-fuchsia-500/8",
+    },
+    matrix: {
+        lightActive: "bg-green-500/15 text-green-700 shadow-sm",
+        lightHover: "text-slate-400 hover:text-green-600 hover:bg-green-500/8",
+        darkActive: "bg-green-500/20 text-green-300 shadow-sm shadow-green-500/10",
+        darkHover: "text-zinc-500 hover:text-green-300 hover:bg-green-500/8",
+    },
+};
+
+export function MainLayout({ children, activeTab, setActiveTab, data, theme, setTheme, activeColorTheme = 'default', language, setLanguage, bg, openTx, setOpenTx, txForm, setTxForm, handleAddTx, user, logout }: MainLayoutProps) {
     const isLight = theme === 'light';
     const textColor = isLight ? "text-slate-800" : "text-white";
-    const sidebarBg = isLight ? "bg-white/80 border-emerald-900/5 shadow-xl" : "bg-zinc-950/40 border-white/5";
-    const sidebarText = isLight ? "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50" : "text-zinc-500 hover:text-white hover:bg-white/5";
-    const sidebarActive = isLight ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-white text-black font-extrabold shadow-lg shadow-white/20";
+    const sidebarBg = isLight ? "bg-white/90 border-slate-200/60 shadow-xl" : "bg-zinc-950/40 border-white/5";
+    const tc = themeColors[activeColorTheme] || themeColors.default;
+    const sidebarText = isLight ? tc.lightHover : tc.darkHover;
+    const sidebarActive = isLight ? tc.lightActive : tc.darkActive;
 
     const inputStyle = isLight
         ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-14 rounded-xl px-4 font-medium shadow-inner"
@@ -43,8 +78,11 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
     const t = Translations[language as keyof typeof Translations] || Translations.fr;
     const { isBlurred, toggleBlur } = usePrivacy();
 
+    const iconHoverColors: any = { default: 'group-hover:text-emerald-400', neon: 'group-hover:text-blue-400', gold: 'group-hover:text-amber-400', cyber: 'group-hover:text-fuchsia-400', matrix: 'group-hover:text-green-400' };
+    const iconHover = iconHoverColors[activeColorTheme] || iconHoverColors.default;
+
     const SidebarItem = ({ id, icon: Icon, label }: any) => (
-        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}><Icon className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? (isLight ? 'text-white' : 'text-black') : 'group-hover:text-emerald-400 transition-colors'}`} /> <span className="hidden md:block text-sm uppercase tracking-wider font-bold">{label}</span></button>
+        <button onClick={() => setActiveTab(id)} className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}><Icon className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? 'text-white' : `${iconHover} transition-colors`}`} /> <span className="hidden md:block text-sm uppercase tracking-wider font-bold">{label}</span></button>
     )
 
     return (
@@ -65,24 +103,28 @@ export function MainLayout({ children, activeTab, setActiveTab, data, theme, set
                     <SidebarItem id="settings" icon={Settings} label={t.sidebar.settings} />
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-white/5 space-y-4">
+                <div className={`mt-4 pt-4 border-t space-y-4 ${isLight ? 'border-slate-200/60' : 'border-white/5'}`}>
                     {data && data.rank && (
-                        <div className="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-4 rounded-xl border border-white/10 relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className={`p-4 rounded-xl border relative overflow-hidden group transition-all
+                            ${isLight
+                                ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md'
+                                : 'bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10'
+                            }`}>
+                            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isLight ? 'bg-amber-100/30' : 'bg-white/5'}`}></div>
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-yellow-500/20 rounded-lg text-yellow-400">
+                                <div className={`p-2 rounded-lg ${isLight ? 'bg-amber-100 text-amber-600' : 'bg-yellow-500/20 text-yellow-400'}`}>
                                     {data.rank === 'Rentier' ? <Crown className="w-5 h-5" /> : data.rank === 'Investisseur' ? <Trophy className="w-5 h-5" /> : <Medal className="w-5 h-5" />}
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{t.rank.title}</p>
-                                    <p className="text-sm font-black text-white">
+                                    <p className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? 'text-slate-400' : 'text-zinc-400'}`}>{t.rank.title}</p>
+                                    <p className={`text-sm font-black ${isLight ? 'text-slate-800' : 'text-white'}`}>
                                         {language === 'es' ?
                                             (data.rank === 'Rentier' ? 'Rentista' : data.rank === 'Investisseur' ? 'Inversor' : data.rank === 'Mendiant' ? 'Mendigo' : data.rank)
                                             : data.rank}
                                     </p>
                                 </div>
                             </div>
-                            <div className="relative h-2 bg-black/50 rounded-full overflow-hidden">
+                            <div className={`relative h-2 rounded-full overflow-hidden ${isLight ? 'bg-amber-100' : 'bg-black/50'}`}>
                                 <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-yellow-500 to-amber-600 transition-all duration-1000" style={{ width: `${Math.min(100, (data.xp / data.next_rank_xp) * 100)}%` }}></div>
                             </div>
                         </div>

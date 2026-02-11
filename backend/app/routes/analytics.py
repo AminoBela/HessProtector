@@ -133,7 +133,7 @@ def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_u
     
     # Fallback Strategy for robustness
     MODELS_TO_TRY = [
-        'gemini-2.0-flash-exp',
+        'gemini-2.0-flash',
         'gemini-1.5-flash',
         'gemini-1.5-flash-latest',
         'gemini-1.5-flash-001',

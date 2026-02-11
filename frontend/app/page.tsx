@@ -29,11 +29,18 @@ import { ApiService } from "@/services/apiClient"
 // --- CONFIGURATION DESIGN ---
 const COLORS = ['#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e'];
 const gradients: any = {
-    default: "bg-gradient-to-br from-emerald-900 via-zinc-900 to-black",
-    gold: "bg-gradient-to-br from-yellow-700 via-amber-900 to-black",
-    cyber: "bg-gradient-to-br from-purple-900 via-pink-900 to-black",
-    matrix: "bg-gradient-to-br from-green-900 via-black to-emerald-900",
-    neon: "bg-gradient-to-br from-blue-900 via-cyan-900 to-black",
+    default: "bg-gradient-to-br from-slate-950 via-zinc-900 to-emerald-950/80",
+    gold: "bg-gradient-to-br from-stone-950 via-neutral-900 to-amber-950/60",
+    cyber: "bg-gradient-to-br from-zinc-950 via-slate-900 to-fuchsia-950/50",
+    matrix: "bg-gradient-to-br from-neutral-950 via-zinc-950 to-emerald-950/70",
+    neon: "bg-gradient-to-br from-zinc-950 via-blue-950/80 to-cyan-950/50",
+};
+const lightGradients: any = {
+    default: "bg-gradient-to-br from-stone-50 via-emerald-50/40 to-slate-100",
+    gold: "bg-gradient-to-br from-amber-50/80 via-stone-50 to-orange-50/60",
+    cyber: "bg-gradient-to-br from-slate-50 via-fuchsia-50/30 to-rose-50/40",
+    matrix: "bg-gradient-to-br from-stone-50 via-emerald-50/30 to-zinc-100",
+    neon: "bg-gradient-to-br from-slate-50 via-blue-50/50 to-cyan-50/30",
 };
 
 export default function Home() {
@@ -102,10 +109,11 @@ export default function Home() {
     // Theme Backgrounds
     const currentTheme = data?.profile?.active_theme || 'default';
     const activeGradient = gradients[currentTheme] || gradients.default;
+    const activeLightGradient = lightGradients[currentTheme] || lightGradients.default;
     const bg = theme === 'dark' ? (
-        <div className={`fixed inset-0 -z-10 ${activeGradient || gradients.default} transition-colors duration-1000`}></div>
+        <div className={`fixed inset-0 -z-10 ${activeGradient} transition-colors duration-1000`}></div>
     ) : (
-        <div className="fixed inset-0 -z-10 bg-slate-50"></div>
+        <div className={`fixed inset-0 -z-10 ${activeLightGradient} transition-colors duration-1000`}></div>
     );
 
     // 1. Check Auth Loading
@@ -140,6 +148,7 @@ export default function Home() {
                 activeTab={activeTab} setActiveTab={setActiveTab}
                 data={data}
                 theme={theme} setTheme={setTheme}
+                activeColorTheme={currentTheme}
                 language={language} setLanguage={setLanguage}
                 bg={bg}
                 openTx={openTx} setOpenTx={setOpenTx}

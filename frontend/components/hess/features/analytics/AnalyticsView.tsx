@@ -43,8 +43,8 @@ export function AnalyticsView({ language, theme, activeTab }: AnalyticsViewProps
         : "card-glass card-glass-dark";
 
     const solidCard = isLight
-        ? "bg-white border border-emerald-900/10 shadow-sm rounded-3xl overflow-hidden"
-        : "bg-zinc-900/50 border border-white/5 shadow-lg rounded-3xl overflow-hidden";
+        ? "bg-white/90 shadow-md rounded-3xl overflow-hidden"
+        : "bg-zinc-900/60 shadow-lg rounded-3xl overflow-hidden";
 
     const selectStyle = isLight
         ? "w-32 h-10 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50"
