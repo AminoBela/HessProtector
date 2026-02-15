@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.models import SetupData, ProfileUpdate, BudgetLimit, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import (
     get_profile_repository,
     get_recurring_repository,
@@ -17,7 +17,7 @@ from app.repositories import (
 router = APIRouter()
 
 
-@router.post("/api/setup")
+@router.post("/setup")
 def setup(
     data: SetupData,
     current_user: User = Depends(get_current_user),
@@ -47,7 +47,7 @@ def setup(
     return {"status": "setup_complete"}
 
 
-@router.put("/api/profile")
+@router.put("/profile")
 def update_profile(
     profile: ProfileUpdate,
     current_user: User = Depends(get_current_user),
@@ -58,7 +58,7 @@ def update_profile(
     return {"status": "updated" if success else "failed"}
 
 
-@router.post("/api/budget-limits")
+@router.post("/budget-limits")
 def set_budget_limit(
     limit: BudgetLimit,
     current_user: User = Depends(get_current_user),
@@ -76,7 +76,7 @@ def set_budget_limit(
     return {"status": "saved"}
 
 
-@router.get("/api/budget-limits")
+@router.get("/budget-limits")
 def get_budget_limits(
     current_user: User = Depends(get_current_user),
     budget_repo: BudgetRepository = Depends(get_budget_repository),
@@ -85,7 +85,7 @@ def get_budget_limits(
     return budget_repo.get_all(current_user["id"])
 
 
-@router.delete("/api/budget-limits/{id}")
+@router.delete("/budget-limits/{id}")
 def delete_budget_limit(
     id: int,
     current_user: User = Depends(get_current_user),

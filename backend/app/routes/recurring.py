@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from app.models import RecurringItem, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import get_recurring_repository
 from app.repositories import RecurringRepository
 
 router = APIRouter()
 
 
-@router.post("/api/recurring")
+@router.post("/recurring")
 def add_recurring(
     rec: RecurringItem,
     current_user: User = Depends(get_current_user),
@@ -18,7 +18,7 @@ def add_recurring(
     return {"status": "added"}
 
 
-@router.delete("/api/recurring/{id}")
+@router.delete("/recurring/{id}")
 def delete_recurring(
     id: int,
     current_user: User = Depends(get_current_user),

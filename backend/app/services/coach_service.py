@@ -22,7 +22,7 @@ class CoachService(metaclass=Singleton):
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment")
         self.client = genai.Client(api_key=self.api_key)
-        self.model = "gemini-2.0-flash"
+        self.model = "gemini-2.5-flash"
 
         self.strategies = {
             "emergency": EmergencyPromptStrategy(),
@@ -43,8 +43,14 @@ class CoachService(metaclass=Singleton):
     @retry(max_attempts=2, delay=1.0)
     def _call_gemini(self, prompt: str, request: PromptRequest) -> Dict:
         try:
+            # Disable AFC explicitly
+            from google.genai import types
+            config = types.GenerateContentConfig(tools=None)
+            
             response = self.client.models.generate_content(
-                model=self.model, contents=[prompt]
+                model=self.model, 
+                contents=[prompt],
+                config=config
             )
             text = response.text.strip()
 

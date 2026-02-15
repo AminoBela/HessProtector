@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.models import PromptRequest, PlanItem, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import (
     get_coach_service,
     get_plans_repository,
@@ -12,7 +12,7 @@ from app.repositories import PlansRepository
 router = APIRouter()
 
 
-@router.post("/api/smart-prompt")
+@router.post("/smart-prompt")
 def generate_smart_prompt(
     req: PromptRequest,
     current_user: User = Depends(get_current_user),
@@ -32,7 +32,7 @@ def generate_smart_prompt(
     return coach_service.generate_prompt(req, context)
 
 
-@router.get("/api/plans")
+@router.get("/plans")
 def get_plans(
     current_user: User = Depends(get_current_user),
     plans_repo: PlansRepository = Depends(get_plans_repository),
@@ -40,7 +40,7 @@ def get_plans(
     return plans_repo.get_all(current_user["id"])
 
 
-@router.post("/api/plans")
+@router.post("/plans")
 def save_plan(
     p: PlanItem,
     current_user: User = Depends(get_current_user),
@@ -50,7 +50,7 @@ def save_plan(
     return {"status": "saved"}
 
 
-@router.delete("/api/plans/{id}")
+@router.delete("/plans/{id}")
 def del_plan(
     id: int,
     current_user: User = Depends(get_current_user),

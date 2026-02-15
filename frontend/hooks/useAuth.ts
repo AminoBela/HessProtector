@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
-const AUTH_BASE_URL = API_BASE_URL.replace('/api', '');
+const AUTH_BASE_URL = API_BASE_URL;
 
 export function useAuth() {
     const [user, setUser] = useState<string | null>(null);

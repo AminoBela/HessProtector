@@ -1,20 +1,26 @@
-
 services:
   backend:
-    build: ./backend
-    container_name: hess_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hess_backend_dev
     ports:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - /app/venv
-      - /app/__pycache__
     environment:
       - PYTHONUNBUFFERED=1
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      # In dev, we can use a local file or the one in the volume
+      - SQLITE_DB_PATH=/app/hess_protector.db
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
-    build: ./frontend
-    container_name: hess_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: hess_frontend_dev
     ports:
       - "3000:3000"
     volumes:
@@ -23,6 +29,9 @@ services:
       - /app/.next
     environment:
       - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    command: npm run dev
     depends_on:
       - backend
-  # Optional: Add a database service if we want to move away from SQLite file
+
+# No named volumes needed for dev usually, as we rely on local files

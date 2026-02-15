@@ -8,8 +8,11 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
+# Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm config set fetch-retry-maxtimeout 600000 && \
+    npm config set fetch-retry-mintimeout 10000 && \
+    npm install --no-audit
 
 # Rebuild the source code only when needed
 FROM base AS builder

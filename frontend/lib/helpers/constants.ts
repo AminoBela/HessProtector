@@ -56,14 +56,14 @@ export const CACHE_KEYS = {
 
 export const API_ENDPOINTS = {
     AUTH: {
-        LOGIN: '/api/login',
-        REGISTER: '/api/register',
+        LOGIN: '/login',
+        REGISTER: '/register',
     },
-    DASHBOARD: '/api/dashboard',
-    TRANSACTIONS: '/api/transactions',
-    PANTRY: '/api/pantry',
-    RECURRING: '/api/recurring',
-    GOALS: '/api/goals',
-    COACH: '/api/coach/prompt',
-    ANALYTICS: '/api/analytics',
+    DASHBOARD: '/dashboard',
+    TRANSACTIONS: '/transactions',
+    PANTRY: '/pantry',
+    RECURRING: '/recurring',
+    GOALS: '/goals',
+    COACH: '/coach/prompt',
+    ANALYTICS: '/analytics',
 } as const

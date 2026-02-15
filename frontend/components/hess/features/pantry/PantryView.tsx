@@ -249,7 +249,12 @@ export function PantryView({
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[600px] pr-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              >
                 {(data?.pantry || []).length === 0 ? (
                   <div className="col-span-2 text-center text-zinc-600 py-10 italic">
                     {t.pantry.empty}
@@ -299,7 +304,7 @@ export function PantryView({
                     </motion.div>
                   ))
                 )}
-              </div>
+              </motion.div>
             </ScrollArea>
           </CardContent>
         </Card>

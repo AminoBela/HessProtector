@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from app.models import GoalItem, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import get_goals_repository
 from app.repositories import GoalsRepository
 
 router = APIRouter()
 
 
-@router.post("/api/goals")
+@router.post("/goals")
 def add_goal(
     goal: GoalItem,
     current_user: User = Depends(get_current_user),
@@ -18,7 +18,7 @@ def add_goal(
     return {"status": "added"}
 
 
-@router.delete("/api/goals/{id}")
+@router.delete("/goals/{id}")
 def delete_goal(
     id: int,
     current_user: User = Depends(get_current_user),

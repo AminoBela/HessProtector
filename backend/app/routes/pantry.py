@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 from app.models import PantryItem, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import get_pantry_repository
 from app.repositories import PantryRepository
 import os
@@ -10,7 +10,7 @@ import json
 router = APIRouter()
 
 
-@router.post("/api/pantry")
+@router.post("/pantry")
 def add_pantry(
     item: PantryItem,
     current_user: User = Depends(get_current_user),
@@ -21,7 +21,7 @@ def add_pantry(
     return {"status": "added"}
 
 
-@router.delete("/api/pantry/{id}")
+@router.delete("/pantry/{id}")
 def delete_pantry(
     id: int,
     current_user: User = Depends(get_current_user),
@@ -32,7 +32,7 @@ def delete_pantry(
     return {"status": "deleted" if success else "not_found"}
 
 
-@router.post("/api/scan-receipt")
+@router.post("/scan-receipt")
 async def scan_receipt(
     file: UploadFile = File(...), current_user: User = Depends(get_current_user)
 ):
@@ -66,7 +66,7 @@ async def scan_receipt(
         """
 
         response = client.models.generate_content(
-            model="gemini-1.5-flash", contents=[prompt, uploaded_file]
+            model="gemini-2.5-flash", contents=[prompt, uploaded_file]
         )
 
         text = response.text.strip()

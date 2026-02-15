@@ -12,9 +12,8 @@ class RecipePromptStrategy(PromptStrategy):
     def build_prompt(self, request, context: Dict) -> str:
         """Build recipe prompt"""
         dish = request.meals[0] if request.meals else "Unknown Dish"
-        inv = ", ".join(
-            [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
-        )
+        inv_list = [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
+        inv = ", ".join(inv_list) if inv_list else "EMPTY"
         lang_instruction = (
             "Respond in French."
             if request.language == "fr"

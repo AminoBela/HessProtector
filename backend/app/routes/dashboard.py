@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.models import User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import get_dashboard_service
 from app.services import DashboardService
 from datetime import date
@@ -8,7 +8,7 @@ from datetime import date
 router = APIRouter()
 
 
-@router.get("/api/dashboard")
+@router.get("/dashboard")
 def get_dashboard(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
@@ -17,7 +17,7 @@ def get_dashboard(
     return dashboard_service.get_dashboard_data(current_user["id"])
 
 
-@router.get("/api/ai-export")
+@router.get("/ai-export")
 def get_ai(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
@@ -32,7 +32,7 @@ def get_ai(
     }
 
 
-@router.get("/api/dashboard/years")
+@router.get("/dashboard/years")
 def get_years(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
@@ -51,7 +51,7 @@ def get_years(
     return years
 
 
-@router.get("/api/dashboard/stats")
+@router.get("/dashboard/stats")
 def get_stats(
     year: str = str(date.today().year),
     current_user: User = Depends(get_current_user),

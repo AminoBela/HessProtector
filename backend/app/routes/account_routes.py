@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from pydantic import BaseModel
 from app.database import get_db_connection
-from app.routes.auth import get_current_user
-from app.auth_utils import verify_password, get_password_hash
+from app.auth_utils import verify_password, get_password_hash, get_current_user
 import json
 
-router = APIRouter(prefix="/api/account", tags=["account"])
+router = APIRouter(prefix="/account", tags=["account"])
 
 
 class PasswordChangeRequest(BaseModel):

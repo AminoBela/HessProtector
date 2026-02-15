@@ -39,6 +39,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { usePrivacy } from "@/context/PrivacyContext";
 import { container, item } from "@/lib/animations";
+import { ApiService } from "@/services/apiClient";
 
 interface AnalyticsViewProps {
   language: string;
@@ -90,16 +91,12 @@ export function AnalyticsView({
     setLoading(true);
     setAudit(null);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/analytics/monthly?year=${year}&month=${month}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+      if (!token) return;
+      const json = await ApiService.get(
+        `/analytics/monthly?year=${year}&month=${month}`,
+        token
       );
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-      }
+      setData(json);
     } catch (e) {
       console.error(e);
     } finally {
@@ -115,21 +112,12 @@ export function AnalyticsView({
     if (!token) return;
     setAuditLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/analytics/audit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ year, month, language }),
-        },
+      const json = await ApiService.post(
+        '/analytics/audit',
+        { year, month, language },
+        token
       );
-      if (res.ok) {
-        const json = await res.json();
-        setAudit(json.analysis);
-      }
+      setAudit(json.analysis);
     } catch (e) {
       console.error(e);
     } finally {

@@ -6,3 +6,4 @@ class PantryItem(BaseModel):
     qty: str
     category: str = "Autre"
     expiry: str = ""
+    added_date: str = ""

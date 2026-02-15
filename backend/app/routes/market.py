@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.models import User
 from app.database import get_db_connection
 from app.services.gamification_service import GamificationService
@@ -14,7 +14,7 @@ class MarketItemRequest(BaseModel):
     price: int = 0
 
 
-@router.post("/api/market/buy")
+@router.post("/market/buy")
 def buy_item(
     item: MarketItemRequest,
     current_user: User = Depends(get_current_user),
@@ -79,7 +79,7 @@ def buy_item(
         conn.close()
 
 
-@router.post("/api/market/equip")
+@router.post("/market/equip")
 def equip_item(item: MarketItemRequest, current_user: User = Depends(get_current_user)):
     """Equip a market item"""
     item_id = item.id

@@ -1,13 +1,31 @@
-.PHONY: dev down build logs
 
+.PHONY: dev prod build-dev build-prod stop logs-dev logs-prod
+
+# --- Development Environment (Hot Reload) ---
 dev:
-	docker compose up
+	@echo "🚀 Starting Development Environment..."
+	docker compose -f docker-compose.yml up --build
 
-down:
-	docker compose down
+stop-dev:
+	@echo "🛑 Stopping Development Environment..."
+	docker compose -f docker-compose.yml down
 
-build:
-	docker compose up --build
+# --- Production Environment (Optimized & Detached) ---
+prod:
+	@echo "🚀 Deploying Production Environment..."
+	docker compose -f docker-compose.prod.yml up -d --build
+	@echo "✅ Production is running!"
 
-logs:
-	docker compose logs -f
+stop-prod:
+	@echo "🛑 Stopping Production Environment..."
+	docker compose -f docker-compose.prod.yml down
+
+# --- Utilities ---
+logs-dev:
+	docker compose -f docker-compose.yml logs -f
+
+logs-prod:
+	docker compose -f docker-compose.prod.yml logs -f
+
+clean:
+	docker system prune -f

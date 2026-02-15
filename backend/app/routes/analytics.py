@@ -19,7 +19,7 @@ class AuditRequest(BaseModel):
     language: str
 
 
-@router.get("/api/analytics/monthly")
+@router.get("/analytics/monthly")
 def get_monthly_analytics(
     year: str, month: str, current_user: User = Depends(get_current_user)
 ):
@@ -99,7 +99,7 @@ def get_monthly_analytics(
     }
 
 
-@router.post("/api/analytics/audit")
+@router.post("/analytics/audit")
 def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_user)):
     data = get_monthly_analytics(req.year, req.month, current_user)
 
@@ -157,12 +157,7 @@ def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_u
     """
 
     MODELS_TO_TRY = [
-        "gemini-2.0-flash",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash-001",
-        "gemini-1.5-pro",
-        "gemini-pro",
+        "gemini-2.5-flash",
     ]
 
     import json
@@ -170,9 +165,14 @@ def generate_audit(req: AuditRequest, current_user: User = Depends(get_current_u
     last_error = None
     for model_name in MODELS_TO_TRY:
         try:
-            logger.info(f"Trying Gemini model: {model_name}...")
+            # Disable AFC explicitly
+            from google.genai import types
+            config = types.GenerateContentConfig(tools=None)
+
             response = client.models.generate_content(
-                model=model_name, contents=[prompt]
+                model=model_name, 
+                contents=[prompt],
+                config=config
             )
             text = response.text.strip()
 

@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+
+# In development, we want all dependencies including devDependencies
+# and we want them installed in the container
+RUN npm install
+
+# Copy source code NOT needed because we volume mount it in docker-compose
+# COPY . .
+
+# Expose the dev server port
+EXPOSE 3000
+
+# Start Next.js in development mode
+CMD ["npm", "run", "dev"]

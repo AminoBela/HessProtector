@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from app.models import Transaction, User
-from app.routes.auth import get_current_user
+from app.auth_utils import get_current_user
 from app.core.dependencies import get_transaction_repository
 from app.repositories import TransactionRepository
 
 router = APIRouter()
 
 
-@router.post("/api/transactions")
+@router.post("/transactions")
 def add_transaction(
     tx: Transaction,
     current_user: User = Depends(get_current_user),
@@ -18,7 +18,7 @@ def add_transaction(
     return {"status": "created"}
 
 
-@router.delete("/api/transactions/{id}")
+@router.delete("/transactions/{id}")
 def delete_transaction(
     id: int,
     current_user: User = Depends(get_current_user),
@@ -29,7 +29,7 @@ def delete_transaction(
     return {"status": "deleted" if success else "not_found"}
 
 
-@router.put("/api/transactions/{id}")
+@router.put("/transactions/{id}")
 def update_transaction(
     id: int,
     tx: Transaction,

@@ -5,9 +5,9 @@ from typing import Dict
 class MealPlanPromptStrategy(PromptStrategy):
     def build_prompt(self, request, context: Dict) -> str:
         p = context.get("profile", {})
-        inv = ", ".join(
-            [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
-        )
+        inv_list = [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
+        inv = ", ".join(inv_list) if inv_list else "EMPTY (You must buy EVERYTHING)"
+        
         goals_str = (
             ", ".join(
                 [
@@ -27,22 +27,29 @@ class MealPlanPromptStrategy(PromptStrategy):
 
         prompt = f"""
         You are the 'HessProtector Chef', an elite AI financial and nutrition coach.
-        Your Mission: Create a delicious, healthy meal plan that STRICTLY fits the user's budget and inventory.
+        Your Mission: Create a delicious, healthy meal plan.
+        
+        CRITICAL INVENTORY STATUS:
+        Fridge: {inv}
         
         GUIDELINES:
         1. **Budget First**: The 'total_estimated_cost' MUST be <= {request.budget}€.
-        2. **Anti-Waste (CRITICAL)**: MUST prioritize using ingredients from 'Inventario Frigo': {inv}
-        3. **Financial Context**: User is saving for: {goals_str}
-        4. **Nutritional Balance**: Meals should be balanced but cheap (Student/Survivor style).
-        5. **Language**: {lang_instruction}
-        6. **Style**: Professional, encouraging, but financially strict. STRICTLY NO EMOJIS in JSON values.
-        7. **Meal Frequency**: STRICTLY generate ONLY the meals requested: {meals_str}
+        2. **Anti-Waste (CRITICAL)**: MUST prioritize using ingredients from 'Fridge'.
+        3. **Shopping List Logic**: 
+           - IF Fridge is EMPTY: You MUST add EVERY single ingredient for every meal to the 'shopping_list'.
+           - IF Fridge has item: Do NOT add it to shopping list unless quantity is insufficient.
+           - CHECK every ingredient required for the meals against the Fridge.
+        4. **Financial Context**: User is saving for: {goals_str}
+        5. **Nutritional Balance**: Meals should be balanced but cheap (Student/Survivor style).
+        6. **Language**: {lang_instruction}
+        7. **Style**: Professional, encouraging, but financially strict. STRICTLY NO EMOJIS in JSON values.
+        8. **Meal Frequency**: STRICTLY generate ONLY the meals requested: {meals_str}
         
-        RESPONSE FORMAT (JSON ONLY):
+        RESPONSE FORMAT (JSON ONLY, NO MARKDOWN):
         {{
             "analysis": "Brief analysis of how this plan saves money and uses the fridge...",
             "meals": [
-                {{ "day": "Lundi", "lunch": "Dish Name" (ONLY IF REQUESTED), "dinner": "Dish Name" (ONLY IF REQUESTED) }}
+                {{ "day": "Lundi", "lunch": "Dish Name", "dinner": "Dish Name" }}
             ],
             "shopping_list": [
                 {{ "item": "Exact Ingredient", "price": "1.50€" }}
