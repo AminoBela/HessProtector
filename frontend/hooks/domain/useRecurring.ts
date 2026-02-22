@@ -1,49 +1,51 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { RecurringItem, RecurringService } from '@/services/recurringService';
 
 export function useRecurring(token: string | null, refresh?: () => void) {
-    const [loading, setLoading] = useState(false);
+    const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const [recForm, setRecForm] = useState({ label: "", amount: "", day: "1", type: "Fixe" });
 
-    const addRecurring = useCallback(async () => {
-        if (!token) return;
-        if (!recForm.label) return;
-        setLoading(true);
-        try {
-            await RecurringService.add({ ...recForm, amount: parseFloat(recForm.amount), day: parseInt(recForm.day) }, token);
+    const addMutation = useMutation({
+        mutationFn: async () => {
+            if (!token || !recForm.label) throw new Error("Missing data");
+            return await RecurringService.add({ ...recForm, amount: parseFloat(recForm.amount), day: parseInt(recForm.day) }, token);
+        },
+        onSuccess: () => {
             setRecForm({ label: "", amount: "", day: "1", type: "Fixe" });
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             if (refresh) refresh();
-            return true;
-        } catch (err) {
+        },
+        onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
-            return false;
-        } finally {
-            setLoading(false);
         }
-    }, [token, recForm, refresh]);
+    });
 
-    const deleteRecurring = useCallback(async (id: number) => {
-        if (!token) return;
-        setLoading(true);
-        try {
-            await RecurringService.delete(id, token);
+    const deleteMutation = useMutation({
+        mutationFn: async (id: number) => {
+            if (!token) throw new Error("Missing token");
+            return await RecurringService.delete(id, token);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             if (refresh) refresh();
-            return true;
-        } catch (err) {
+        },
+        onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
-            return false;
-        } finally {
-            setLoading(false);
         }
-    }, [token, refresh]);
+    });
 
     return {
         recForm,
         setRecForm,
-        addRecurring,
-        deleteRecurring,
-        loading,
+        addRecurring: async () => {
+            try { await addMutation.mutateAsync(); return true; } catch { return false; }
+        },
+        deleteRecurring: async (id: number) => {
+            try { await deleteMutation.mutateAsync(id); return true; } catch { return false; }
+        },
+        loading: addMutation.isPending || deleteMutation.isPending,
         error
     };
 }

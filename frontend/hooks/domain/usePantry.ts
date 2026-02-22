@@ -1,76 +1,73 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { PantryItem, PantryService } from '@/services/pantryService';
 
 export function usePantry(token: string | null, refresh?: () => void) {
-    const [loading, setLoading] = useState(false);
+    const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const [pantryForm, setPantryForm] = useState({ item: "", qty: "", category: "Autre", expiry: "" });
     const [scannedTotal, setScannedTotal] = useState<number | null>(null);
 
-    const addPantryItem = useCallback(async () => {
-        if (!token) return;
-        if (!pantryForm.item) return;
-
-        setLoading(true);
-        try {
-            // Adjust to match Service structure if needed, forcing any type for simplicity given previous usage
-            await PantryService.add(pantryForm as any, token);
+    const addMutation = useMutation({
+        mutationFn: async () => {
+            if (!token || !pantryForm.item) throw new Error("Missing data");
+            return await PantryService.add(pantryForm as any, token);
+        },
+        onSuccess: () => {
             setPantryForm({ item: "", qty: "", category: "Autre", expiry: "" });
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             if (refresh) refresh();
-            return true;
-        } catch (err) {
+        },
+        onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
-            return false;
-        } finally {
-            setLoading(false);
         }
-    }, [token, pantryForm, refresh]);
+    });
 
-    const deletePantryItem = useCallback(async (id: number) => {
-        if (!token) return;
-        setLoading(true);
-        try {
-            await PantryService.delete(id, token);
+    const deleteMutation = useMutation({
+        mutationFn: async (id: number) => {
+            if (!token) throw new Error("Missing token");
+            return await PantryService.delete(id, token);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             if (refresh) refresh();
-            return true;
-        } catch (err) {
+        },
+        onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
-            return false;
-        } finally {
-            setLoading(false);
         }
-    }, [token, refresh]);
+    });
 
-    const scanReceipt = useCallback(async (file: File) => {
-        if (!token) return null;
-        setLoading(true);
-        // We can use a separate state for scanning if needed, or just rely on loading.
-        // For distinct UI feedback (e.g. specifically for receipt), let's use loading for now or add scanning state.
-        // The View uses 'scanning' prop.
-        try {
-            const result = await PantryService.scanReceipt(file, token);
+    const scanMutation = useMutation({
+        mutationFn: async (file: File) => {
+            if (!token) throw new Error("Missing token");
+            return await PantryService.scanReceipt(file, token);
+        },
+        onSuccess: (result) => {
             if (result && result.total_amount) {
                 setScannedTotal(result.total_amount);
             }
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
             if (refresh) refresh();
-            return result;
-        } catch (err) {
+        },
+        onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
-            return null;
-        } finally {
-            setLoading(false);
         }
-    }, [token, refresh]);
+    });
 
     return {
         pantryForm,
         setPantryForm,
-        addPantryItem,
-        deletePantryItem,
-        scanReceipt,
-        loading,
-        // Alias loading to scanning for now to satisfy interface, or better to add dedicated state
-        scanning: loading,
+        addPantryItem: async () => {
+            try { await addMutation.mutateAsync(); return true; } catch { return false; }
+        },
+        deletePantryItem: async (id: number) => {
+            try { await deleteMutation.mutateAsync(id); return true; } catch { return false; }
+        },
+        scanReceipt: async (file: File) => {
+            try { return await scanMutation.mutateAsync(file); } catch { return null; }
+        },
+        loading: addMutation.isPending || deleteMutation.isPending || scanMutation.isPending,
+        scanning: scanMutation.isPending,
         scannedTotal,
         setScannedTotal,
         error

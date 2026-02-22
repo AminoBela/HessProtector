@@ -1,15 +1,60 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ApiService } from '@/services/apiClient';
 
 export function useHessData(token: string | null) {
-    const [data, setData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [statsYear, setStatsYear] = useState(new Date().getFullYear().toString());
-    const [years, setYears] = useState<string[]>([]);
-    const [statsData, setStatsData] = useState<any>(null);
 
-    // Form States (kept for settings only — domain hooks handle the others)
+    // Dashboard Data Query
+    const {
+        data: dashboardData,
+        isLoading: isDashboardLoading,
+        refetch: refreshDashboard
+    } = useQuery({
+        queryKey: ['dashboard', token],
+        queryFn: () => ApiService.get('/dashboard', token as string),
+        enabled: !!token,
+    });
+
+    // Years Query
+    const { data: years = [] } = useQuery({
+        queryKey: ['years', token],
+        queryFn: () => ApiService.get('/dashboard/years', token as string),
+        enabled: !!token,
+    });
+
+    // Stats Query
+    const { data: statsData } = useQuery({
+        queryKey: ['stats', statsYear, token],
+        queryFn: () => ApiService.get(`/dashboard/stats?year=${statsYear}`, token as string),
+        enabled: !!token && !!statsYear,
+    });
+
+    // Form States (kept for settings only)
     const [settingsForm, setSettingsForm] = useState({ supermarket: "", diet: "" });
+
+    // Sync settings form with fetched profile
+    useEffect(() => {
+        if (dashboardData?.profile) {
+            setSettingsForm({
+                supermarket: dashboardData.profile.supermarket || "",
+                diet: dashboardData.profile.diet || ""
+            });
+        }
+    }, [dashboardData]);
+
+    const updateSettingsMutation = useMutation({
+        mutationFn: (newSettings: any) => ApiService.put('/profile', newSettings, token as string),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        }
+    });
+
+    const updateSettings = async () => {
+        if (!token) return;
+        await updateSettingsMutation.mutateAsync(settingsForm);
+    };
 
     // Coach States
     const [groceryBudget, setGroceryBudget] = useState([30]);
@@ -17,84 +62,43 @@ export function useHessData(token: string | null) {
     const [planMeals, setPlanMeals] = useState<string[]>(["lunch", "dinner"]);
     const [generatedPrompt, setGeneratedPrompt] = useState("");
 
-    const refreshStats = useCallback(() => {
-        if (!token) return;
-        ApiService.get(`/dashboard/stats?year=${statsYear}`, token)
-            .then(s => setStatsData(s))
-            .catch(e => {
-                if (e.message !== "Unauthorized") console.error("Stats error:", e);
-            });
-    }, [token, statsYear]);
-
-    const refresh = useCallback(() => {
-        if (!token) return;
-        ApiService.get('/dashboard', token)
-            .then(d => {
-                setData(d);
-                setLoading(false);
-                if (d?.profile) setSettingsForm(d.profile);
-            })
-            .catch(e => {
-                if (e.message !== "Unauthorized") console.error("Refresh error:", e);
-            });
-
-        ApiService.get('/dashboard/years', token)
-            .then(y => setYears(y))
-            .catch(e => {
-                if (e.message !== "Unauthorized") console.error("Years error:", e);
-            });
-
-        refreshStats();
-    }, [token, refreshStats]);
-
-    useEffect(() => {
-        if (token) {
-            refresh();
-        } else {
-            setLoading(false);
-        }
-    }, [token, refresh]);
-
-    useEffect(() => { refreshStats(); }, [statsYear, token, refreshStats]);
-
-    // Settings action
-    const updateSettings = async () => {
-        if (!token) return;
-        await ApiService.put('/profile', settingsForm, token);
-        refresh();
-    };
-
-    // Coach prompt generation
-    const generatePrompt = async (language: string, planMeals: string[], currentPlanJson?: string) => {
-        if (!token) return;
-        setGeneratedPrompt("");
-        try {
-            const json = await ApiService.post('/smart-prompt', {
+    const generatePromptMutation = useMutation({
+        mutationFn: (args: { language: string, meals: string[], currentPlanJson?: string }) =>
+            ApiService.post('/smart-prompt', {
                 type: "meal_plan",
                 budget: groceryBudget[0],
                 days: planDays[0],
-                meals: planMeals,
-                language: language,
-                current_plan: currentPlanJson
-            }, token);
-
+                meals: args.meals,
+                language: args.language,
+                current_plan: args.currentPlanJson
+            }, token as string),
+        onSuccess: (json) => {
             if (json.error) {
                 console.error("Coach Error:", json.error);
                 return;
             }
-
             if (json.prompt) {
                 const promptStr = typeof json.prompt === 'string' ? json.prompt : JSON.stringify(json.prompt);
                 setGeneratedPrompt(promptStr);
             }
-        } catch (e) {
+        },
+        onError: (e) => {
             console.error("Generator Failed:", e);
         }
+    });
+
+    const generatePrompt = async (language: string, planMeals: string[], currentPlanJson?: string) => {
+        if (!token) return;
+        setGeneratedPrompt("");
+        await generatePromptMutation.mutateAsync({ language, meals: planMeals, currentPlanJson });
     };
 
     return {
-        data, loading, refresh,
-        statsYear, setStatsYear, years, statsData,
+        data: dashboardData,
+        loading: isDashboardLoading,
+        refresh: refreshDashboard,
+        statsYear, setStatsYear,
+        years, statsData,
         settingsForm, setSettingsForm, updateSettings,
         groceryBudget, setGroceryBudget,
         planDays, setPlanDays,
