@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 const AUTH_BASE_URL = API_BASE_URL;
@@ -7,13 +8,14 @@ export function useAuth() {
     const [user, setUser] = useState<string | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
-        // Auto-login from localStorage
-        const storedToken = localStorage.getItem('hess_token');
+        // Since JWT is in HttpOnly cookie, we just rely on the stored username to know if we are logged in
+        // A robust implementation would hit a /api/me endpoint here.
         const storedUser = localStorage.getItem('hess_user');
-        if (storedToken && storedUser) {
-            setToken(storedToken);
+        if (storedUser) {
+            setToken("cookie_token"); // Dummy token to bypass frontend checks, real token is in cookie
             setUser(storedUser);
         }
         setLoading(false);
@@ -32,15 +34,13 @@ export function useAuth() {
         try {
             const res = await fetch(`${AUTH_BASE_URL}/auth/login`, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                credentials: 'include'
             });
 
             if (res.ok) {
-                const data = await res.json();
-                const newToken = data.access_token;
-                localStorage.setItem('hess_token', newToken);
                 localStorage.setItem('hess_user', username);
-                setToken(newToken);
+                setToken("cookie_token");
                 setUser(username);
                 return true;
             }
@@ -56,15 +56,13 @@ export function useAuth() {
             const res = await fetch(`${AUTH_BASE_URL}/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ username, password, email })
             });
 
             if (res.ok) {
-                const data = await res.json();
-                const newToken = data.access_token;
-                localStorage.setItem('hess_token', newToken);
                 localStorage.setItem('hess_user', username);
-                setToken(newToken);
+                setToken("cookie_token");
                 setUser(username);
                 return true;
             }
@@ -75,11 +73,23 @@ export function useAuth() {
         }
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            // Hit backend to clear HttpOnly cookie
+            await fetch(`${AUTH_BASE_URL}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (e) {
+            console.error(e);
+        }
+
+        // We clean up localStorage as well (legacy tokens if they existed)
         localStorage.removeItem('hess_token');
         localStorage.removeItem('hess_user');
         setToken(null);
         setUser(null);
+        queryClient.clear(); // Clear all cached user data
     };
 
     return { user, token, loading, login, register, logout };

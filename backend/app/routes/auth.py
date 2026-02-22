@@ -14,8 +14,10 @@ from datetime import timedelta
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/register", response_model=Token)
-async def register(user: UserCreate, session: Session = Depends(get_session)):
+from fastapi import Response
+
+@router.post("/register")
+async def register(user: UserCreate, response: Response, session: Session = Depends(get_session)):
     if len(user.password) < 6:
         raise HTTPException(
             status_code=400, detail="Password must be at least 6 characters"
@@ -34,10 +36,20 @@ async def register(user: UserCreate, session: Session = Depends(get_session)):
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    
+    response.set_cookie(
+        key="hess_token",
+        value=access_token,
+        httponly=True,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        samesite="lax",
+        secure=False, # Set to True if testing explicitly over HTTPS
+    )
+    return {"message": "Successfully registered", "username": user.username}
 
-@router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
+@router.post("/login")
+async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
     user = session.exec(select(DBUser).where(DBUser.username == form_data.username)).first()
 
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -51,4 +63,19 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), session: Sessi
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    
+    response.set_cookie(
+        key="hess_token",
+        value=access_token,
+        httponly=True,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        samesite="lax",
+        secure=False, # Set to True if using HTTPS
+    )
+    return {"message": "Successfully logged in", "username": user.username}
+
+@router.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie("hess_token", samesite="lax")
+    return {"message": "Successfully logged out"}

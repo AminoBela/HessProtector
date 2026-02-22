@@ -6,9 +6,12 @@ export const ApiService = {
             "Content-Type": "application/json",
         };
         if (token) {
-            headers["Authorization"] = `Bearer ${token}`;
+            headers["Authorization"] = `Bearer ${token}`; // Keeping as a fallback
         }
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, { headers });
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            headers,
+            credentials: 'include'
+        });
         if (!res.ok) {
             if (res.status === 401) {
                 // Dispatch logout event or handle globally
@@ -30,6 +33,7 @@ export const ApiService = {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers,
+            credentials: 'include',
             body: JSON.stringify(data),
         });
         if (!res.ok) {
@@ -52,6 +56,7 @@ export const ApiService = {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "PUT",
             headers,
+            credentials: 'include',
             body: JSON.stringify(data),
         });
         if (!res.ok) {
@@ -74,6 +79,7 @@ export const ApiService = {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "DELETE",
             headers,
+            credentials: 'include'
         });
         if (!res.ok) {
             if (res.status === 401) {
@@ -94,6 +100,7 @@ export const ApiService = {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers,
+            credentials: 'include',
             body: formData,
         });
         if (!res.ok) {
