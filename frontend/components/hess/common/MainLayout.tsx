@@ -39,25 +39,16 @@ import {
 } from "@/components/ui/select";
 import { Translations } from "@/lib/i18n";
 import { usePrivacy } from "@/context/PrivacyContext";
+import { useSettings } from "@/context/SettingsContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useTransactions } from "@/hooks/domain/useTransactions";
+import { useHessData } from "@/hooks/useHessData";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  data: any;
-  theme: string;
-  setTheme: (theme: string) => void;
-  activeColorTheme?: string;
-  language: string;
-  setLanguage: (lang: string) => void;
-  bg: React.ReactNode;
-  openTx: boolean;
-  setOpenTx: (open: boolean) => void;
-  txForm: any;
-  setTxForm: (form: any) => void;
-  handleAddTx: () => void;
-  user: string | null;
-  logout: () => void;
 }
 
 const themeColors: any = {
@@ -95,25 +86,32 @@ const themeColors: any = {
   },
 };
 
-export function MainLayout({
-  children,
-  activeTab,
-  setActiveTab,
-  data,
-  theme,
-  setTheme,
-  activeColorTheme = "default",
-  language,
-  setLanguage,
-  bg,
-  openTx,
-  setOpenTx,
-  txForm,
-  setTxForm,
-  handleAddTx,
-  user,
-  logout,
-}: MainLayoutProps) {
+const gradients: any = {
+  default: "bg-gradient-to-br from-slate-950 via-zinc-900 to-emerald-950/80",
+  gold: "bg-gradient-to-br from-stone-950 via-neutral-900 to-amber-950/60",
+  cyber: "bg-gradient-to-br from-zinc-950 via-slate-900 to-fuchsia-950/50",
+  matrix: "bg-gradient-to-br from-neutral-950 via-zinc-950 to-emerald-950/70",
+  neon: "bg-gradient-to-br from-zinc-950 via-blue-950/80 to-cyan-950/50",
+};
+const lightGradients: any = {
+  default: "bg-gradient-to-br from-stone-50 via-emerald-50/40 to-slate-100",
+  gold: "bg-gradient-to-br from-amber-50/80 via-stone-50 to-orange-50/60",
+  cyber: "bg-gradient-to-br from-slate-50 via-fuchsia-50/30 to-rose-50/40",
+  matrix: "bg-gradient-to-br from-stone-50 via-emerald-50/30 to-zinc-100",
+  neon: "bg-gradient-to-br from-slate-50 via-blue-50/50 to-cyan-50/30",
+};
+
+export function MainLayout({ children }: MainLayoutProps) {
+  const { theme, setTheme, language, setLanguage } = useSettings();
+  const { user, token, logout } = useAuth();
+  const { data } = useHessData(token);
+  const { txForm, setTxForm, addTransaction } = useTransactions(token);
+  const [openTx, setOpenTx] = useState(false);
+  const pathname = usePathname();
+  const activeTab = pathname === "/" ? "dashboard" : pathname.split("/")[1] || "dashboard";
+
+  const activeColorTheme = data?.profile?.active_theme || "default";
+
   const isLight = theme === "light";
   const textColor = isLight ? "text-slate-800" : "text-white";
   const sidebarBg = isLight
@@ -145,8 +143,8 @@ export function MainLayout({
     iconHoverColors[activeColorTheme] || iconHoverColors.default;
 
   const SidebarItem = ({ id, icon: Icon, label }: any) => (
-    <button
-      onClick={() => setActiveTab(id)}
+    <Link
+      href={`/${id}`}
       className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}
     >
       <Icon
@@ -155,8 +153,27 @@ export function MainLayout({
       <span className="hidden md:block text-sm uppercase tracking-wider font-bold">
         {label}
       </span>
-    </button>
+    </Link>
   );
+
+  const activeGradient = gradients[activeColorTheme] || gradients.default;
+  const activeLightGradient =
+    lightGradients[activeColorTheme] || lightGradients.default;
+  const bg =
+    theme === "dark" ? (
+      <div
+        className={`fixed inset-0 -z-10 ${activeGradient} transition-colors duration-1000`}
+      ></div>
+    ) : (
+      <div
+        className={`fixed inset-0 -z-10 ${activeLightGradient} transition-colors duration-1000`}
+      ></div>
+    );
+
+  const handleAddTxWrapper = async () => {
+    await addTransaction();
+    setOpenTx(false);
+  };
 
   return (
     <div
@@ -215,11 +232,10 @@ export function MainLayout({
           {data && data.rank && (
             <div
               className={`p-4 rounded-xl border relative overflow-hidden group transition-all
-                            ${
-                              isLight
-                                ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md"
-                                : "bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10"
-                            }`}
+                            ${isLight
+                  ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md"
+                  : "bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10"
+                }`}
             >
               <div
                 className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isLight ? "bg-amber-100/30" : "bg-white/5"}`}
@@ -446,7 +462,7 @@ export function MainLayout({
                     </SelectContent>
                   </Select>
                   <Button
-                    onClick={handleAddTx}
+                    onClick={handleAddTxWrapper}
                     className={`w-full h-14 font-black rounded-xl text-lg shadow-xl mt-2 ${isLight ? "bg-white text-black hover:bg-zinc-200" : "bg-emerald-600 text-white hover:bg-emerald-500"}`}
                   >
                     {t.dialog.add}
