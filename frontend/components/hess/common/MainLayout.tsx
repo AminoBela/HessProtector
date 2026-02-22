@@ -46,6 +46,7 @@ import { useHessData } from "@/hooks/useHessData";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { AnimatedBackground } from "@/components/hess/common/AnimatedBackground";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -156,24 +157,25 @@ export function MainLayout({ children }: MainLayoutProps) {
     </Link>
   );
 
-  const activeGradient = gradients[activeColorTheme] || gradients.default;
-  const activeLightGradient =
-    lightGradients[activeColorTheme] || lightGradients.default;
-  const bg =
-    theme === "dark" ? (
-      <div
-        className={`fixed inset-0 -z-10 ${activeGradient} transition-colors duration-1000`}
-      ></div>
-    ) : (
-      <div
-        className={`fixed inset-0 -z-10 ${activeLightGradient} transition-colors duration-1000`}
-      ></div>
-    );
+  const bg = <AnimatedBackground themeId={activeColorTheme} isLight={isLight} />;
 
   const handleAddTxWrapper = async () => {
     await addTransaction();
     setOpenTx(false);
   };
+
+  const isSetupRequired = data && !data.is_setup;
+
+  if (isSetupRequired) {
+    return (
+      <div className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}>
+        {bg}
+        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide">
+          {children}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div

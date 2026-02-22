@@ -1,17 +1,16 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-import { Lock, User, Mail, ArrowRight, Loader2 } from "lucide-react";
+import { Lock, User, Mail, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { Translations } from "@/lib/i18n";
 
 interface AuthViewProps {
@@ -38,17 +37,18 @@ export function AuthView({
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [showPassword, setShowPassword] = useState(false);
 
   const t = Translations[language as keyof typeof Translations].auth;
   const isLight = theme === "light";
 
   const cardGlass = isLight
-    ? "card-glass card-glass-light"
-    : "card-glass card-glass-dark";
+    ? "bg-white/80 backdrop-blur-2xl border-white/50 shadow-2xl shadow-emerald-500/10"
+    : "bg-zinc-950/80 backdrop-blur-2xl border-white/10 shadow-2xl shadow-black/50 overflow-hidden";
 
   const inputStyle = isLight
-    ? "bg-white/50 border-emerald-900/10 text-slate-800 focus:ring-emerald-500/50 transition-all duration-300"
-    : "bg-zinc-900/50 border-white/10 text-white focus:ring-emerald-500/50 transition-all duration-300";
+    ? "bg-white/50 border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-sm"
+    : "bg-zinc-950/50 border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-inner";
 
   const triggerError = (msg: string) => {
     setError(msg);
@@ -60,13 +60,17 @@ export function AuthView({
     setIsLoading(true);
     setError("");
     const success = await onLogin(loginForm.username, loginForm.password);
-    if (!success) triggerError(t.error || "Login Failed");
+    if (!success) triggerError(t.error || "Identifiants incorrects");
     setIsLoading(false);
   };
 
   const handleRegister = async () => {
     if (regForm.password !== regForm.confirm) {
       triggerError("Les mots de passe ne correspondent pas");
+      return;
+    }
+    if (!regForm.username || !regForm.password || !regForm.email) {
+      triggerError("Tous les champs sont obligatoires");
       return;
     }
     setIsLoading(true);
@@ -76,14 +80,22 @@ export function AuthView({
       regForm.password,
       regForm.email,
     );
-    if (!success) triggerError(t.error || "Registration Failed");
+    if (!success) triggerError(t.error || "Inscription échouée");
     setIsLoading(false);
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (activeTab === "login") {
+        handleLogin();
+      } else {
+        handleRegister();
+      }
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 font-sans overflow-hidden">
-      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-3xl animate-pulse" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-700" />
+    <div className={`min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden ${isLight ? "text-slate-800" : "text-white"}`}>
 
       <motion.div
         layout
@@ -98,16 +110,25 @@ export function AuthView({
           default: { type: "spring", duration: 0.6, bounce: 0.3 },
           x: { type: "tween", duration: 0.5, ease: "easeInOut" },
         }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-xl relative z-10"
       >
-        <div className="text-center mb-10">
+        <div className="text-center mb-10 flex flex-col items-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", bounce: 0.5 }}
+            className={`w-16 h-16 rounded-2xl mb-6 flex items-center justify-center shadow-xl ${isLight ? "bg-gradient-to-br from-emerald-400 to-cyan-500" : "bg-gradient-to-br from-emerald-500 to-teal-600"}`}
+          >
+            <ShieldCheck className="w-10 h-10 text-white" />
+          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className={`text-5xl font-black mb-3 tracking-tighter ${isLight ? "text-slate-900" : "text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-300% animate-gradient"}`}
           >
-            HessProtector
+            Hess<span className={isLight ? "text-emerald-500" : ""}>Protector</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -120,7 +141,7 @@ export function AuthView({
         </div>
 
         <div
-          className={`p-1 bg-black/5 dark:bg-white/5 backdrop-blur-xl rounded-2xl flex relative mb-6 border border-white/5`}
+          className={`p-1.5 ${isLight ? "bg-white/60 shadow-sm" : "bg-black/20"} backdrop-blur-xl rounded-2xl flex relative mb-6 border ${isLight ? "border-slate-200" : "border-white/5"}`}
         >
           {(["login", "register"] as const).map((tab) => (
             <button
@@ -129,20 +150,19 @@ export function AuthView({
                 setActiveTab(tab);
                 setError("");
               }}
-              className={`flex-1 relative py-3 text-sm font-bold uppercase tracking-wider transition-colors duration-300 z-10 ${
-                activeTab === tab
-                  ? isLight
-                    ? "text-white"
-                    : "text-black"
-                  : isLight
-                    ? "text-slate-500 hover:text-slate-800"
-                    : "text-zinc-500 hover:text-zinc-300"
-              }`}
+              className={`flex-1 relative py-3.5 text-sm font-bold uppercase tracking-wider transition-colors duration-300 z-10 ${activeTab === tab
+                ? isLight
+                  ? "text-white"
+                  : "text-white"
+                : isLight
+                  ? "text-slate-500 hover:text-slate-800"
+                  : "text-zinc-500 hover:text-zinc-300"
+                }`}
             >
               {activeTab === tab && (
                 <motion.div
                   layoutId="activeTab"
-                  className={`absolute inset-0 rounded-xl ${isLight ? "bg-slate-900" : "bg-emerald-600"}`}
+                  className={`absolute inset-0 rounded-xl ${isLight ? "bg-slate-900 shadow-md" : "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20"}`}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -154,13 +174,13 @@ export function AuthView({
         </div>
 
         <Card
-          className={`border-0 rounded-[2.5rem] overflow-hidden ${cardGlass} transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]`}
+          className={`border ${cardGlass} rounded-[2.5rem] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]`}
         >
-          <CardHeader className="text-center pb-2 pt-8">
+          <CardHeader className="text-center pb-2 pt-10">
             <CardTitle
-              className={`text-2xl font-bold tracking-tight ${isLight ? "text-slate-800" : "text-white"}`}
+              className={`text-2xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}
             >
-              {t.welcome}
+              {activeTab === "login" ? "Bienvenue" : "Rejoignez-nous"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-2 px-8 pb-10">
@@ -201,18 +221,19 @@ export function AuthView({
                   >
                     <div className="flex flex-col gap-2">
                       <Label
-                        className={`ml-1 text-sm uppercase tracking-wide font-bold min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                       >
                         {t.username}
                       </Label>
                       <div className="relative group">
                         <User
-                          className={`absolute left-4 top-4 w-5 h-5 transition-colors ${isLight ? "text-slate-400 group-focus-within:text-emerald-600" : "text-zinc-500 group-focus-within:text-emerald-400"}`}
+                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`}
                         />
                         <Input
-                          className={`pl-12 h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
+                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
                           placeholder="Admin"
                           value={loginForm.username}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) =>
                             setLoginForm({
                               ...loginForm,
@@ -224,19 +245,20 @@ export function AuthView({
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label
-                        className={`ml-1 text-sm uppercase tracking-wide font-bold min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                        className={`ml-1 text-xs uppercase tracking-widest font-black flex justify-between ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                       >
-                        {t.password}
+                        <span>{t.password}</span>
                       </Label>
                       <div className="relative group">
                         <Lock
-                          className={`absolute left-4 top-4 w-5 h-5 transition-colors ${isLight ? "text-slate-400 group-focus-within:text-emerald-600" : "text-zinc-500 group-focus-within:text-emerald-400"}`}
+                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`}
                         />
                         <Input
-                          type="password"
-                          className={`pl-12 h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
+                          type={showPassword ? "text" : "password"}
+                          className={`pl-14 pr-12 h-14 rounded-2xl text-lg font-medium shadow-sm ${inputStyle}`}
                           placeholder="••••••••"
                           value={loginForm.password}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) =>
                             setLoginForm({
                               ...loginForm,
@@ -244,20 +266,30 @@ export function AuthView({
                             })
                           }
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-4 top-4 transition-colors ${isLight ? "text-slate-400 hover:text-emerald-600" : "text-zinc-500 hover:text-emerald-400"}`}
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
                       </div>
                     </div>
                     <Button
                       onClick={handleLogin}
-                      disabled={isLoading}
-                      className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-white shadow-lg shadow-emerald-900/20 mt-4 text-base tracking-wide"
+                      disabled={isLoading || !loginForm.username || !loginForm.password}
+                      className="w-full h-16 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-white shadow-xl shadow-emerald-500/20 mt-4 text-xl tracking-wide group overflow-hidden relative"
                     >
-                      {isLoading ? (
-                        <Loader2 className="w-6 h-6 animate-spin" />
-                      ) : (
-                        <>
-                          {t.loginBtn} <ArrowRight className="w-5 h-5 ml-2" />
-                        </>
-                      )}
+                      <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300" />
+                      <span className="relative flex items-center justify-center">
+                        {isLoading ? (
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                        ) : (
+                          <>
+                            {t.loginBtn} <ArrowRight className="w-6 h-6 ml-2" />
+                          </>
+                        )}
+                      </span>
                     </Button>
                   </motion.div>
                 ) : (
@@ -271,18 +303,19 @@ export function AuthView({
                   >
                     <div className="flex flex-col gap-2">
                       <Label
-                        className={`ml-1 text-sm uppercase tracking-wide font-bold min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                       >
                         {t.username}
                       </Label>
                       <div className="relative group">
                         <User
-                          className={`absolute left-4 top-4 w-5 h-5 transition-colors ${isLight ? "text-slate-400 group-focus-within:text-cyan-600" : "text-zinc-500 group-focus-within:text-cyan-400"}`}
+                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
                         />
                         <Input
-                          className={`pl-12 h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
+                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
                           placeholder="Nouvel Utilisateur"
                           value={regForm.username}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) =>
                             setRegForm({ ...regForm, username: e.target.value })
                           }
@@ -291,53 +324,68 @@ export function AuthView({
                     </div>
                     <div className="flex flex-col gap-2">
                       <Label
-                        className={`ml-1 text-sm uppercase tracking-wide font-bold min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                       >
                         {t.email}
                       </Label>
                       <div className="relative group">
                         <Mail
-                          className={`absolute left-4 top-4 w-5 h-5 transition-colors ${isLight ? "text-slate-400 group-focus-within:text-cyan-600" : "text-zinc-500 group-focus-within:text-cyan-400"}`}
+                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
                         />
                         <Input
-                          className={`pl-12 h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
+                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
                           placeholder="exemple@email.com"
                           value={regForm.email}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) =>
                             setRegForm({ ...regForm, email: e.target.value })
                           }
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="flex flex-col gap-2">
                         <Label
-                          className={`ml-1 text-sm uppercase tracking-wide font-bold min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                          className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                         >
                           {t.password}
                         </Label>
-                        <Input
-                          type="password"
-                          className={`h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
-                          placeholder="••••••••"
-                          value={regForm.password}
-                          onChange={(e) =>
-                            setRegForm({ ...regForm, password: e.target.value })
-                          }
-                        />
+                        <div className="relative group">
+                          <Lock
+                            className={`absolute left-4 top-4 w-6 h-6 z-10 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
+                          />
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            className={`pl-14 pr-12 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
+                            placeholder="••••••••"
+                            value={regForm.password}
+                            onKeyDown={handleKeyDown}
+                            onChange={(e) =>
+                              setRegForm({ ...regForm, password: e.target.value })
+                            }
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className={`absolute right-4 top-4 z-10 transition-colors ${isLight ? "text-slate-400 hover:text-cyan-600" : "text-zinc-500 hover:text-cyan-400"}`}
+                          >
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          </button>
+                        </div>
                       </div>
                       <div className="flex flex-col gap-2">
                         <Label
-                          className={`ml-1 text-sm uppercase tracking-wide font-bold truncate block min-h-[20px] ${isLight ? "text-slate-500" : "text-zinc-500"}`}
+                          className={`ml-1 text-xs uppercase tracking-widest font-black truncate block ${isLight ? "text-slate-400" : "text-zinc-500"}`}
                           title={t.confirmPassword}
                         >
                           {t.confirmPassword}
                         </Label>
                         <Input
-                          type="password"
-                          className={`h-14 rounded-2xl text-base font-medium shadow-sm ${inputStyle}`}
+                          type={showPassword ? "text" : "password"}
+                          className={`h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
                           placeholder="••••••••"
                           value={regForm.confirm}
+                          onKeyDown={handleKeyDown}
                           onChange={(e) =>
                             setRegForm({ ...regForm, confirm: e.target.value })
                           }
@@ -346,17 +394,20 @@ export function AuthView({
                     </div>
                     <Button
                       onClick={handleRegister}
-                      disabled={isLoading}
-                      className="w-full h-14 rounded-2xl bg-cyan-600 hover:bg-cyan-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-bold text-white shadow-lg shadow-cyan-900/20 mt-4 text-base tracking-wide"
+                      disabled={isLoading || !regForm.username || !regForm.password || !regForm.confirm}
+                      className="w-full h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-white shadow-xl shadow-cyan-500/20 mt-4 text-xl tracking-wide group overflow-hidden relative"
                     >
-                      {isLoading ? (
-                        <Loader2 className="w-6 h-6 animate-spin" />
-                      ) : (
-                        <>
-                          {t.registerBtn}{" "}
-                          <ArrowRight className="w-5 h-5 ml-2" />
-                        </>
-                      )}
+                      <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300" />
+                      <span className="relative flex items-center justify-center">
+                        {isLoading ? (
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                        ) : (
+                          <>
+                            {t.registerBtn}{" "}
+                            <ArrowRight className="w-6 h-6 ml-2" />
+                          </>
+                        )}
+                      </span>
                     </Button>
                   </motion.div>
                 )}

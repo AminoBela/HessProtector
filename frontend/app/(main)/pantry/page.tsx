@@ -10,9 +10,17 @@ import { useSettings } from "@/context/SettingsContext";
 export default function PantryPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
-    const { data } = useHessData(token);
+    const { data, loading } = useHessData(token);
     const { pantryForm, setPantryForm, addPantryItem, deletePantryItem, scanReceipt, scanning, scannedTotal, setScannedTotal } = usePantry(token);
     const { addTransaction } = useTransactions(token);
+
+    if (loading || !data) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
 
     const handleUploadReceipt = async (e: any) => {
         if (!e.target.files[0]) return;

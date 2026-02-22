@@ -21,7 +21,7 @@ class CoachService(metaclass=Singleton):
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found in environment")
         self.client = genai.Client(api_key=self.api_key)
-        self.model = "gemini-flash-latest"
+        self.model = "gemini-2.5-flash"
 
         self.strategies = {
             "emergency": EmergencyPromptStrategy(),
@@ -43,7 +43,9 @@ class CoachService(metaclass=Singleton):
     def _call_gemini(self, prompt: str, request: PromptRequest) -> Dict:
         try:
             from google.genai import types
-            config = types.GenerateContentConfig(tools=None)
+            config = types.GenerateContentConfig(
+                response_mime_type="application/json"
+            )
 
             response = self.client.models.generate_content(
                 model=self.model, 

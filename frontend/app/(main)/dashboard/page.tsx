@@ -20,13 +20,21 @@ export default function DashboardPage() {
         statsYear, setStatsYear,
         years,
         statsData,
-        refresh
+        refresh,
+        loading
     } = useHessData(token);
+
+    if (loading || !data) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
 
     if (data && !data.is_setup) {
         return (
             <SetupWizard
-                bg={null}
                 onFinish={async (setupData) => {
                     await ApiService.post("/setup", setupData, token);
                     refresh();

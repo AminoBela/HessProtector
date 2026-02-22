@@ -90,6 +90,9 @@ export function useAuth() {
         setToken(null);
         setUser(null);
         queryClient.clear(); // Clear all cached user data
+
+        // Force navigate to login page
+        window.location.href = '/login';
     };
 
     return { user, token, loading, login, register, logout };

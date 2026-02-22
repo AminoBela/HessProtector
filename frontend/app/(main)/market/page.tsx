@@ -10,8 +10,16 @@ import { useState } from "react";
 export default function MarketPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
-    const { data, refresh } = useHessData(token);
+    const { data, refresh, loading } = useHessData(token);
     const [buying, setBuying] = useState(false);
+
+    if (loading || !data) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
 
     const handleBuyTheme = async (item: any) => {
         if (!token || buying) return;

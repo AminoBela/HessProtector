@@ -6,12 +6,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const gradients: any = {
-    default: "bg-gradient-to-br from-slate-950 via-zinc-900 to-emerald-950/80",
-};
-const lightGradients: any = {
-    default: "bg-gradient-to-br from-stone-50 via-emerald-50/40 to-slate-100",
-};
+import { AnimatedBackground } from "@/components/hess/common/AnimatedBackground";
 
 export default function LoginPage() {
     const { login, register, user, loading } = useAuth();
@@ -34,12 +29,8 @@ export default function LoginPage() {
 
     if (user) return null;
 
-    const bg =
-        theme === "dark" ? (
-            <div className={`fixed inset-0 -z-10 ${gradients.default} transition-colors duration-1000`}></div>
-        ) : (
-            <div className={`fixed inset-0 -z-10 ${lightGradients.default} transition-colors duration-1000`}></div>
-        );
+    const isLight = theme === "light";
+    const bg = <AnimatedBackground themeId="default" isLight={isLight} />;
 
     return (
         <>

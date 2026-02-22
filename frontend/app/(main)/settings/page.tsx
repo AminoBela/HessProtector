@@ -8,7 +8,15 @@ import { useSettings } from "@/context/SettingsContext";
 export default function SettingsPage() {
     const { token, logout } = useAuth();
     const { theme, language } = useSettings();
-    const { settingsForm, setSettingsForm, updateSettings } = useHessData(token);
+    const { data, settingsForm, setSettingsForm, updateSettings, loading } = useHessData(token);
+
+    if (loading || !data) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+            </div>
+        );
+    }
 
     return (
         <SettingsView

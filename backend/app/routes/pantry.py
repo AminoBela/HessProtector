@@ -62,8 +62,15 @@ async def scan_receipt(
         }
         """ 
 
+        from google.genai import types
+        config = types.GenerateContentConfig(
+            response_mime_type="application/json"
+        )
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash", contents=[prompt, uploaded_file]
+            model="gemini-2.5-flash", 
+            contents=[prompt, uploaded_file],
+            config=config
         )
 
         text = response.text.strip()

@@ -90,23 +90,39 @@ def generate_audit(req: AuditRequest, current_user: dict = Depends(get_current_u
     )
 
     prompt = f"""
-    You are a financial advisor. Analyze this monthly data:
+    You are a brutally honest but helpful financial advisor. Analyze this monthly data:
     {json.dumps(data, default=str)}
 
-    Identify 3 strengths and 3 weaknesses.
     {lang_instruction}
+    Return ONLY a raw JSON object with this exact structure (no markdown, no backticks):
+    {{
+      "score": <number 0-10 based on financial health>,
+      "title": "<short dramatic title for their performance>",
+      "roast": "<a witty, spicy, slightly roasting but ultimately helpful 1-sentence comment on their spending habits>",
+      "pros": ["<strength 1>", "<strength 2>", "<strength 3>"],
+      "cons": ["<weakness 1>", "<weakness 2>", "<weakness 3>"],
+      "tips": [
+        {{"icon": "<emoji>", "tip": "<actionable advice 1>"}},
+        {{"icon": "<emoji>", "tip": "<actionable advice 2>"}},
+        {{"icon": "<emoji>", "tip": "<actionable advice 3>"}}
+      ]
+    }}
     """
 
     MODELS_TO_TRY = [
-        "gemini-flash-latest",
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
         "gemini-1.5-flash",
+        "gemini-flash-latest",
     ]
 
     last_error = None
     for model_name in MODELS_TO_TRY:
         try:
             from google.genai import types
-            config = types.GenerateContentConfig(tools=None)
+            config = types.GenerateContentConfig(
+                response_mime_type="application/json"
+            )
 
             response = client.models.generate_content(
                 model=model_name, 

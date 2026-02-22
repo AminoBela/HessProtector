@@ -19,13 +19,26 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const savedTheme = localStorage.getItem("hess_theme");
         const savedLang = localStorage.getItem("hess_lang");
-        if (savedTheme) setTheme(savedTheme);
+
+        const initialTheme = savedTheme || "dark";
+        setTheme(initialTheme);
+        if (initialTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+
         if (savedLang) setLanguage(savedLang);
     }, []);
 
     const handleSetTheme = (newTheme: string) => {
         setTheme(newTheme);
         localStorage.setItem("hess_theme", newTheme);
+        if (newTheme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
     };
 
     const handleSetLang = (newLang: string) => {
