@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { AnalyticsView } from '@/components/hess/features/analytics/AnalyticsView';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import React from 'react';
