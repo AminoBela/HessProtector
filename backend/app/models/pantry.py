@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class PantryItem(BaseModel):
     item: str
     qty: str

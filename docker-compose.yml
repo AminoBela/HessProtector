@@ -8,10 +8,13 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    env_file:
+      - ./backend/.env
     environment:
       - PYTHONUNBUFFERED=1
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - SECRET_KEY=${SECRET_KEY}
+      # Keys loaded from env_file do not need to be repeated here unless overriding
+      # - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # - SECRET_KEY=${SECRET_KEY}
       # In dev, we can use a local file or the one in the volume
       - SQLITE_DB_PATH=/app/hess_protector.db
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload

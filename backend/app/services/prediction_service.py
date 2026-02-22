@@ -2,7 +2,6 @@ import calendar
 from datetime import date
 from typing import List, Dict
 
-
 class PredictionService:
     def predict_month_end(
         self, balance: float, recurring: List[Dict], transactions: List[Dict]

@@ -11,7 +11,6 @@ from app.repositories import PlansRepository
 
 router = APIRouter()
 
-
 @router.post("/smart-prompt")
 def generate_smart_prompt(
     req: PromptRequest,
@@ -31,7 +30,6 @@ def generate_smart_prompt(
 
     return coach_service.generate_prompt(req, context)
 
-
 @router.get("/plans")
 def get_plans(
     current_user: User = Depends(get_current_user),
@@ -39,16 +37,14 @@ def get_plans(
 ):
     return plans_repo.get_all(current_user["id"])
 
-
 @router.post("/plans")
 def save_plan(
     p: PlanItem,
     current_user: User = Depends(get_current_user),
     plans_repo: PlansRepository = Depends(get_plans_repository),
 ):
-    plans_repo.create(p.name, p.content, current_user["id"])
+    plans_repo.create({"name": p.name, "content": p.content}, current_user["id"])
     return {"status": "saved"}
-
 
 @router.delete("/plans/{id}")
 def del_plan(

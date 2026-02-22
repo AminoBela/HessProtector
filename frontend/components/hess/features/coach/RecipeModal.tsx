@@ -54,12 +54,12 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
         exit={{ y: 50, opacity: 0 }}
         className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
       >
-        {/* Header */}
+        {}
         <div className="p-6 border-b border-zinc-800 flex justify-between items-start bg-zinc-900 z-10">
           <div>
             <h2 className="text-3xl font-bold text-white flex items-center gap-3">
               <span className="text-4xl">{recipe.title?.split(" ")[0]}</span>{" "}
-              {/* Emoji assumption */}
+              {}
               <span>{recipe.title?.replace(/^[^\s]+\s/, "") || "Recette"}</span>
             </h2>
             <div className="flex gap-4 mt-3 text-sm font-medium text-emerald-400">
@@ -88,9 +88,9 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
           </button>
         </div>
 
-        {/* Content - Scrollable */}
+        {}
         <div className="p-6 overflow-y-auto space-y-8 scrollbar-hide">
-          {/* Ingredients */}
+          {}
           <div>
             <h3 className="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2 uppercase tracking-widest">
               {language === "fr" ? "Ingrédients" : "Ingredients"}
@@ -117,7 +117,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
             </div>
           </div>
 
-          {/* Steps */}
+          {}
           <div>
             <h3 className="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2 uppercase tracking-widest">
               {language === "fr" ? "Préparation" : "Preparation"}
@@ -135,7 +135,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
           </div>
         </div>
 
-        {/* Footer - Tip */}
+        {}
         {recipe.chef_tip && (
           <div className="p-4 bg-emerald-900/10 border-t border-emerald-500/20">
             <div className="flex items-start gap-3">

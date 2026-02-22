@@ -1,6 +1,5 @@
 from app.services.validators.transaction_validator import TransactionValidator
 
-
 class AmountValidator(TransactionValidator):
     def _check(self, transaction, user_id: int, context: dict) -> tuple[bool, str]:
         if transaction.amount <= 0:

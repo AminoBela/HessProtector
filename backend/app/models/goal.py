@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class GoalItem(BaseModel):
     label: str
     target: float

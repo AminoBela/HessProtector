@@ -6,17 +6,15 @@ from app.repositories import TransactionRepository
 
 router = APIRouter()
 
-
 @router.post("/transactions")
 def add_transaction(
     tx: Transaction,
     current_user: User = Depends(get_current_user),
     repo: TransactionRepository = Depends(get_transaction_repository),
 ):
-    """Add a new transaction"""
+
     repo.create(tx, current_user["id"])
     return {"status": "created"}
-
 
 @router.delete("/transactions/{id}")
 def delete_transaction(
@@ -24,10 +22,9 @@ def delete_transaction(
     current_user: User = Depends(get_current_user),
     repo: TransactionRepository = Depends(get_transaction_repository),
 ):
-    """Delete a transaction"""
+
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}
-
 
 @router.put("/transactions/{id}")
 def update_transaction(
@@ -36,6 +33,6 @@ def update_transaction(
     current_user: User = Depends(get_current_user),
     repo: TransactionRepository = Depends(get_transaction_repository),
 ):
-    """Update a transaction"""
+
     success = repo.update(id, tx, current_user["id"])
     return {"status": "updated" if success else "not_found"}

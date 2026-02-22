@@ -7,22 +7,20 @@ from datetime import date
 
 router = APIRouter()
 
-
 @router.get("/dashboard")
 def get_dashboard(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
 ):
-    """Get complete dashboard data for the user"""
-    return dashboard_service.get_dashboard_data(current_user["id"])
 
+    return dashboard_service.get_dashboard_data(current_user["id"])
 
 @router.get("/ai-export")
 def get_ai(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
 ):
-    """Export AI-optimized data"""
+
     d = dashboard_service.get_dashboard_data(current_user["id"])
     return {
         "role": "Coach",
@@ -31,13 +29,11 @@ def get_ai(
         "pantry": d["pantry"],
     }
 
-
 @router.get("/dashboard/years")
 def get_years(
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
 ):
-    """Get available years from transaction history"""
 
     data = dashboard_service.get_dashboard_data(current_user["id"])
     transactions = data["transactions"]
@@ -50,12 +46,11 @@ def get_years(
 
     return years
 
-
 @router.get("/dashboard/stats")
 def get_stats(
     year: str = str(date.today().year),
     current_user: User = Depends(get_current_user),
     dashboard_service: DashboardService = Depends(get_dashboard_service),
 ):
-    """Get financial statistics for a specific year"""
+
     return dashboard_service.get_stats_by_year(year, current_user["id"])

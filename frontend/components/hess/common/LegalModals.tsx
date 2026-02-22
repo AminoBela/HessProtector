@@ -82,7 +82,7 @@ export const LEGAL_TEXT = {
 
 3. **Protection des Données**
    Toutes les données sensibles sont chiffrées. Nous ne vendons jamais vos données à des tiers.
-   
+
 4. **Vos Droits (RGPD)**
    Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et d'effacement de vos données.
    Vous pouvez exercer ces droits directement depuis les paramètres de l'application.

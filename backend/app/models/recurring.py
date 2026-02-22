@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class RecurringItem(BaseModel):
     label: str
     amount: float

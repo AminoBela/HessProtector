@@ -1,77 +1,44 @@
-from app.core.factories import ServiceFactory, RepositoryFactory
+from fastapi import Depends
+from app.database import get_session
+from sqlmodel import Session
+from app.core.factories import ServiceFactory
+from app.repositories import (
+    TransactionRepository,
+    PantryRepository,
+    RecurringRepository,
+    GoalsRepository,
+    ProfileRepository,
+    PlansRepository,
+    BudgetRepository,
+)
 
+def get_transaction_repository(session: Session = Depends(get_session)):
+    return TransactionRepository(session)
 
-def get_dashboard_service():
-    service = ServiceFactory.create_dashboard_service()
-    try:
-        yield service
-    finally:
-        service.transaction_repo.close()
-        service.pantry_repo.close()
-        service.recurring_repo.close()
-        service.goals_repo.close()
-        service.profile_repo.close()
+def get_pantry_repository(session: Session = Depends(get_session)):
+    return PantryRepository(session)
 
+def get_recurring_repository(session: Session = Depends(get_session)):
+    return RecurringRepository(session)
+
+def get_goals_repository(session: Session = Depends(get_session)):
+    return GoalsRepository(session)
+
+def get_profile_repository(session: Session = Depends(get_session)):
+    return ProfileRepository(session)
+
+def get_plans_repository(session: Session = Depends(get_session)):
+    return PlansRepository(session)
+
+def get_budget_repository(session: Session = Depends(get_session)):
+    return BudgetRepository(session)
+
+def get_dashboard_service(session: Session = Depends(get_session)):
+    service = ServiceFactory.create_dashboard_service(session)
+    return service
 
 def get_coach_service():
     return ServiceFactory.create_coach_service()
-
-
-def get_transaction_repository():
-    repo = RepositoryFactory.create_transaction_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_pantry_repository():
-    repo = RepositoryFactory.create_pantry_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_recurring_repository():
-    repo = RepositoryFactory.create_recurring_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_goals_repository():
-    repo = RepositoryFactory.create_goals_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_profile_repository():
-    repo = RepositoryFactory.create_profile_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_plans_repository():
-    repo = RepositoryFactory.create_plans_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
-
-def get_budget_repository():
-    repo = RepositoryFactory.create_budget_repository()
-    try:
-        yield repo
-    finally:
-        repo.close()
-
 
 def get_gamification_service():
     return ServiceFactory.create_gamification_service()

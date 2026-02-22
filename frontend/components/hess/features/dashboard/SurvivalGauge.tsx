@@ -89,7 +89,7 @@ export function SurvivalGauge({
         </div>
       </div>
 
-      {/* Background Gauge Visual */}
+      {}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-yellow-500 to-emerald-500 opacity-20" />
       <motion.div
         className={`absolute bottom-0 h-1 ${isSafe ? "bg-emerald-500" : "bg-rose-500"}`}

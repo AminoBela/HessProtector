@@ -1,44 +1,37 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from app.auth_utils import get_current_user
-from app.models import User
-from app.database import get_db_connection
+from app.database import get_session
+from sqlmodel import Session, select
+from app.models.domain import Transaction, Goal, Profile, UserTheme
 from app.services.gamification_service import GamificationService
 from app.core.dependencies import get_gamification_service
 
 router = APIRouter()
 
-
 class MarketItemRequest(BaseModel):
     id: str
     price: int = 0
 
-
 @router.post("/market/buy")
 def buy_item(
     item: MarketItemRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: dict = Depends(get_current_user),
     gamification_service: GamificationService = Depends(get_gamification_service),
+    session: Session = Depends(get_session),
 ):
-    """Buy a market item"""
     item_id = item.id
     price = item.price
 
-    conn = get_db_connection()
-    c = conn.cursor()
-
     try:
-        c.execute("SELECT * FROM transactions WHERE user_id = ?", (current_user["id"],))
-        transactions = [dict(row) for row in c.fetchall()]
-
-        c.execute("SELECT * FROM goals WHERE user_id = ?", (current_user["id"],))
-        goals = [dict(row) for row in c.fetchall()]
+        transactions = session.exec(select(Transaction).where(Transaction.user_id == current_user["id"])).all()
+        goals = session.exec(select(Goal).where(Goal.user_id == current_user["id"])).all()
 
         balance = sum(
-            t["amount"] if t["type"] == "revenu" else -t["amount"] for t in transactions
+            t.amount if t.type == "revenu" else -t.amount for t in transactions
         )
 
-        goals_completed = len([g for g in goals if g["saved"] >= g["target"]])
+        goals_completed = len([g for g in goals if g.saved >= g.target])
         current_xp = gamification_service.calculate_xp(balance, goals_completed)
 
         if current_xp < price:
@@ -47,14 +40,10 @@ def buy_item(
                 detail=f"Insufficient XP (have {current_xp}, need {price})",
             )
 
-        c.execute(
-            "SELECT unlocked_themes FROM profile WHERE user_id = ?",
-            (current_user["id"],),
-        )
-        profile_row = c.fetchone()
+        profile = session.exec(select(Profile).where(Profile.user_id == current_user["id"])).first()
         unlocked = (
-            profile_row["unlocked_themes"].split(",")
-            if profile_row and profile_row["unlocked_themes"]
+            profile.unlocked_themes.split(",")
+            if profile and profile.unlocked_themes
             else ["default"]
         )
 
@@ -62,53 +51,44 @@ def buy_item(
             raise HTTPException(status_code=400, detail="Already owned")
 
         unlocked.append(item_id)
-        c.execute(
-            "UPDATE profile SET unlocked_themes = ? WHERE user_id = ?",
-            (",".join(unlocked), current_user["id"]),
-        )
+        if profile:
+            profile.unlocked_themes = ",".join(unlocked)
+            session.add(profile)
 
-        c.execute(
-            "INSERT OR IGNORE INTO user_themes (user_id, theme_id) VALUES (?, ?)",
-            (current_user["id"], item_id),
-        )
+        user_theme = session.exec(select(UserTheme).where(UserTheme.user_id == current_user["id"], UserTheme.theme_id == item_id)).first()
+        if not user_theme:
+            session.add(UserTheme(user_id=current_user["id"], theme_id=item_id))
 
-        conn.commit()
+        session.commit()
 
         return {"status": "purchased", "item_id": item_id, "new_xp": current_xp}
-    finally:
-        conn.close()
-
+    except Exception as e:
+        session.rollback()
+        raise e
 
 @router.post("/market/equip")
-def equip_item(item: MarketItemRequest, current_user: User = Depends(get_current_user)):
-    """Equip a market item"""
+def equip_item(item: MarketItemRequest, current_user: dict = Depends(get_current_user), session: Session = Depends(get_session)):
     item_id = item.id
-
-    conn = get_db_connection()
-    c = conn.cursor()
 
     try:
         if item_id != "default":
-            c.execute(
-                "SELECT unlocked_themes FROM profile WHERE user_id = ?",
-                (current_user["id"],),
-            )
-            profile_row = c.fetchone()
+            profile = session.exec(select(Profile).where(Profile.user_id == current_user["id"])).first()
             unlocked = (
-                profile_row["unlocked_themes"].split(",")
-                if profile_row and profile_row["unlocked_themes"]
+                profile.unlocked_themes.split(",")
+                if profile and profile.unlocked_themes
                 else ["default"]
             )
 
             if item_id not in unlocked:
                 raise HTTPException(status_code=400, detail="Theme not owned")
 
-        c.execute(
-            "UPDATE profile SET active_theme = ? WHERE user_id = ?",
-            (item_id, current_user["id"]),
-        )
+        profile = session.exec(select(Profile).where(Profile.user_id == current_user["id"])).first()
+        if profile:
+            profile.active_theme = item_id
+            session.add(profile)
 
-        conn.commit()
+        session.commit()
         return {"status": "equipped", "item_id": item_id}
-    finally:
-        conn.close()
+    except Exception as e:
+        session.rollback()
+        raise e

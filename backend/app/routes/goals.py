@@ -6,17 +6,15 @@ from app.repositories import GoalsRepository
 
 router = APIRouter()
 
-
 @router.post("/goals")
 def add_goal(
     goal: GoalItem,
     current_user: User = Depends(get_current_user),
     repo: GoalsRepository = Depends(get_goals_repository),
 ):
-    """Add a financial goal"""
+
     repo.create(goal, current_user["id"])
     return {"status": "added"}
-
 
 @router.delete("/goals/{id}")
 def delete_goal(
@@ -24,6 +22,6 @@ def delete_goal(
     current_user: User = Depends(get_current_user),
     repo: GoalsRepository = Depends(get_goals_repository),
 ):
-    """Delete a financial goal"""
+
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}

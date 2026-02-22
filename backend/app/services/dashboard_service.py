@@ -11,7 +11,6 @@ from app.services.prediction_service import PredictionService
 from app.services.builders import DashboardDataBuilder
 from app.core.decorators import timed
 
-
 class DashboardService:
     def __init__(
         self,

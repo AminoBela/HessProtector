@@ -19,11 +19,13 @@ import {
   Save,
   ShoppingCart,
   ChefHat,
+  Receipt,
+  UtensilsCrossed,
 } from "lucide-react";
 import { useState } from "react";
 import { Translations } from "@/lib/i18n";
 import { motion } from "framer-motion";
-import { container } from "@/lib/animations";
+import { container, item } from "@/lib/animations";
 import { RecipeModal } from "./RecipeModal";
 import { ApiService } from "@/services/apiClient";
 
@@ -78,12 +80,14 @@ export function CoachResults({
   token,
 }: CoachResultsProps) {
   const isLight = theme === "light";
-  const cardGlass = isLight
-    ? "card-glass card-glass-light"
-    : "card-glass card-glass-dark";
-  const cardGlassHeavy = isLight
-    ? "card-glass card-glass-light p-6"
-    : "card-glass card-glass-dark p-6";
+
+  const glassCard = isLight
+    ? "bg-white/80 backdrop-blur-xl border-emerald-900/5 shadow-xl"
+    : "bg-black/40 backdrop-blur-xl border-white/10 shadow-xl";
+
+  const receiptBg = isLight
+    ? "bg-white shadow-[0_0_15px_rgba(0,0,0,0.05)] border-zinc-100"
+    : "bg-zinc-900 shadow-[0_0_15px_rgba(0,0,0,0.3)] border-white/5";
 
   const t =
     Translations[language as keyof typeof Translations]?.coach ||
@@ -166,7 +170,7 @@ export function CoachResults({
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20"
+      className="pb-20 space-y-8"
     >
       <RecipeModal
         isOpen={isRecipeOpen}
@@ -176,282 +180,267 @@ export function CoachResults({
         language={language}
       />
 
-      <div className="lg:col-span-2 space-y-6 bg-transparent">
-        <div
-          className={`flex justify-between items-center p-3 rounded-2xl border backdrop-blur-md sticky top-0 z-30 shadow-2xl ${isLight ? "bg-white/80 border-emerald-900/10" : "bg-zinc-950/80 border-white/10"}`}
+      { }
+      <motion.div variants={item} className="flex justify-between items-center bg-transparent">
+        <Button
+          variant="ghost"
+          className="text-zinc-500 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-full px-6"
+          onClick={onBack}
         >
+          <ArrowLeft className="w-5 h-5 mr-2" /> {common.back}
+        </Button>
+
+        <div className="flex gap-2 items-center bg-transparent">
+          {showSaveSuccess && (
+            <span className="text-emerald-400 text-xs font-bold mr-2 animate-in fade-in slide-in-from-right-2 flex gap-1 items-center">
+              <Check className="w-3 h-3" /> {t.successSave}
+            </span>
+          )}
+
           <Button
-            variant="ghost"
-            className="text-zinc-400 hover:text-emerald-500"
-            onClick={onBack}
+            variant="outline"
+            size="sm"
+            className={`border-white/10 rounded-full px-4 ${isEditing ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" : isLight ? "bg-white/50 text-slate-600" : "bg-white/5 text-zinc-400"}`}
+            onClick={() => setIsEditing(!isEditing)}
           >
-            <ArrowLeft className="w-5 h-5 mr-2" /> {common.back}
+            <PenSquare className="w-4 h-4 mr-2" />
+            {isEditing ? common.finish : common.edit}
           </Button>
-          <div className="flex gap-2 items-center">
-            {showSaveSuccess && (
-              <span className="text-emerald-400 text-xs font-bold mr-2 animate-in fade-in slide-in-from-right-2 flex gap-1 items-center">
-                <Check className="w-3 h-3" /> {t.successSave}
-              </span>
-            )}
 
-            <Button
-              variant="outline"
-              size="sm"
-              className={`border-white/10 ${isEditing ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" : isLight ? "bg-slate-100 text-slate-500" : "bg-zinc-900 text-zinc-400"}`}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              <PenSquare className="w-4 h-4 mr-2" />{" "}
-              {isEditing ? common.finish : common.edit}
-            </Button>
-
-            {isEditing && (
-              <Button
-                size="sm"
-                onClick={onUpdateAI}
-                disabled={updating}
-                className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
-              >
-                {updating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                )}{" "}
-                {t.recalc}
-              </Button>
-            )}
-
+          {isEditing && (
             <Button
               size="sm"
-              onClick={() => setIsSaveDialogOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-500"
+              onClick={onUpdateAI}
+              disabled={updating}
+              className="bg-purple-600 hover:bg-purple-500 rounded-full px-4 shadow-lg shadow-purple-500/20"
             >
-              <Save className="w-4 h-4 mr-2" /> {common.save}
+              {updating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+              {t.recalc}
             </Button>
+          )}
+
+          <Button
+            size="sm"
+            onClick={() => setIsSaveDialogOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-500 rounded-full px-4 shadow-lg shadow-emerald-500/20"
+          >
+            <Save className="w-4 h-4 mr-2" /> {common.save}
+          </Button>
+        </div>
+      </motion.div>
+
+      { }
+      <motion.div variants={item} className={`p-8 rounded-[2rem] relative overflow-hidden ${glassCard} border md:border-0`}>
+        {updating && (
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 transition-all duration-300">
+            <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
           </div>
+        )}
+
+        <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+          <Lightbulb className={`w-32 h-32 ${isLight ? "text-emerald-900" : "text-white"}`} />
         </div>
 
-        <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-          <DialogContent
-            className={
-              isLight
-                ? "bg-white/95 backdrop-blur-xl border-emerald-900/10 text-slate-800"
-                : "bg-zinc-950 border-white/10 text-white"
-            }
-          >
-            <DialogHeader>
-              <DialogTitle>{t.saveDialogTitle}</DialogTitle>
-              <DialogDescription>{t.saveDialogDesc}</DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <Input
-                value={newPlanName}
-                onChange={(e) => setNewPlanName(e.target.value)}
-                placeholder={t.placeholderName}
-                className={
-                  isLight
-                    ? "bg-white border-emerald-900/10 text-slate-800"
-                    : "bg-zinc-900 border-white/10 text-white"
-                }
-              />
+        <div className="relative z-10 max-w-3xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-emerald-500/20 rounded-lg">
+              <Lightbulb className="w-5 h-5 text-emerald-500" />
             </div>
-            <DialogFooter>
-              <Button
-                variant="ghost"
-                onClick={() => setIsSaveDialogOpen(false)}
-              >
-                {common.cancel}
-              </Button>
-              <Button
-                onClick={handleSaveConfirm}
-                disabled={saving || !newPlanName.trim()}
-                className="bg-emerald-600 hover:bg-emerald-500"
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  common.save
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        <div
-          className={`${isLight ? "bg-emerald-100 border-emerald-200" : "bg-emerald-900/20 border-emerald-500/20"} border p-5 rounded-3xl backdrop-blur-md relative overflow-hidden`}
-        >
-          {updating && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10">
-              <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
-            </div>
-          )}
-          <div className="flex items-start gap-4">
-            <div className="p-2 bg-emerald-500/20 rounded-full shrink-0">
-              <Lightbulb className="w-5 h-5 text-emerald-400" />
-            </div>
-            <p
-              className={`text-sm leading-relaxed mt-1 ${isLight ? "text-emerald-800" : "text-emerald-100"}`}
-            >
-              {parsedData.analysis}
-            </p>
+            <span className="text-xs font-bold uppercase tracking-widest text-emerald-500">Analysis & Strategy</span>
           </div>
+          <p className={`text-lg md:text-xl font-medium leading-relaxed ${isLight ? "text-slate-700" : "text-zinc-200"}`}>
+            "{parsedData.analysis}"
+          </p>
         </div>
+      </motion.div>
 
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 relative"
-        >
-          {updating && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-3xl">
-              <span className="text-white font-bold animate-pulse">
-                {common.update}
-              </span>
-            </div>
-          )}
-          {parsedData.meals.map((day, idx) => (
-            <div key={idx} className={cardGlassHeavy}>
-              <div
-                className={`flex items-center gap-3 mb-4 border-b pb-3 ${isLight ? "border-emerald-900/10" : "border-white/5"}`}
-              >
-                <span
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isLight ? "bg-emerald-100 text-emerald-700" : "bg-white/10 text-zinc-300"}`}
-                >
-                  {idx + 1}
-                </span>
-                <span
-                  className={`font-bold text-lg ${isLight ? "text-slate-800" : "text-white"}`}
-                >
-                  {day.day}
-                </span>
-              </div>
-              <div className="space-y-3">
-                {shouldShowMeal(day.lunch, "lunch") && (
-                  <div
-                    onClick={() => handleRecipeClick(day.lunch)}
-                    className={`${isLight ? "bg-orange-50/50 border-orange-100 hover:bg-orange-100/50" : "bg-white/5 border-white/5 hover:bg-white/10"} p-3 rounded-xl border transition-colors cursor-pointer group relative`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-bold text-orange-400 uppercase tracking-wider block mb-2">
-                        {t.lunch}
-                      </span>
-                      {!isEditing && (
-                        <ChefHat className="w-3 h-3 text-zinc-500 group-hover:text-orange-400 transition-colors opacity-0 group-hover:opacity-100" />
-                      )}
-                    </div>
-                    {isEditing ? (
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Input
-                          className={`h-8 text-sm focus-visible:ring-emerald-500 ${isLight ? "bg-white border-orange-200 text-slate-800" : "bg-black/50 border-white/10 text-white"}`}
-                          value={day.lunch}
-                          onChange={(e) =>
-                            updateMeal(idx, "lunch", e.target.value)
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <p
-                        className={`font-medium text-sm ${isLight ? "text-slate-700" : "text-zinc-200"}`}
-                      >
-                        {day.lunch}
-                      </p>
-                    )}
-                  </div>
-                )}
-                {shouldShowMeal(day.dinner, "dinner") && (
-                  <div
-                    onClick={() => handleRecipeClick(day.dinner)}
-                    className={`${isLight ? "bg-indigo-50/50 border-indigo-100 hover:bg-indigo-100/50" : "bg-white/5 border-white/5 hover:bg-white/10"} p-3 rounded-xl border transition-colors cursor-pointer group relative`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-2">
-                        {t.dinner}
-                      </span>
-                      {!isEditing && (
-                        <ChefHat className="w-3 h-3 text-zinc-500 group-hover:text-indigo-400 transition-colors opacity-0 group-hover:opacity-100" />
-                      )}
-                    </div>
-                    {isEditing ? (
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <Input
-                          className={`h-8 text-sm focus-visible:ring-emerald-500 ${isLight ? "bg-white border-indigo-200 text-slate-800" : "bg-black/50 border-white/10 text-white"}`}
-                          value={day.dinner}
-                          onChange={(e) =>
-                            updateMeal(idx, "dinner", e.target.value)
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <p
-                        className={`font-medium text-sm ${isLight ? "text-slate-700" : "text-zinc-200"}`}
-                      >
-                        {day.dinner}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        { }
+        <div className="lg:col-span-2 space-y-6">
+          <h3 className={`text-xl font-black uppercase tracking-tight flex items-center gap-3 ${isLight ? "text-slate-800" : "text-white"}`}>
+            <UtensilsCrossed className="w-5 h-5 text-emerald-500" />
+            {t.mealsTitle || "Meal Plan"}
+          </h3>
 
-      <div className="lg:col-span-1">
-        <div
-          className={`sticky top-24 ${cardGlass} p-0 flex flex-col max-h-[calc(100vh-100px)] relative`}
-        >
-          {updating && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 rounded-3xl" />
-          )}
-
-          <div
-            className={`p-5 border-b flex justify-between items-center ${isLight ? "bg-emerald-50/50 border-emerald-900/10" : "bg-zinc-950/30 border-white/5"}`}
-          >
-            <div className="flex items-center gap-3">
-              <ShoppingCart className="w-5 h-5 text-emerald-400" />
-              <h3
-                className={`font-black text-lg uppercase ${isLight ? "text-slate-700" : "text-white"}`}
-              >
-                {t.shopping}
-              </h3>
-            </div>
-            {parsedData.total_estimated_cost && (
-              <span className="text-emerald-400 font-bold font-mono bg-emerald-900/30 px-2 py-1 rounded text-sm">
-                {parsedData.total_estimated_cost}
-              </span>
+          <div className="space-y-4 relative">
+            {updating && (
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-20 rounded-3xl" />
             )}
-          </div>
-          <ScrollArea className="flex-1 px-4 py-2">
-            <div className="space-y-1">
-              {parsedData.shopping_list.map((item, i) => (
-                <div
-                  key={i}
-                  className={`flex items-center justify-between p-3 rounded-lg transition-colors group border-b last:border-0 ${isLight ? "hover:bg-black/5 border-black/5" : "hover:bg-white/5 border-white/5"}`}
-                >
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-600 group-hover:bg-emerald-500 transition-colors shrink-0" />
-                    <span
-                      className={`text-sm truncate ${isLight ? "text-slate-700" : "text-zinc-300"}`}
-                    >
-                      {item.item}
+            {parsedData.meals.map((day, idx) => (
+              <motion.div
+                variants={item}
+                layout
+                key={idx}
+                className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${isLight ? "bg-white border-emerald-900/5 shadow-lg" : "bg-zinc-900/50 border-white/10 shadow-lg backdrop-blur-md"}`}
+              >
+                <div className="p-6 flex flex-col md:flex-row gap-6 items-start">
+                  <div className="flex-shrink-0">
+                    <span className={`flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-black shadow-lg ring-1 ring-inset ${isLight ? "bg-emerald-100 text-emerald-600 ring-emerald-200" : "bg-white/10 text-white ring-white/10"}`}>
+                      {idx + 1}
                     </span>
                   </div>
-                  <span className="text-xs text-zinc-500 font-mono shrink-0 ml-2">
-                    {item.price}
-                  </span>
+
+                  <div className="flex-1 w-full space-y-4">
+                    <h4 className={`text-2xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
+                      {day.day}
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      { }
+                      {shouldShowMeal(day.lunch, "lunch") && (
+                        <div
+                          onClick={() => handleRecipeClick(day.lunch)}
+                          className={`relative p-4 rounded-2xl border transition-all cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-orange-300 hover:bg-orange-50/50" : "bg-black/20 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5"}`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest">{t.lunch}</span>
+                            {!isEditing && <ChefHat className="w-3.5 h-3.5 text-orange-400 opacity-0 group-hover/meal:opacity-100 transition-all transform group-hover/meal:translate-x-0 translate-x-2" />}
+                          </div>
+
+                          {isEditing ? (
+                            <div onClick={e => e.stopPropagation()}>
+                              <Input
+                                value={day.lunch}
+                                onChange={e => updateMeal(idx, "lunch", e.target.value)}
+                                className="h-9 text-sm bg-transparent border-0 p-0 focus-visible:ring-0 font-bold"
+                              />
+                            </div>
+                          ) : (
+                            <p className={`font-bold leading-tight ${isLight ? "text-slate-700" : "text-zinc-200"}`}>{day.lunch}</p>
+                          )}
+                        </div>
+                      )}
+
+                      { }
+                      {shouldShowMeal(day.dinner, "dinner") && (
+                        <div
+                          onClick={() => handleRecipeClick(day.dinner)}
+                          className={`relative p-4 rounded-2xl border transition-all cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50" : "bg-black/20 border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5"}`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">{t.dinner}</span>
+                            {!isEditing && <ChefHat className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover/meal:opacity-100 transition-all transform group-hover/meal:translate-x-0 translate-x-2" />}
+                          </div>
+
+                          {isEditing ? (
+                            <div onClick={e => e.stopPropagation()}>
+                              <Input
+                                value={day.dinner}
+                                onChange={e => updateMeal(idx, "dinner", e.target.value)}
+                                className="h-9 text-sm bg-transparent border-0 p-0 focus-visible:ring-0 font-bold"
+                              />
+                            </div>
+                          ) : (
+                            <p className={`font-bold leading-tight ${isLight ? "text-slate-700" : "text-zinc-200"}`}>{day.dinner}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-          <div
-            className={`p-4 border-t ${isLight ? "bg-slate-50 border-emerald-900/5" : "bg-zinc-950/50 border-white/5"}`}
-          >
-            <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest">
-              {t.powered}
-            </p>
+              </motion.div>
+            ))}
           </div>
         </div>
+
+        { }
+        <div className="lg:col-span-1 lg:sticky lg:top-24">
+          <motion.div variants={item} className={`rounded-xl overflow-hidden border ${receiptBg}`}>
+            { }
+            <div className="bg-zinc-950 p-6 text-center border-b border-white/10 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+              <Receipt className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
+              <h3 className="text-white font-mono font-bold text-xl uppercase tracking-widest">{t.shopping}</h3>
+              <p className="text-zinc-500 text-xs mt-1 font-mono uppercase">{new Date().toLocaleDateString()}</p>
+            </div>
+
+            { }
+            <ScrollArea className="h-[calc(100vh-350px)] max-h-[600px] bg-white/5 relative">
+              <div className="p-6 space-y-4">
+                {parsedData.shopping_list.map((item, i) => (
+                  <div key={i} className="flex justify-between items-baseline gap-4 group">
+                    <div className="flex-1">
+                      <p className={`text-sm font-medium font-mono leading-relaxed group-hover:text-emerald-500 transition-colors ${isLight ? "text-slate-600" : "text-zinc-300"}`}>
+                        {item.item.toUpperCase()}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-sm font-mono text-zinc-500">{item.price}</p>
+                    </div>
+                  </div>
+                ))}
+
+                <div className="border-t border-dashed border-zinc-500/30 my-6" />
+
+                <div className="flex justify-between items-center text-lg font-bold font-mono">
+                  <span className={isLight ? "text-slate-900" : "text-white"}>TOTAL</span>
+                  <span className="text-emerald-500">{parsedData.total_estimated_cost || "?"}</span>
+                </div>
+              </div>
+
+              { }
+              <div
+                className="h-4 w-full bg-repeat-x bottom-0 absolute"
+                style={{
+                  backgroundImage: `radial-gradient(circle at 10px -5px, transparent 12px, ${isLight ? "#fff" : "#18181b"} 13px)`,
+                  backgroundSize: "20px 20px",
+                  transform: "rotate(180deg)"
+                }}
+              />
+            </ScrollArea>
+
+            <div className={`p-4 text-center text-[10px] uppercase tracking-widest text-zinc-500 font-mono ${isLight ? "bg-slate-50" : "bg-black/40"}`}>
+              Powered by HessProtector AI
+            </div>
+          </motion.div>
+        </div>
       </div>
+
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent
+          className={
+            isLight
+              ? "bg-white/95 backdrop-blur-xl border-emerald-900/10 text-slate-800"
+              : "bg-zinc-950 border-white/10 text-white"
+          }
+        >
+          <DialogHeader>
+            <DialogTitle>{t.saveDialogTitle}</DialogTitle>
+            <DialogDescription>{t.saveDialogDesc}</DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={newPlanName}
+              onChange={(e) => setNewPlanName(e.target.value)}
+              placeholder={t.placeholderName}
+              className={
+                isLight
+                  ? "bg-white border-emerald-900/10 text-slate-800"
+                  : "bg-zinc-900 border-white/10 text-white"
+              }
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setIsSaveDialogOpen(false)}
+            >
+              {common.cancel}
+            </Button>
+            <Button
+              onClick={handleSaveConfirm}
+              disabled={saving || !newPlanName.trim()}
+              className="bg-emerald-600 hover:bg-emerald-500"
+            >
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                common.save
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

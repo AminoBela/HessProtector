@@ -6,7 +6,6 @@ from typing import Callable
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 def cached(ttl_seconds: int = 300):
     cache = {}
 
@@ -30,7 +29,6 @@ def cached(ttl_seconds: int = 300):
 
     return decorator
 
-
 def logged(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -49,7 +47,6 @@ def logged(func: Callable) -> Callable:
 
     return wrapper
 
-
 def timed(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -60,7 +57,6 @@ def timed(func: Callable) -> Callable:
         return result
 
     return wrapper
-
 
 def retry(max_attempts: int = 3, delay: float = 1.0):
     def decorator(func: Callable) -> Callable:

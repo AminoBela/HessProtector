@@ -1,30 +1,20 @@
-"""
-Models module - Domain models organized by feature
-"""
+
 
 from .user import User, UserCreate, UserInDB
 
-
 from .auth import Token, TokenData
-
 
 from .transaction import Transaction
 
-
 from .pantry import PantryItem
-
 
 from .recurring import RecurringItem
 
-
 from .goal import GoalItem
-
 
 from .coach import PromptRequest, PlanItem
 
-
 from .profile import ProfileUpdate, SetupData
-
 
 from .budget import BudgetLimit
 

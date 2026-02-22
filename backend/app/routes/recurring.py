@@ -6,17 +6,15 @@ from app.repositories import RecurringRepository
 
 router = APIRouter()
 
-
 @router.post("/recurring")
 def add_recurring(
     rec: RecurringItem,
     current_user: User = Depends(get_current_user),
     repo: RecurringRepository = Depends(get_recurring_repository),
 ):
-    """Add a recurring payment"""
+
     repo.create(rec, current_user["id"])
     return {"status": "added"}
-
 
 @router.delete("/recurring/{id}")
 def delete_recurring(
@@ -24,6 +22,6 @@ def delete_recurring(
     current_user: User = Depends(get_current_user),
     repo: RecurringRepository = Depends(get_recurring_repository),
 ):
-    """Delete a recurring payment"""
+
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}

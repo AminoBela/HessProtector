@@ -137,7 +137,7 @@ export function MarketView({
       animate="show"
       className="space-y-8"
     >
-      {/* Header */}
+      {}
       <div className="flex justify-between items-end">
         <div>
           <h2
@@ -159,7 +159,7 @@ export function MarketView({
         </div>
       </div>
 
-      {/* Theme Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {THEMES.map((themeItem) => {
           const unlockedList = (
@@ -206,14 +206,14 @@ export function MarketView({
                                 ${isLight ? "bg-white" : "bg-zinc-900/40 backdrop-blur-md"}
                             `}
               >
-                {/* Gradient Preview Header */}
+                {}
                 <div
                   className={`h-44 bg-gradient-to-br ${themeItem.gradient} relative overflow-hidden`}
                 >
-                  {/* Animated shine effect */}
+                  {}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
 
-                  {/* Floating pattern overlay */}
+                  {}
                   <div
                     className="absolute inset-0 opacity-10"
                     style={{
@@ -223,12 +223,12 @@ export function MarketView({
                     }}
                   />
 
-                  {/* Theme Icon */}
+                  {}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <ThemeIcon className="w-16 h-16 text-white/30 group-hover:text-white/50 transition-all duration-500 group-hover:scale-110" />
                   </div>
 
-                  {/* Price Badge */}
+                  {}
                   <div className="absolute top-4 right-4">
                     <div
                       className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider backdrop-blur-md
@@ -242,7 +242,7 @@ export function MarketView({
                     </div>
                   </div>
 
-                  {/* Equipped indicator */}
+                  {}
                   {isEquipped && (
                     <div className="absolute top-4 left-4">
                       <div className="px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-white flex items-center gap-1.5 shadow-lg">
@@ -252,7 +252,7 @@ export function MarketView({
                     </div>
                   )}
 
-                  {/* Rank Lock Overlay */}
+                  {}
                   {isRankLocked && !isOwned && (
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
                       <div className="text-center">
@@ -265,7 +265,7 @@ export function MarketView({
                   )}
                 </div>
 
-                {/* Card Body */}
+                {}
                 <div className="p-6">
                   <div className="mb-4">
                     <h3
@@ -280,7 +280,7 @@ export function MarketView({
                     </p>
                   </div>
 
-                  {/* Action Button */}
+                  {}
                   <div>
                     {isEquipped ? (
                       <Button

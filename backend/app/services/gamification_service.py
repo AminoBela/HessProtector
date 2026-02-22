@@ -1,7 +1,6 @@
 from typing import Dict, List
 from app.core.singleton import Singleton
 
-
 class GamificationService(metaclass=Singleton):
     def calculate_xp(self, balance: float, goals_completed: int) -> int:
         raw_xp = int(balance)

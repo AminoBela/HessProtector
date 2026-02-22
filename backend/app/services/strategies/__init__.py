@@ -1,6 +1,4 @@
-"""
-Strategies module - Prompt building strategies
-"""
+
 
 from .prompt_strategy import PromptStrategy
 from .emergency_prompt_strategy import EmergencyPromptStrategy

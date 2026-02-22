@@ -1,13 +1,12 @@
 from app.services.strategies.prompt_strategy import PromptStrategy
 from typing import Dict
 
-
 class MealPlanPromptStrategy(PromptStrategy):
     def build_prompt(self, request, context: Dict) -> str:
         p = context.get("profile", {})
         inv_list = [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
         inv = ", ".join(inv_list) if inv_list else "EMPTY (You must buy EVERYTHING)"
-        
+
         goals_str = (
             ", ".join(
                 [
@@ -26,40 +25,39 @@ class MealPlanPromptStrategy(PromptStrategy):
         meals_str = ", ".join(request.meals).upper()
 
         prompt = f"""
-        You are the 'HessProtector Chef', an elite AI financial and nutrition coach.
-        Your Mission: Create a delicious, healthy meal plan.
+        You are a frugal financial coach.
+        Goal: Sustain the user for {request.days} days with {request.budget}€.
         
-        CRITICAL INVENTORY STATUS:
-        Fridge: {inv}
+        CONTEXT:
+        - Pantry: {inv}
+        - Goals: {goals_str}
+        - Diet: {p.get('diet', 'Standard')}
         
-        GUIDELINES:
-        1. **Budget First**: The 'total_estimated_cost' MUST be <= {request.budget}€.
-        2. **Anti-Waste (CRITICAL)**: MUST prioritize using ingredients from 'Fridge'.
-        3. **Shopping List Logic**: 
-           - IF Fridge is EMPTY: You MUST add EVERY single ingredient for every meal to the 'shopping_list'.
-           - IF Fridge has item: Do NOT add it to shopping list unless quantity is insufficient.
-           - CHECK every ingredient required for the meals against the Fridge.
-        4. **Financial Context**: User is saving for: {goals_str}
-        5. **Nutritional Balance**: Meals should be balanced but cheap (Student/Survivor style).
-        6. **Language**: {lang_instruction}
-        7. **Style**: Professional, encouraging, but financially strict. STRICTLY NO EMOJIS in JSON values.
-        8. **Meal Frequency**: STRICTLY generate ONLY the meals requested: {meals_str}
+        INSTRUCTIONS:
+        1. Create a strictly budget-compliant meal plan.
+        2. Use pantry items first.
+        3. Recipes must be cheap and simple.
+        4. {lang_instruction}
         
-        RESPONSE FORMAT (JSON ONLY, NO MARKDOWN):
+        OUTPUT JSON ONLY:
         {{
-            "analysis": "Brief analysis of how this plan saves money and uses the fridge...",
+            "analysis": "Brief comment on budget vs duration (1 sentence).",
+            "total_estimated_cost": "Cost string",
+            "shopping_list": [{{"item": "Name", "price": "Cost"}}],
             "meals": [
-                {{ "day": "Lundi", "lunch": "Dish Name", "dinner": "Dish Name" }}
+                {{
+                    "day": "Day X",
+                    "lunch": "Recipe Name",
+                    "dinner": "Recipe Name"
+                }}
             ],
-            "shopping_list": [
-                {{ "item": "Exact Ingredient", "price": "1.50€" }}
-            ],
-            "total_estimated_cost": "Total €",
-            "tips": ["Tip 1", "Tip 2"]
+            "tips": ["Short tip 1", "Short tip 2"]
         }}
         
-        USER REQUEST: CREATE A PLAN FOR {request.days} DAYS. MEALS PER DAY: {meals_str}.
-        Profile: {p.get("supermarket", "N/A")}, Diet: {p.get("diet", "N/A")}
+        CONSTRAINTS:
+        - "meals" keys: "day", "lunch", "dinner".
+        - If {meals_str} excludes LUNCH/DINNER, set value to "Skip".
+        - NO markdown formatting. NO code blocks. JUST JSON.
         """
 
         if request.current_plan:

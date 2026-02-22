@@ -1,6 +1,4 @@
-"""
-Core module - Configuration and dependencies
-"""
+
 
 from . import dependencies
 

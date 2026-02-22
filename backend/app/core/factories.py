@@ -1,4 +1,4 @@
-from app.database import get_db_connection
+from sqlmodel import Session
 from app.repositories import (
     TransactionRepository,
     PantryRepository,
@@ -16,17 +16,14 @@ from app.services import (
     CoachService,
 )
 
-
 class ServiceFactory:
     @staticmethod
-    def create_dashboard_service() -> DashboardService:
-        conn = get_db_connection()
-
-        transaction_repo = TransactionRepository(conn)
-        pantry_repo = PantryRepository(conn)
-        recurring_repo = RecurringRepository(conn)
-        goals_repo = GoalsRepository(conn)
-        profile_repo = ProfileRepository(conn)
+    def create_dashboard_service(session: Session) -> DashboardService:
+        transaction_repo = TransactionRepository(session)
+        pantry_repo = PantryRepository(session)
+        recurring_repo = RecurringRepository(session)
+        goals_repo = GoalsRepository(session)
+        profile_repo = ProfileRepository(session)
 
         gamification_service = GamificationService()
         prediction_service = PredictionService()
@@ -53,36 +50,3 @@ class ServiceFactory:
     def create_prediction_service() -> PredictionService:
         return PredictionService()
 
-
-class RepositoryFactory:
-    @staticmethod
-    def create_transaction_repository():
-        return TransactionRepository(get_db_connection())
-
-    @staticmethod
-    def create_pantry_repository():
-        return PantryRepository(get_db_connection())
-
-    @staticmethod
-    def create_recurring_repository():
-        return RecurringRepository(get_db_connection())
-
-    @staticmethod
-    def create_goals_repository():
-        return GoalsRepository(get_db_connection())
-
-    @staticmethod
-    def create_profile_repository():
-        return ProfileRepository(get_db_connection())
-
-    @staticmethod
-    def create_plans_repository():
-        return PlansRepository(get_db_connection())
-
-    @staticmethod
-    def create_budget_repository():
-        return BudgetRepository(get_db_connection())
-
-    @staticmethod
-    def create_user_repository():
-        return UserRepository(get_db_connection())

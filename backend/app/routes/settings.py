@@ -16,7 +16,6 @@ from app.repositories import (
 
 router = APIRouter()
 
-
 @router.post("/setup")
 def setup(
     data: SetupData,
@@ -25,7 +24,6 @@ def setup(
     recurring_repo: RecurringRepository = Depends(get_recurring_repository),
     tx_repo: TransactionRepository = Depends(get_transaction_repository),
 ):
-    """Initial setup for new user"""
 
     profile_data = {
         "supermarket": data.supermarket,
@@ -46,17 +44,15 @@ def setup(
 
     return {"status": "setup_complete"}
 
-
 @router.put("/profile")
 def update_profile(
     profile: ProfileUpdate,
     current_user: User = Depends(get_current_user),
     profile_repo: ProfileRepository = Depends(get_profile_repository),
 ):
-    """Update user profile"""
+
     success = profile_repo.update(profile, current_user["id"])
     return {"status": "updated" if success else "failed"}
-
 
 @router.post("/budget-limits")
 def set_budget_limit(
@@ -64,7 +60,6 @@ def set_budget_limit(
     current_user: User = Depends(get_current_user),
     budget_repo: BudgetRepository = Depends(get_budget_repository),
 ):
-    """Set a budget limit for a category"""
 
     existing = budget_repo.get_by_category(limit.category, current_user["id"])
 
@@ -75,15 +70,13 @@ def set_budget_limit(
 
     return {"status": "saved"}
 
-
 @router.get("/budget-limits")
 def get_budget_limits(
     current_user: User = Depends(get_current_user),
     budget_repo: BudgetRepository = Depends(get_budget_repository),
 ):
-    """Get all budget limits"""
-    return budget_repo.get_all(current_user["id"])
 
+    return budget_repo.get_all(current_user["id"])
 
 @router.delete("/budget-limits/{id}")
 def delete_budget_limit(
@@ -91,6 +84,6 @@ def delete_budget_limit(
     current_user: User = Depends(get_current_user),
     budget_repo: BudgetRepository = Depends(get_budget_repository),
 ):
-    """Delete a budget limit"""
+
     success = budget_repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}

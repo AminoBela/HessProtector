@@ -26,7 +26,6 @@ import { MarketView } from "@/components/hess/features/market/MarketView";
 import { buyTheme, equipTheme } from "@/services/transactionService";
 import { ApiService } from "@/services/apiClient";
 
-// --- CONFIGURATION DESIGN ---
 const COLORS = [
   "#10b981",
   "#06b6d4",
@@ -62,7 +61,6 @@ export default function Home() {
   const [language, setLanguage] = useState("fr");
   const [theme, setTheme] = useState("dark");
 
-  // Data Fetching (core dashboard, stats, coach, settings)
   const {
     data,
     loading: dataLoading,
@@ -85,7 +83,6 @@ export default function Home() {
     generatePrompt,
   } = useHessData(token);
 
-  // Modular Domain Hooks
   const {
     txForm,
     setTxForm,
@@ -127,7 +124,6 @@ export default function Home() {
     } catch (e: any) {
       const msg = e?.message || "";
       if (msg.includes("Bad Request")) {
-        // Could be "Already owned" or "Insufficient XP" — refresh to sync UI
         refresh();
       } else {
         console.error(e);
@@ -150,11 +146,9 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [openTx, setOpenTx] = useState(false);
 
-  // Translations
   const t =
     Translations[language as keyof typeof Translations] || Translations.fr;
 
-  // Theme Backgrounds
   const currentTheme = data?.profile?.active_theme || "default";
   const activeGradient = gradients[currentTheme] || gradients.default;
   const activeLightGradient =
@@ -170,7 +164,6 @@ export default function Home() {
       ></div>
     );
 
-  // 1. Check Auth Loading
   if (authLoading)
     return (
       <div className="flex h-screen items-center justify-center bg-black text-emerald-400 font-bold uppercase tracking-[0.5em] animate-pulse">
@@ -178,7 +171,6 @@ export default function Home() {
       </div>
     );
 
-  // 2. Not Authenticated -> Show AuthView
   if (!user) {
     return (
       <>
@@ -193,7 +185,6 @@ export default function Home() {
     );
   }
 
-  // 3. Authenticated but Data Loading
   if (dataLoading)
     return (
       <div className="flex h-screen items-center justify-center bg-black text-emerald-400 font-bold uppercase tracking-[0.5em] animate-pulse">
@@ -201,7 +192,6 @@ export default function Home() {
       </div>
     );
 
-  // 4. Authenticated & Data Loaded but Not Setup
   if (data && !data.is_setup) {
     return (
       <SetupWizard

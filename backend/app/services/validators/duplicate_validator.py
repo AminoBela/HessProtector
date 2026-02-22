@@ -1,7 +1,6 @@
 from app.services.validators.transaction_validator import TransactionValidator
 from datetime import datetime, timedelta
 
-
 class DuplicateValidator(TransactionValidator):
     def __init__(self, transaction_repo, next_validator=None):
         super().__init__(next_validator)

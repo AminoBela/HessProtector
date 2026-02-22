@@ -1,13 +1,9 @@
-"""
-Builder Pattern - Dashboard Data Builder
-"""
+
 
 from typing import Dict, List
 from datetime import date
 
-
 class DashboardDataBuilder:
-    """Builder for constructing dashboard data step by step"""
 
     def __init__(self):
         self._data = {}
@@ -20,7 +16,7 @@ class DashboardDataBuilder:
         goals: List[Dict],
         profile: Dict,
     ) -> "DashboardDataBuilder":
-        """Add base data collections"""
+
         self._data["transactions"] = transactions
         self._data["pantry"] = pantry
         self._data["recurring"] = recurring
@@ -30,7 +26,7 @@ class DashboardDataBuilder:
         return self
 
     def with_balance(self, transactions: List[Dict]) -> "DashboardDataBuilder":
-        """Calculate and add balance"""
+
         balance = sum(
             t["amount"] if t["type"] == "revenu" else -t["amount"] for t in transactions
         )
@@ -38,7 +34,7 @@ class DashboardDataBuilder:
         return self
 
     def with_upcoming_bills(self, recurring: List[Dict]) -> "DashboardDataBuilder":
-        """Calculate and add upcoming bills"""
+
         today_day = date.today().day
         upcoming_bills = sum(r["amount"] for r in recurring if r["day"] > today_day)
         self._data["upcoming_bills"] = upcoming_bills
@@ -48,7 +44,7 @@ class DashboardDataBuilder:
     def with_monthly_data(
         self, transactions: List[Dict], recurring: List[Dict]
     ) -> "DashboardDataBuilder":
-        """Calculate and add monthly income/expenses"""
+
         current_month = str(date.today())[:7]
 
         this_month_income = sum(
@@ -69,7 +65,7 @@ class DashboardDataBuilder:
         return self
 
     def with_categories(self, transactions: List[Dict]) -> "DashboardDataBuilder":
-        """Calculate and add spending by category"""
+
         categories = {}
         for t in transactions:
             if t["type"] == "depense":
@@ -82,7 +78,7 @@ class DashboardDataBuilder:
     def with_gamification(
         self, gamification_service, balance: float, goals: List[Dict]
     ) -> "DashboardDataBuilder":
-        """Add gamification data (XP, rank, achievements)"""
+
         goals_completed = len([g for g in goals if g["saved"] >= g["target"]])
         total_xp = gamification_service.calculate_xp(balance, goals_completed)
         rank_name, next_rank_xp = gamification_service.get_rank(total_xp)
@@ -99,7 +95,7 @@ class DashboardDataBuilder:
         recurring: List[Dict],
         transactions: List[Dict],
     ) -> "DashboardDataBuilder":
-        """Add financial prediction"""
+
         prediction = prediction_service.predict_month_end(
             balance, recurring, transactions
         )
@@ -115,7 +111,7 @@ class DashboardDataBuilder:
         goals: List[Dict],
         pantry: List[Dict],
     ) -> "DashboardDataBuilder":
-        """Add achievements"""
+
         achievements = gamification_service.get_achievements(
             {
                 "balance": balance,
@@ -129,5 +125,5 @@ class DashboardDataBuilder:
         return self
 
     def build(self) -> Dict:
-        """Build and return the complete dashboard data"""
+
         return self._data

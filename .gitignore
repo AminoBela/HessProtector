@@ -28,3 +28,6 @@ backend/venv/
 backend/env/
 backend/.env
 backend/hess_protector.db
+
+# Root
+.env

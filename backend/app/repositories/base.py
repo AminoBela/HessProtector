@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-from sqlite3 import Connection, Row
+from sqlmodel import Session
 from typing import List, Optional, Any
 
-
 class BaseRepository(ABC):
-    def __init__(self, conn: Connection):
-        self.conn = conn
-        self.conn.row_factory = Row
+    def __init__(self, session: Session):
+        self.session = session
 
     def close(self):
-        """Close the database connection"""
-        if self.conn:
-            self.conn.close()
+        # Session should be managed by FastAPI Depends generator,
+        # but if close() is called manually we can gracefully handle it
+        if self.session:
+            self.session.close()
 
     @abstractmethod
     def get_by_id(self, id: int, user_id: int) -> Optional[dict]:
@@ -41,8 +40,8 @@ class BaseRepository(ABC):
     def delete(self, id: int, user_id: int) -> bool:
         pass
 
-    def _row_to_dict(self, row: Optional[Row]) -> Optional[dict]:
-        return dict(row) if row else None
+    def _row_to_dict(self, row: Any) -> Optional[dict]:
+        return row.model_dump() if row else None
 
-    def _rows_to_dicts(self, rows: List[Row]) -> List[dict]:
-        return [dict(row) for row in rows]
+    def _rows_to_dicts(self, rows: List[Any]) -> List[dict]:
+        return [row.model_dump() for row in rows]

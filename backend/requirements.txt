@@ -11,3 +11,5 @@ bcrypt
 pytest
 httpx
 ruff
+sqlmodel
+alembic

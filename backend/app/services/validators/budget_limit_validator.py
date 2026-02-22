@@ -1,6 +1,5 @@
 from app.services.validators.transaction_validator import TransactionValidator
 
-
 class BudgetLimitValidator(TransactionValidator):
     def __init__(self, budget_repo, next_validator=None):
         super().__init__(next_validator)

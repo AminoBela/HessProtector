@@ -1,6 +1,4 @@
-"""
-Services module - Business logic layer
-"""
+
 
 from .gamification_service import GamificationService
 from .prediction_service import PredictionService

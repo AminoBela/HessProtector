@@ -1,16 +1,12 @@
-"""
-Recipe Prompt Strategy
-"""
+
 
 from app.services.strategies.prompt_strategy import PromptStrategy
 from typing import Dict
 
-
 class RecipePromptStrategy(PromptStrategy):
-    """Strategy for building recipe prompts"""
 
     def build_prompt(self, request, context: Dict) -> str:
-        """Build recipe prompt"""
+
         dish = request.meals[0] if request.meals else "Unknown Dish"
         inv_list = [f"{i['item']} ({i['qty']})" for i in context.get("pantry", [])]
         inv = ", ".join(inv_list) if inv_list else "EMPTY"
@@ -21,30 +17,30 @@ class RecipePromptStrategy(PromptStrategy):
         )
 
         return f"""
-        You are a Michelin Star Chef compatible with a student budget.
-        TASK: Generate a detailed, easy-to-follow recipe for: "{dish}".
+        You are a frugal chef. Create a detailed, low-cost recipe for "{dish}".
         
-        Inventory: {inv}
+        PANTRY INVENTORY: {inv}
         
-        GUIDELINES:
-        1. **Ingredients**: Check inventory for substitutions
-        2. **Simplicity**: Max 5-6 main steps
-        3. **Language**: {lang_instruction}
-        4. **Format**: JSON ONLY. STRICTLY NO EMOJIS. STRICTLY NO MARKDOWN formatting.
+        INSTRUCTIONS:
+        1. Use as many pantry ingredients as possible to reduce cost.
+        2. Keep steps simple and beginner-friendly.
+        3. {lang_instruction}
         
-        RESPONSE STRUCTURE:
+        OUTPUT JSON ONLY:
         {{
-            "title": "Recipe Title",
-            "time": "20 min",
-            "difficulty": "Easy/Medium/Hard",
-            "calories": "500 kcal",
+            "title": "{dish}",
+            "prep_time": "10 min",
+            "cook_time": "20 min",
+            "servings": 2,
+            "cost_per_serving": 1.50,
             "ingredients": [
-                {{ "item": "Pasta", "qty": "200g", "substitution": "Rice (if in pantry)" }}
+                {{"name": "Rice", "qty": "200g", "source": "Pantry"}},
+                {{"name": "Chicken", "qty": "100g", "source": "Buy"}}
             ],
             "steps": [
-                "Boil water...",
-                "Fry the onions..."
+                "Boil water.",
+                "Cook rice."
             ],
-            "chef_tip": "Add a splash of pasta water to the sauce for creaminess."
+            "tips": "Add salt for flavor."
         }}
         """

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-
 class TransactionValidator(ABC):
     def __init__(self, next_validator: Optional["TransactionValidator"] = None):
         self._next = next_validator

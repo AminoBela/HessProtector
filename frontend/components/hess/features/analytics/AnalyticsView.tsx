@@ -253,9 +253,9 @@ export function AnalyticsView({
           <div className={`absolute inset-0 border-0 ${cardGlass} z-0`} />
 
           <Card className="relative z-10 border-0 bg-transparent shadow-none p-6">
-            {/* Top Section: Score + Roast */}
+            {}
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-8 border-b border-white/5 pb-8">
-              {/* Score Gauge */}
+              {}
               <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90">
                   <circle
@@ -291,7 +291,7 @@ export function AnalyticsView({
                 </div>
               </div>
 
-              {/* Title & Roast */}
+              {}
               <div className="flex-1 text-center md:text-left">
                 <h2
                   className={`text-3xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
@@ -306,7 +306,7 @@ export function AnalyticsView({
               </div>
             </div>
 
-            {/* Middle Section: Pros vs Cons */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div
                 className={`p-6 rounded-2xl ${isLight ? "bg-emerald-50/50 border border-emerald-100" : "bg-emerald-900/10 border border-emerald-500/20"}`}
@@ -347,7 +347,7 @@ export function AnalyticsView({
               </div>
             </div>
 
-            {/* Bottom Section: Tips */}
+            {}
             <div>
               <h3
                 className={`text-sm font-bold uppercase tracking-widest opacity-50 mb-4 ${isLight ? "text-slate-900" : "text-white"}`}

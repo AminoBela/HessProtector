@@ -9,17 +9,15 @@ import json
 
 router = APIRouter()
 
-
 @router.post("/pantry")
 def add_pantry(
     item: PantryItem,
     current_user: User = Depends(get_current_user),
     repo: PantryRepository = Depends(get_pantry_repository),
 ):
-    """Add an item to pantry"""
+
     repo.create(item, current_user["id"])
     return {"status": "added"}
-
 
 @router.delete("/pantry/{id}")
 def delete_pantry(
@@ -27,16 +25,15 @@ def delete_pantry(
     current_user: User = Depends(get_current_user),
     repo: PantryRepository = Depends(get_pantry_repository),
 ):
-    """Delete a pantry item"""
+
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}
-
 
 @router.post("/scan-receipt")
 async def scan_receipt(
     file: UploadFile = File(...), current_user: User = Depends(get_current_user)
 ):
-    """Scan a receipt image using Gemini Vision"""
+
     try:
         await file.read()
 
@@ -63,7 +60,7 @@ async def scan_receipt(
                 {"item": "Pain", "qty": "1", "category": "Boulangerie"}
             ]
         }
-        """
+        """ 
 
         response = client.models.generate_content(
             model="gemini-2.5-flash", contents=[prompt, uploaded_file]

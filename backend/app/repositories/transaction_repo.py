@@ -1,69 +1,65 @@
 from app.repositories.base import BaseRepository
-from app.models import Transaction
+from app.models.domain import Transaction
+from sqlmodel import select
 from typing import List, Optional
 
-
 class TransactionRepository(BaseRepository):
-    def _do_create(self, tx: Transaction, user_id: int) -> int:
-        c = self.conn.cursor()
-        c.execute(
-            "INSERT INTO transactions (label, amount, type, category, date, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-            (tx.label, tx.amount, tx.type, tx.category, tx.date, user_id),
+    def _do_create(self, tx_data, user_id: int) -> int:
+        db_tx = Transaction(
+            label=tx_data.label,
+            amount=tx_data.amount,
+            type=tx_data.type,
+            category=tx_data.category,
+            date=tx_data.date,
+            user_id=user_id
         )
-        self.conn.commit()
-        return c.lastrowid
+        self.session.add(db_tx)
+        self.session.commit()
+        self.session.refresh(db_tx)
+        return db_tx.id
 
-    def _validate_before_create(self, tx: Transaction, user_id: int):
+    def _validate_before_create(self, tx, user_id: int):
         if tx.amount <= 0:
             raise ValueError("Transaction amount must be positive")
         if not tx.label or not tx.label.strip():
             raise ValueError("Transaction label is required")
 
-    def _after_create(self, entity_id: int, tx: Transaction, user_id: int):
+    def _after_create(self, entity_id: int, tx, user_id: int):
         print(f"Transaction {entity_id} created for user {user_id}")
 
     def get_by_id(self, id: int, user_id: int) -> Optional[dict]:
-        c = self.conn.cursor()
-        c.execute("SELECT * FROM transactions WHERE id=? AND user_id=?", (id, user_id))
-        return self._row_to_dict(c.fetchone())
+        db_tx = self.session.exec(select(Transaction).where(Transaction.id == id, Transaction.user_id == user_id)).first()
+        return self._row_to_dict(db_tx)
 
     def get_all(self, user_id: int) -> List[dict]:
-        c = self.conn.cursor()
-        c.execute(
-            "SELECT * FROM transactions WHERE user_id=? ORDER BY date DESC, id DESC",
-            (user_id,),
-        )
-        return self._rows_to_dicts(c.fetchall())
+        db_txs = self.session.exec(select(Transaction).where(Transaction.user_id == user_id).order_by(Transaction.date.desc(), Transaction.id.desc())).all()
+        return self._rows_to_dicts(db_txs)
 
     def delete(self, id: int, user_id: int) -> bool:
-        c = self.conn.cursor()
-        c.execute("DELETE FROM transactions WHERE id=? AND user_id=?", (id, user_id))
-        self.conn.commit()
-        return c.rowcount > 0
+        db_tx = self.session.exec(select(Transaction).where(Transaction.id == id, Transaction.user_id == user_id)).first()
+        if not db_tx:
+            return False
+        self.session.delete(db_tx)
+        self.session.commit()
+        return True
 
-    def update(self, id: int, tx: Transaction, user_id: int) -> bool:
-        c = self.conn.cursor()
-        c.execute(
-            "UPDATE transactions SET label=?, amount=?, type=?, category=?, date=? WHERE id=? AND user_id=?",
-            (tx.label, tx.amount, tx.type, tx.category, tx.date, id, user_id),
-        )
-        self.conn.commit()
-        return c.rowcount > 0
+    def update(self, id: int, tx, user_id: int) -> bool:
+        db_tx = self.session.exec(select(Transaction).where(Transaction.id == id, Transaction.user_id == user_id)).first()
+        if not db_tx:
+            return False
+        db_tx.label = tx.label
+        db_tx.amount = tx.amount
+        db_tx.type = tx.type
+        db_tx.category = tx.category
+        db_tx.date = tx.date
+        self.session.add(db_tx)
+        self.session.commit()
+        return True
 
     def get_by_year(self, year: str, user_id: int) -> List[dict]:
-        c = self.conn.cursor()
-        c.execute(
-            "SELECT * FROM transactions WHERE strftime('%Y', date) = ? AND user_id=? ORDER BY date DESC",
-            (year, user_id),
-        )
-        return self._rows_to_dicts(c.fetchall())
+        db_txs = self.session.exec(select(Transaction).where(Transaction.date.startswith(year), Transaction.user_id == user_id).order_by(Transaction.date.desc())).all()
+        return self._rows_to_dicts(db_txs)
 
-    def get_by_date_range(
-        self, start_date: str, end_date: str, user_id: int
-    ) -> List[dict]:
-        c = self.conn.cursor()
-        c.execute(
-            "SELECT * FROM transactions WHERE date BETWEEN ? AND ? AND user_id=? ORDER BY date DESC",
-            (start_date, end_date, user_id),
-        )
-        return self._rows_to_dicts(c.fetchall())
+    def get_by_date_range(self, start_date: str, end_date: str, user_id: int) -> List[dict]:
+        db_txs = self.session.exec(select(Transaction).where(Transaction.date >= start_date, Transaction.date <= end_date, Transaction.user_id == user_id).order_by(Transaction.date.desc())).all()
+        return self._rows_to_dicts(db_txs)

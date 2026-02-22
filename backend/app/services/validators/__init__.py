@@ -1,6 +1,4 @@
-"""
-Validators module - Chain of Responsibility for validation
-"""
+
 
 from .transaction_validator import TransactionValidator
 from .amount_validator import AmountValidator

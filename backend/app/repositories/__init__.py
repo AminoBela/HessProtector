@@ -1,6 +1,4 @@
-"""
-Repositories module - Data access layer
-"""
+
 
 from .base import BaseRepository
 from .transaction_repo import TransactionRepository
