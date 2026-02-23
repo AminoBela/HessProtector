@@ -95,7 +95,7 @@ export function CoachSavedPlans({
             <motion.div
               variants={item}
               key={plan.id}
-              className={`group relative flex flex-col p-6 rounded-[2rem] border transition-all duration-300 ${glassCard}`}
+              className={`group relative flex flex-col p-6 rounded-[2rem] border transition-[box-shadow,background-color,border-color] duration-300 ${glassCard}`}
             >
               <div className="flex-1 space-y-4">
                 <div className="flex justify-between items-start">
@@ -143,7 +143,7 @@ export function CoachSavedPlans({
 
               <Button
                 onClick={() => onLoad(plan)}
-                className="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl h-12 shadow-lg shadow-emerald-500/20 group-hover:scale-[1.02] transition-all"
+                className="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl h-12 shadow-lg shadow-emerald-500/20 group-hover:scale-[1.02] transition-[transform,background-color] duration-300"
               >
                 {t.load} <ChevronRight className="w-4 h-4 ml-2" />
               </Button>

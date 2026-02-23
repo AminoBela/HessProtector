@@ -4,6 +4,7 @@ from app.auth_utils import get_current_user
 from app.core.dependencies import get_pantry_repository
 from app.repositories import PantryRepository
 import os
+import tempfile
 from google import genai
 import json
 
@@ -35,17 +36,22 @@ async def scan_receipt(
 ):
 
     try:
-        await file.read()
-
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             return {"error": "GEMINI_API_KEY not configured"}
 
         client = genai.Client(api_key=api_key)
 
-        uploaded_file = client.files.upload(
-            path=file.filename, config={"display_name": file.filename}
-        )
+        fd, temp_path = tempfile.mkstemp(suffix=os.path.splitext(file.filename)[1])
+        try:
+            with os.fdopen(fd, 'wb') as temp_file:
+                temp_file.write(await file.read())
+            
+            uploaded_file = client.files.upload(
+                path=temp_path, config={"display_name": file.filename}
+            )
+        finally:
+            os.remove(temp_path)
 
         prompt = """
         Analyze this receipt image and extract:
@@ -54,10 +60,10 @@ async def scan_receipt(
         
         Return ONLY valid JSON:
         {
-            "total": "42.50",
+            "total_amount": "42.50",
             "items": [
-                {"item": "Tomates", "qty": "500g", "category": "Légumes"},
-                {"item": "Pain", "qty": "1", "category": "Boulangerie"}
+                {"item": "Tomates", "qty": "500g", "category": "Legumes"},
+                {"item": "Pain", "qty": "1", "category": "Autre"}
             ]
         }
         """ 
@@ -80,6 +86,21 @@ async def scan_receipt(
             text = text[start:end]
 
         result = json.loads(text)
+
+        # Automatically insert parsed items into the database
+        repo = PantryRepository()
+        for item_data in result.get("items", []):
+            try:
+                # Need to add expiry logic, defaulting to empty for now
+                pantry_item = PantryItem(
+                    item=item_data.get("item", "Inconnu"),
+                    qty=str(item_data.get("qty", "1")),
+                    category=item_data.get("category", "Autre"),
+                    expiry=""
+                )
+                repo.create(pantry_item, current_user["id"])
+            except Exception as e:
+                print(f"Error saving scanned item: {e}")
 
         client.files.delete(name=uploaded_file.name)
 

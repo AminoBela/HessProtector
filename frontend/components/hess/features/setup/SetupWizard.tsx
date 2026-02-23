@@ -45,8 +45,8 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
     : "bg-zinc-950/80 backdrop-blur-2xl border-white/10 shadow-2xl shadow-black/50";
 
   const inputStyle = isLight
-    ? "bg-white/50 border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-sm"
-    : "bg-zinc-950/50 border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-inner";
+    ? "bg-white/50 border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-2xl px-5 text-lg font-medium shadow-sm"
+    : "bg-zinc-950/50 border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-2xl px-5 text-lg font-medium shadow-inner";
 
   const selectStyle = isLight
     ? "w-full !h-14 px-5 rounded-2xl border border-emerald-900/10 bg-white/50 text-slate-800 focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm font-medium text-lg flex items-center"

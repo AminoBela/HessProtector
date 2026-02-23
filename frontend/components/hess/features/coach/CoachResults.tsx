@@ -178,6 +178,7 @@ export function CoachResults({
         recipe={recipe}
         loading={recipeLoading}
         language={language}
+        theme={theme}
       />
 
       { }
@@ -192,9 +193,13 @@ export function CoachResults({
 
         <div className="flex gap-2 items-center bg-transparent">
           {showSaveSuccess && (
-            <span className="text-emerald-400 text-xs font-bold mr-2 animate-in fade-in slide-in-from-right-2 flex gap-1 items-center">
+            <motion.span
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-emerald-500 text-xs font-bold mr-2 flex gap-1 items-center"
+            >
               <Check className="w-3 h-3" /> {t.successSave}
-            </span>
+            </motion.span>
           )}
 
           <Button
@@ -269,9 +274,8 @@ export function CoachResults({
             {parsedData.meals.map((day, idx) => (
               <motion.div
                 variants={item}
-                layout
                 key={idx}
-                className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${isLight ? "bg-white border-emerald-900/5 shadow-lg" : "bg-zinc-900/50 border-white/10 shadow-lg backdrop-blur-md"}`}
+                className={`group relative overflow-hidden rounded-3xl border transition-[box-shadow,background-color,border-color] duration-300 hover:shadow-2xl ${isLight ? "bg-white border-emerald-900/5 shadow-lg" : "bg-zinc-900/50 border-white/10 shadow-lg backdrop-blur-md"}`}
               >
                 <div className="p-6 flex flex-col md:flex-row gap-6 items-start">
                   <div className="flex-shrink-0">
@@ -290,7 +294,7 @@ export function CoachResults({
                       {shouldShowMeal(day.lunch, "lunch") && (
                         <div
                           onClick={() => handleRecipeClick(day.lunch)}
-                          className={`relative p-4 rounded-2xl border transition-all cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-orange-300 hover:bg-orange-50/50" : "bg-black/20 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5"}`}
+                          className={`relative p-4 rounded-2xl border transition-[box-shadow,background-color,border-color] duration-300 cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-orange-300 hover:bg-orange-50/50" : "bg-black/20 border-white/5 hover:border-orange-500/30 hover:bg-orange-500/5"}`}
                         >
                           <div className="flex justify-between items-start mb-2">
                             <span className="text-[10px] font-extrabold text-orange-400 uppercase tracking-widest">{t.lunch}</span>
@@ -315,7 +319,7 @@ export function CoachResults({
                       {shouldShowMeal(day.dinner, "dinner") && (
                         <div
                           onClick={() => handleRecipeClick(day.dinner)}
-                          className={`relative p-4 rounded-2xl border transition-all cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50" : "bg-black/20 border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5"}`}
+                          className={`relative p-4 rounded-2xl border transition-[box-shadow,background-color,border-color] duration-300 cursor-pointer group/meal ${isLight ? "bg-slate-50 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50" : "bg-black/20 border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5"}`}
                         >
                           <div className="flex justify-between items-start mb-2">
                             <span className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest">{t.dinner}</span>
@@ -393,8 +397,8 @@ export function CoachResults({
               Powered by HessProtector AI
             </div>
           </motion.div>
-        </div>
-      </div>
+        </div >
+      </div >
 
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
         <DialogContent
@@ -441,6 +445,6 @@ export function CoachResults({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </motion.div>
+    </motion.div >
   );
 }

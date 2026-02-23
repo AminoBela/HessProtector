@@ -111,6 +111,8 @@ export function CoachView({
         { name, content: JSON.stringify(parsedData) },
         token,
       );
+      await fetchSavedPlans();
+      setShowSaved(true);
     } catch (e) {
       console.error("Error saving", e);
     }

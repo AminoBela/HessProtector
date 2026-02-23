@@ -106,7 +106,7 @@ export function HistoryView({
                 (data?.transactions || []).map((tx: any) => (
                   <div
                     key={tx.id}
-                    className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-all gap-4 ${itemBg}`}
+                    className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-colors duration-300 gap-4 ${itemBg}`}
                   >
                     <div className="flex items-center gap-5">
                       <div
@@ -235,9 +235,10 @@ export function HistoryView({
                   </Select>
                 </div>
                 <Button
+                  variant="premium"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="w-full h-12 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
+                  className="w-full h-12 rounded-xl"
                 >
                   {isSaving ? (
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />

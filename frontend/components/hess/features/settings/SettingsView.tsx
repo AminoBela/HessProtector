@@ -209,8 +209,8 @@ export function SettingsView({
     ? "card-glass card-glass-light"
     : "card-glass card-glass-dark";
   const inputStyle = isLight
-    ? "bg-slate-50 border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 !h-14 rounded-xl font-medium"
-    : "bg-zinc-950/50 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 !h-14 rounded-xl font-medium";
+    ? "w-full bg-white/50 border border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] h-14 rounded-2xl px-5 text-lg font-medium shadow-sm"
+    : "w-full bg-zinc-950/50 border border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] h-14 rounded-2xl px-5 text-lg font-medium shadow-inner";
 
   const selectStyle = isLight
     ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500/50 font-medium"
@@ -469,11 +469,10 @@ export function SettingsView({
                     <div
                       className={`
                                         relative group overflow-hidden rounded-3xl border p-8 flex flex-col justify-between h-auto min-h-[280px] transition-all duration-500
-                                        ${
-                                          isLight
-                                            ? "bg-gradient-to-br from-white/80 to-slate-50/80 border-white/40 shadow-xl shadow-emerald-900/5 hover:shadow-2xl hover:shadow-emerald-900/10"
-                                            : "bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 border-white/10 shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-emerald-900/20"
-                                        }
+                                        ${isLight
+                          ? "bg-gradient-to-br from-white/80 to-slate-50/80 border-white/40 shadow-xl shadow-emerald-900/5 hover:shadow-2xl hover:shadow-emerald-900/10"
+                          : "bg-gradient-to-br from-zinc-900/80 to-zinc-950/80 border-white/10 shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-emerald-900/20"
+                        }
                                     `}
                     >
                       <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-[60px] rounded-full pointer-events-none group-hover:bg-emerald-500/20 transition-all duration-500" />
@@ -500,11 +499,10 @@ export function SettingsView({
                           disabled={exportStatus === "loading"}
                           className={`
                                                     w-full h-14 rounded-xl font-bold text-base transition-all duration-300
-                                                    ${
-                                                      isLight
-                                                        ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200"
-                                                        : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
-                                                    }
+                                                    ${isLight
+                              ? "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200"
+                              : "bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20"
+                            }
                                                 `}
                         >
                           {exportStatus === "loading" ? (
@@ -529,11 +527,10 @@ export function SettingsView({
                           <button
                             className={`
                                                     w-full p-6 rounded-3xl border text-left transition-all duration-300 group flex items-center justify-between
-                                                    ${
-                                                      isLight
-                                                        ? "bg-white/60 hover:bg-white border-slate-200/60 hover:border-blue-200 shadow-sm hover:shadow-md"
-                                                        : "bg-zinc-900/40 hover:bg-zinc-900/80 border-white/5 hover:border-blue-500/30"
-                                                    }
+                                                    ${isLight
+                                ? "bg-white/60 hover:bg-white border-slate-200/60 hover:border-blue-200 shadow-sm hover:shadow-md"
+                                : "bg-zinc-900/40 hover:bg-zinc-900/80 border-white/5 hover:border-blue-500/30"
+                              }
                                                 `}
                           >
                             <div className="flex items-center gap-5">
@@ -570,11 +567,10 @@ export function SettingsView({
                           <button
                             className={`
                                                     w-full p-6 rounded-3xl border text-left transition-all duration-300 group flex items-center justify-between
-                                                    ${
-                                                      isLight
-                                                        ? "bg-white/60 hover:bg-white border-slate-200/60 hover:border-purple-200 shadow-sm hover:shadow-md"
-                                                        : "bg-zinc-900/40 hover:bg-zinc-900/80 border-white/5 hover:border-purple-500/30"
-                                                    }
+                                                    ${isLight
+                                ? "bg-white/60 hover:bg-white border-slate-200/60 hover:border-purple-200 shadow-sm hover:shadow-md"
+                                : "bg-zinc-900/40 hover:bg-zinc-900/80 border-white/5 hover:border-purple-500/30"
+                              }
                                                 `}
                           >
                             <div className="flex items-center gap-5">

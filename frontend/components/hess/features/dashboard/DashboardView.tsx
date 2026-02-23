@@ -141,7 +141,7 @@ export function DashboardView({
             <button
               key={y}
               onClick={() => setStatsYear(y)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${statsYear === y ? (isLight ? "bg-emerald-500 text-white shadow-lg" : "bg-zinc-800 text-white shadow-lg") : isLight ? "text-slate-500 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${statsYear === y ? (isLight ? "bg-emerald-500 text-white shadow-lg" : "bg-zinc-800 text-white shadow-lg") : isLight ? "text-slate-500 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
             >
               {y}
             </button>
@@ -161,7 +161,7 @@ export function DashboardView({
           <div className="relative z-10 p-6 flex flex-col justify-between h-full">
             <CardHeader className="p-0">
               <CardTitle
-                className={`${cardTitleColor} text-sm uppercase font-bold tracking-[0.3em]`}
+                className={`${cardTitleColor} text-sm uppercase font-black tracking-[0.3em]`}
               >
                 {t.netBalance} ({t.annual} {statsYear})
               </CardTitle>
@@ -216,7 +216,7 @@ export function DashboardView({
             <div className="flex justify-between items-start">
               <div>
                 <h3
-                  className={`text-sm font-bold uppercase tracking-widest mb-1 ${isLight ? "text-slate-500" : "text-zinc-400"}`}
+                  className={`text-sm font-black uppercase tracking-widest mb-1 ${isLight ? "text-slate-500" : "text-zinc-400"}`}
                 >
                   {t.safeBalance}
                 </h3>
@@ -244,7 +244,7 @@ export function DashboardView({
                 </div>
                 <div className="flex-1">
                   <p
-                    className={`text-xs font-bold uppercase ${isLight ? "text-indigo-400" : "text-indigo-400"}`}
+                    className={`text-xs font-black uppercase tracking-wider ${isLight ? "text-indigo-500" : "text-indigo-400"}`}
                   >
                     Reste à vivre (Est.)
                   </p>
@@ -266,7 +266,7 @@ export function DashboardView({
           <div className="relative z-10 h-full">
             <CardHeader className="pt-8 px-8 pb-2">
               <CardTitle
-                className={`text-xs uppercase tracking-[0.2em] font-bold ${subTextColor}`}
+                className={`text-xs uppercase tracking-[0.2em] font-black ${subTextColor}`}
               >
                 {t.evolution} {statsYear}
               </CardTitle>
@@ -331,7 +331,7 @@ export function DashboardView({
           <div className="relative z-10 h-full">
             <CardHeader className="pt-8 px-8 pb-2">
               <CardTitle
-                className={`text-xs uppercase tracking-[0.2em] font-bold ${subTextColor}`}
+                className={`text-xs uppercase tracking-[0.2em] font-black ${subTextColor}`}
               >
                 {t.activities}
               </CardTitle>
@@ -342,7 +342,7 @@ export function DashboardView({
                   {data.transactions.slice(0, 5).map((tx: any) => (
                     <div
                       key={tx.id}
-                      className={`flex justify-between items-center p-5 rounded-2xl border transition-all ${itemBg}`}
+                      className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${itemBg}`}
                     >
                       <div className="flex items-center gap-5">
                         <div
@@ -381,7 +381,7 @@ export function DashboardView({
       {data.achievements && (
         <motion.div variants={item}>
           <h3
-            className={`text-xs font-bold uppercase tracking-widest mb-6 ${subTextColor}`}
+            className={`text-xs font-black uppercase tracking-widest mb-6 ${subTextColor}`}
           >
             {t.achievements || "Salle des Trophées"}
           </h3>

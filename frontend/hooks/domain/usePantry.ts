@@ -50,6 +50,7 @@ export function usePantry(token: string | null, refresh?: () => void) {
             if (refresh) refresh();
         },
         onError: (err) => {
+            console.error("Scan error:", err);
             setError(err instanceof Error ? err.message : "Unknown error");
         }
     });

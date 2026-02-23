@@ -47,7 +47,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -121,26 +121,36 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-black tracking-tight;
   }
 }
 
 @layer components {
   .card-glass {
-    @apply backdrop-blur-xl border shadow-xl rounded-3xl overflow-hidden transition-all duration-500 transform-gpu;
+    @apply backdrop-blur-2xl border transition-[border-color,box-shadow,transform] duration-500 transform-gpu overflow-hidden;
+    border-radius: 1.5rem !important;
   }
 
   .card-glass-light {
-    @apply border-slate-200/60 hover:border-slate-300/80 hover:shadow-2xl;
-    background-color: rgba(255, 255, 255, 0.75) !important;
-    color: rgb(30 41 59) !important;
+    @apply border-white/60 shadow-xl hover:shadow-2xl;
+    background-color: rgba(255, 255, 255, 0.70) !important;
+    color: rgb(15 23 42) !important;
   }
 
   .card-glass-dark {
-    @apply border-white/[0.08] hover:border-white/[0.12] hover:shadow-2xl;
+    @apply border-white/10 shadow-xl hover:shadow-2xl hover:border-white/20;
     background-color: rgba(9, 9, 11, 0.65) !important;
     color: rgb(255 255 255) !important;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 }
 

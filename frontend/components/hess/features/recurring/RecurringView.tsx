@@ -41,12 +41,12 @@ export function RecurringView({
     : "card-glass card-glass-dark";
 
   const inputStyle = isLight
-    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner"
-    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner";
+    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner"
+    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner";
 
   const selectStyle = isLight
-    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium"
-    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium";
+    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium"
+    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium";
 
   const today = new Date();
   const currentMonthDays = getDaysInMonth(today);
@@ -116,8 +116,10 @@ export function RecurringView({
                 </Select>
               </div>
               <Button
+                variant="premium"
+                size="xl"
                 onClick={handleAddRec}
-                className="w-full bg-purple-600 hover:bg-purple-500 h-14 rounded-xl font-bold"
+                className="w-full mt-2"
               >
                 {t.recurring.add}
               </Button>
@@ -208,7 +210,7 @@ export function RecurringView({
                     return (
                       <div
                         key={dayNum}
-                        className={`h-24 p-2 relative rounded-xl border transition-all group flex flex-col gap-1 ${dayBg}`}
+                        className={`h-24 p-2 relative rounded-xl border transition-[box-shadow,border-color,background-color] duration-300 group flex flex-col gap-1 ${dayBg}`}
                       >
                         <span className={`text-sm font-bold ${numColor}`}>
                           {dayNum}

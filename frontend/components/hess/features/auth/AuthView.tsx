@@ -1,17 +1,10 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-
 import { Lock, User, Mail, ArrowRight, Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { Translations } from "@/lib/i18n";
+import { AnimatedBackground } from "@/components/hess/common/AnimatedBackground";
 
 interface AuthViewProps {
   onLogin: (u: string, p: string) => Promise<boolean>;
@@ -35,25 +28,34 @@ export function AuthView({
     confirm: "",
   });
   const [error, setError] = useState("");
-  const [shake, setShake] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);
+  const [sloganIndex, setSloganIndex] = useState(0);
 
   const t = Translations[language as keyof typeof Translations].auth;
+
+  const slogans = [
+    t.subtitle || "Gérez vos finances avec élégance.",
+    "Reprenez le contrôle de votre budget.",
+    "L'intelligence artificielle au service de votre portefeuille.",
+    "Analysez, économisez, prospérez."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSloganIndex((prev) => (prev + 1) % slogans.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [slogans.length]);
+
   const isLight = theme === "light";
 
-  const cardGlass = isLight
-    ? "bg-white/80 backdrop-blur-2xl border-white/50 shadow-2xl shadow-emerald-500/10"
-    : "bg-zinc-950/80 backdrop-blur-2xl border-white/10 shadow-2xl shadow-black/50 overflow-hidden";
-
   const inputStyle = isLight
-    ? "bg-white/50 border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-sm"
-    : "bg-zinc-950/50 border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all !h-14 rounded-2xl px-5 text-lg font-medium shadow-inner";
+    ? "bg-transparent border-0 border-b-[3px] border-slate-200 focus:border-emerald-500 rounded-none px-2 text-slate-900 placeholder:text-slate-400 focus:ring-0 transition-[border-color,box-shadow] !h-14 text-2xl font-bold w-full"
+    : "bg-transparent border-0 border-b-[3px] border-white/10 focus:border-emerald-500 rounded-none px-2 text-white placeholder:text-zinc-600 focus:ring-0 transition-[border-color,box-shadow] !h-14 text-2xl font-bold w-full";
 
   const triggerError = (msg: string) => {
     setError(msg);
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
   };
 
   const handleLogin = async () => {
@@ -95,327 +97,251 @@ export function AuthView({
   };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-4 font-sans relative overflow-hidden ${isLight ? "text-slate-800" : "text-white"}`}>
+    <div className={`relative flex min-h-screen w-full overflow-hidden ${isLight ? "bg-slate-50" : "bg-zinc-950"}`}>
 
-      <motion.div
-        layout
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          x: shake ? [0, -10, 10, -10, 10, 0] : 0,
-        }}
-        transition={{
-          default: { type: "spring", duration: 0.6, bounce: 0.3 },
-          x: { type: "tween", duration: 0.5, ease: "easeInOut" },
-        }}
-        className="w-full max-w-xl relative z-10"
-      >
-        <div className="text-center mb-10 flex flex-col items-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", bounce: 0.5 }}
-            className={`w-16 h-16 rounded-2xl mb-6 flex items-center justify-center shadow-xl ${isLight ? "bg-gradient-to-br from-emerald-400 to-cyan-500" : "bg-gradient-to-br from-emerald-500 to-teal-600"}`}
-          >
-            <ShieldCheck className="w-10 h-10 text-white" />
-          </motion.div>
+      {/* Global Animated Background */}
+      <div className="absolute inset-0 z-0">
+        <AnimatedBackground themeId="default" isLight={isLight} />
+        {/* Subtle overlay to ensure text legibility on the left side */}
+        <div className={`absolute inset-0 ${isLight ? "bg-white/30" : "bg-zinc-950/40"}`} />
+      </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className={`text-5xl font-black mb-3 tracking-tighter ${isLight ? "text-slate-900" : "text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-300% animate-gradient"}`}
-          >
-            Hess<span className={isLight ? "text-emerald-500" : ""}>Protector</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className={`text-lg font-medium tracking-wide ${isLight ? "text-slate-500" : "text-zinc-400"}`}
-          >
-            {t.subtitle}
-          </motion.p>
-        </div>
+      {/* Main Container */}
+      <div className="relative z-10 flex w-full h-screen">
 
-        <div
-          className={`p-1.5 ${isLight ? "bg-white/60 shadow-sm" : "bg-black/20"} backdrop-blur-xl rounded-2xl flex relative mb-6 border ${isLight ? "border-slate-200" : "border-white/5"}`}
-        >
-          {(["login", "register"] as const).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => {
-                setActiveTab(tab);
-                setError("");
-              }}
-              className={`flex-1 relative py-3.5 text-sm font-bold uppercase tracking-wider transition-colors duration-300 z-10 ${activeTab === tab
-                ? isLight
-                  ? "text-white"
-                  : "text-white"
-                : isLight
-                  ? "text-slate-500 hover:text-slate-800"
-                  : "text-zinc-500 hover:text-zinc-300"
-                }`}
+        {/* Left Side: Branding (Hidden on mobile) */}
+        <div className="hidden lg:flex flex-1 flex-col justify-between p-16">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-emerald-400 to-cyan-500">
+              <ShieldCheck className="w-8 h-8 text-white" />
+            </div>
+            <span className={`text-4xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
+              Hess<span className="text-emerald-500">Protector</span>
+            </span>
+          </div>
+
+          <div className="mb-20">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={`text-6xl xl:text-7xl font-black tracking-tight leading-[1.1] mb-6 ${isLight ? "text-slate-900" : "text-white"}`}
             >
-              {activeTab === tab && (
-                <motion.div
-                  layoutId="activeTab"
-                  className={`absolute inset-0 rounded-xl ${isLight ? "bg-slate-900 shadow-md" : "bg-gradient-to-r from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20"}`}
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                />
-              )}
-              <span className="relative z-10">
-                {tab === "login" ? t.loginTitle : t.registerTitle}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <Card
-          className={`border ${cardGlass} rounded-[2.5rem] transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]`}
-        >
-          <CardHeader className="text-center pb-2 pt-10">
-            <CardTitle
-              className={`text-2xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}
-            >
-              {activeTab === "login" ? "Bienvenue" : "Rejoignez-nous"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6 pt-2 px-8 pb-10">
-            <AnimatePresence mode="wait">
-              {error && (
-                <motion.div
-                  key="error-box"
-                  initial={{
-                    opacity: 0,
-                    height: 0,
-                    marginBottom: 0,
-                    scale: 0.9,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    height: "auto",
-                    marginBottom: 16,
-                    scale: 1,
-                  }}
-                  exit={{ opacity: 0, height: 0, marginBottom: 0, scale: 0.9 }}
-                  className="px-4 py-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold text-center flex items-center justify-center gap-2"
+              Maîtrisez <br /> votre budget.
+            </motion.h1>
+            <div className="h-24 overflow-hidden relative">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={sloganIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                  className={`text-2xl font-medium ${isLight ? "text-slate-700" : "text-zinc-300"}`}
                 >
-                  <span className="text-lg">⚠️</span> {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {slogans[sloganIndex]}
+                </motion.p>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
 
-            <div className="relative">
-              <AnimatePresence mode="wait" initial={false}>
+        {/* Right Side: Glass Form Panel */}
+        <div className={`w-full lg:w-[500px] xl:w-[600px] flex flex-col justify-center min-h-screen p-8 sm:p-12 lg:p-16 shadow-2xl overflow-y-auto ${isLight ? "bg-white/80 border-l border-white/50 backdrop-blur-2xl" : "bg-zinc-950/80 border-l border-white/10 backdrop-blur-2xl"}`}>
+
+          {/* Mobile Header (Hidden on Desktop) */}
+          <div className="flex lg:hidden items-center gap-3 mb-12">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-emerald-400 to-cyan-500">
+              <ShieldCheck className="w-6 h-6 text-white" />
+            </div>
+            <span className={`text-3xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
+              Hess<span className="text-emerald-500">Protector</span>
+            </span>
+          </div>
+
+          <div className="w-full max-w-md mx-auto">
+            {/* Tabs */}
+            <div className="flex gap-8 mb-12 border-b-2 border-transparent">
+              {(["login", "register"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => {
+                    setActiveTab(tab);
+                    setError("");
+                  }}
+                  className={`text-2xl font-black pb-2 transition-colors duration-300 relative ${activeTab === tab
+                    ? (isLight ? "text-slate-900" : "text-white")
+                    : (isLight ? "text-slate-400 hover:text-slate-600" : "text-zinc-500 hover:text-zinc-300")
+                    }`}
+                >
+                  {tab === "login" ? t.loginTitle : t.registerTitle}
+                  {activeTab === tab && (
+                    <motion.div
+                      layoutId="activeTabUnderlineAuth"
+                      className="absolute -bottom-[2px] left-0 right-0 h-1 bg-emerald-500 rounded-full"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 px-4 py-3 bg-red-500/10 border-l-4 border-red-500 text-red-500 font-medium"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            {/* Form Fields */}
+            <div className="relative min-h-[350px]">
+              <AnimatePresence mode="wait">
                 {activeTab === "login" ? (
                   <motion.div
                     key="login"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    className="flex flex-col gap-6"
+                    initial={{ opacity: 0, x: -20, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: 20, filter: "blur(10px)" }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col gap-10 absolute inset-0 pt-2"
                   >
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                      >
+                    <div className="relative group min-h-[4rem]">
+                      <Input
+                        className={`peer ${inputStyle}`}
+                        placeholder=" "
+                        value={loginForm.username}
+                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                      />
+                      <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${loginForm.username ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
                         {t.username}
-                      </Label>
-                      <div className="relative group">
-                        <User
-                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`}
-                        />
-                        <Input
-                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
-                          placeholder="Admin"
-                          value={loginForm.username}
-                          onKeyDown={handleKeyDown}
-                          onChange={(e) =>
-                            setLoginForm({
-                              ...loginForm,
-                              username: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
+                      </label>
+                      <User className={`absolute right-2 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`} />
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        className={`ml-1 text-xs uppercase tracking-widest font-black flex justify-between ${isLight ? "text-slate-400" : "text-zinc-500"}`}
+
+                    <div className="relative group min-h-[4rem]">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        className={`peer ${inputStyle}`}
+                        placeholder=" "
+                        value={loginForm.password}
+                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      />
+                      <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${loginForm.password ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
+                        {t.password}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className={`absolute right-2 top-4 transition-colors ${isLight ? "text-slate-400 hover:text-emerald-600" : "text-zinc-500 hover:text-emerald-400"}`}
                       >
-                        <span>{t.password}</span>
-                      </Label>
-                      <div className="relative group">
-                        <Lock
-                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`}
-                        />
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          className={`pl-14 pr-12 h-14 rounded-2xl text-lg font-medium shadow-sm ${inputStyle}`}
-                          placeholder="••••••••"
-                          value={loginForm.password}
-                          onKeyDown={handleKeyDown}
-                          onChange={(e) =>
-                            setLoginForm({
-                              ...loginForm,
-                              password: e.target.value,
-                            })
-                          }
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className={`absolute right-4 top-4 transition-colors ${isLight ? "text-slate-400 hover:text-emerald-600" : "text-zinc-500 hover:text-emerald-400"}`}
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
                     </div>
+
                     <Button
                       onClick={handleLogin}
                       disabled={isLoading || !loginForm.username || !loginForm.password}
-                      className="w-full h-16 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-white shadow-xl shadow-emerald-500/20 mt-4 text-xl tracking-wide group overflow-hidden relative"
+                      className="w-full h-16 rounded-2xl bg-emerald-500 text-white hover:bg-slate-900 dark:hover:bg-white dark:hover:text-black transition-all font-black mt-8 text-xl tracking-wide group"
                     >
-                      <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300" />
-                      <span className="relative flex items-center justify-center">
-                        {isLoading ? (
-                          <Loader2 className="w-6 h-6 animate-spin" />
-                        ) : (
-                          <>
-                            {t.loginBtn} <ArrowRight className="w-6 h-6 ml-2" />
-                          </>
-                        )}
+                      <span className="flex items-center justify-center">
+                        {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <> {t.loginBtn} <ArrowRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" /> </>}
                       </span>
                     </Button>
                   </motion.div>
                 ) : (
                   <motion.div
                     key="register"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    className="flex flex-col gap-5"
+                    initial={{ opacity: 0, x: 20, filter: "blur(10px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: -20, filter: "blur(10px)" }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col gap-10 absolute inset-0 pt-2"
                   >
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                      >
+                    <div className="relative group min-h-[4rem]">
+                      <Input
+                        className={`peer ${inputStyle}`}
+                        placeholder=" "
+                        value={regForm.username}
+                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setRegForm({ ...regForm, username: e.target.value })}
+                      />
+                      <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.username ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
                         {t.username}
-                      </Label>
-                      <div className="relative group">
-                        <User
-                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
-                        />
-                        <Input
-                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
-                          placeholder="Nouvel Utilisateur"
-                          value={regForm.username}
-                          onKeyDown={handleKeyDown}
-                          onChange={(e) =>
-                            setRegForm({ ...regForm, username: e.target.value })
-                          }
-                        />
-                      </div>
+                      </label>
+                      <User className={`absolute right-2 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`} />
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <Label
-                        className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                      >
+
+                    <div className="relative group min-h-[4rem]">
+                      <Input
+                        className={`peer ${inputStyle}`}
+                        placeholder=" "
+                        value={regForm.email}
+                        onKeyDown={handleKeyDown}
+                        onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
+                      />
+                      <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.email ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
                         {t.email}
-                      </Label>
-                      <div className="relative group">
-                        <Mail
-                          className={`absolute left-4 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
-                        />
-                        <Input
-                          className={`pl-14 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
-                          placeholder="exemple@email.com"
-                          value={regForm.email}
-                          onKeyDown={handleKeyDown}
-                          onChange={(e) =>
-                            setRegForm({ ...regForm, email: e.target.value })
-                          }
-                        />
-                      </div>
+                      </label>
+                      <Mail className={`absolute right-2 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`} />
                     </div>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <Label
-                          className={`ml-1 text-xs uppercase tracking-widest font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                        >
-                          {t.password}
-                        </Label>
-                        <div className="relative group">
-                          <Lock
-                            className={`absolute left-4 top-4 w-6 h-6 z-10 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-cyan-500" : "text-zinc-600 group-focus-within:text-cyan-500"}`}
-                          />
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            className={`pl-14 pr-12 h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
-                            placeholder="••••••••"
-                            value={regForm.password}
-                            onKeyDown={handleKeyDown}
-                            onChange={(e) =>
-                              setRegForm({ ...regForm, password: e.target.value })
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className={`absolute right-4 top-4 z-10 transition-colors ${isLight ? "text-slate-400 hover:text-cyan-600" : "text-zinc-500 hover:text-cyan-400"}`}
-                          >
-                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label
-                          className={`ml-1 text-xs uppercase tracking-widest font-black truncate block ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                          title={t.confirmPassword}
-                        >
-                          {t.confirmPassword}
-                        </Label>
+
+                    <div className="flex gap-6 min-h-[4rem]">
+                      <div className="relative w-1/2 group">
                         <Input
                           type={showPassword ? "text" : "password"}
-                          className={`h-14 rounded-2xl text-lg shadow-sm ${inputStyle}`}
-                          placeholder="••••••••"
+                          className={`peer ${inputStyle}`}
+                          placeholder=" "
+                          value={regForm.password}
+                          onKeyDown={handleKeyDown}
+                          onChange={(e) => setRegForm({ ...regForm, password: e.target.value })}
+                        />
+                        <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.password ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
+                          {t.password}
+                        </label>
+                      </div>
+                      <div className="relative w-1/2 group">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          className={`peer ${inputStyle}`}
+                          placeholder=" "
                           value={regForm.confirm}
                           onKeyDown={handleKeyDown}
-                          onChange={(e) =>
-                            setRegForm({ ...regForm, confirm: e.target.value })
-                          }
+                          onChange={(e) => setRegForm({ ...regForm, confirm: e.target.value })}
                         />
+                        <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.confirm ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
+                          Confirmer
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-2 top-4 transition-colors ${isLight ? "text-slate-400 hover:text-emerald-600" : "text-zinc-500 hover:text-emerald-400"}`}
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
                       </div>
                     </div>
+
                     <Button
                       onClick={handleRegister}
                       disabled={isLoading || !regForm.username || !regForm.password || !regForm.confirm}
-                      className="w-full h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-400 hover:to-cyan-500 hover:scale-[1.02] active:scale-[0.98] transition-all font-black text-white shadow-xl shadow-cyan-500/20 mt-4 text-xl tracking-wide group overflow-hidden relative"
+                      className="w-full h-16 rounded-2xl bg-emerald-500 text-white hover:bg-slate-900 dark:hover:bg-white dark:hover:text-black transition-all font-black mt-2 text-xl tracking-wide group"
                     >
-                      <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300" />
-                      <span className="relative flex items-center justify-center">
-                        {isLoading ? (
-                          <Loader2 className="w-6 h-6 animate-spin" />
-                        ) : (
-                          <>
-                            {t.registerBtn}{" "}
-                            <ArrowRight className="w-6 h-6 ml-2" />
-                          </>
-                        )}
+                      <span className="flex items-center justify-center">
+                        {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <> {t.registerBtn} <ArrowRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" /> </>}
                       </span>
                     </Button>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

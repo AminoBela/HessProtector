@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Translations } from "@/lib/i18n";
+import { motion, AnimatePresence } from "framer-motion";
 import { usePrivacy } from "@/context/PrivacyContext";
 import { useSettings } from "@/context/SettingsContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -123,11 +124,11 @@ export function MainLayout({ children }: MainLayoutProps) {
   const sidebarActive = isLight ? tc.lightActive : tc.darkActive;
 
   const inputStyle = isLight
-    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-14 rounded-xl px-4 font-medium shadow-inner"
-    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all h-14 rounded-xl px-4 font-medium shadow-inner";
+    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-[border-color,box-shadow] h-14 rounded-xl px-4 font-medium shadow-inner"
+    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-[border-color,box-shadow] h-14 rounded-xl px-4 font-medium shadow-inner";
   const selectStyle = isLight
-    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium flex items-center justify-between"
-    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium flex items-center justify-between";
+    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-[border-color,box-shadow] shadow-inner font-medium flex items-center justify-between"
+    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-[border-color,box-shadow] shadow-inner font-medium flex items-center justify-between";
 
   const t =
     Translations[language as keyof typeof Translations] || Translations.fr;
@@ -151,7 +152,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <Icon
         className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
       />{" "}
-      <span className="hidden md:block text-sm uppercase tracking-wider font-bold">
+      <span className="hidden md:block text-sm uppercase tracking-widest font-black">
         {label}
       </span>
     </Link>
@@ -170,8 +171,19 @@ export function MainLayout({ children }: MainLayoutProps) {
     return (
       <div className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}>
         {bg}
-        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide">
-          {children}
+        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide bg-transparent p-4 md:p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, filter: "blur(10px)", y: 10 }}
+              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+              exit={{ opacity: 0, filter: "blur(10px)", y: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="h-full max-w-7xl mx-auto"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     );

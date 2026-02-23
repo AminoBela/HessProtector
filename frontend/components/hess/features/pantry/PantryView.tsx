@@ -34,6 +34,7 @@ import {
 import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
 const getCategoryIcon = (cat: string) => {
   switch (cat) {
@@ -106,12 +107,12 @@ export function PantryView({
     : "card-glass card-glass-dark";
 
   const inputStyle = isLight
-    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner"
-    : "bg-zinc-900/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner";
+    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner"
+    : "bg-zinc-900/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner";
 
   const selectStyle = isLight
-    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium"
-    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium";
+    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium"
+    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium";
 
   const t =
     Translations[language as keyof typeof Translations] || Translations.fr;
@@ -222,17 +223,19 @@ export function PantryView({
                 </SelectContent>
               </Select>
             </div>
-            <Input
-              type="date"
-              className={inputStyle}
-              value={pantryForm.expiry}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPantryForm({ ...pantryForm, expiry: e.target.value })
-              }
-            />
+            <div className="space-y-1">
+              <label className="text-xs font-bold uppercase text-zinc-400">Date de péremption</label>
+              <PremiumDatePicker
+                date={pantryForm.expiry ? new Date(pantryForm.expiry) : undefined}
+                setDate={(date) => setPantryForm({ ...pantryForm, expiry: date ? date.toISOString().split("T")[0] : "" })}
+                isLight={isLight}
+              />
+            </div>
             <Button
+              variant="premium"
+              size="xl"
               onClick={handleAddPantry}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 h-14 rounded-xl font-black text-white text-lg shadow-lg hover:scale-105 transition-all"
+              className="w-full mt-2"
             >
               {t.pantry.add}
             </Button>
@@ -263,7 +266,7 @@ export function PantryView({
                   (data?.pantry || []).map((p: PantryItem) => (
                     <motion.div variants={item} key={p.id}>
                       <div
-                        className={`flex justify-between items-center p-5 rounded-2xl border transition-all group ${isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80" : "bg-white/5 border-white/5 hover:bg-white/10"}`}
+                        className={`flex justify-between items-center p-5 rounded-2xl border group ${isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80 transition-colors" : "bg-white/5 border-white/5 hover:bg-white/10 transition-colors"}`}
                       >
                         <div className="flex items-center gap-5">
                           <div

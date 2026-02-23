@@ -10,7 +10,11 @@ export function useGoals(token: string | null, refresh?: () => void) {
     const addMutation = useMutation({
         mutationFn: async () => {
             if (!token || !goalForm.label) throw new Error("Missing data");
-            return await GoalsService.add({ ...goalForm, target: parseFloat(goalForm.target), saved: parseFloat(goalForm.saved) }, token);
+            return await GoalsService.add({
+                ...goalForm,
+                target: parseFloat(goalForm.target || "0"),
+                saved: parseFloat(goalForm.saved || "0")
+            }, token);
         },
         onSuccess: () => {
             setGoalForm({ label: "", target: "", saved: "0", deadline: "", priority: "Moyenne" });

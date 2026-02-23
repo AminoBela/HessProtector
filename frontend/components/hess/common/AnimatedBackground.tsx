@@ -22,7 +22,7 @@ const themeConfigs: Record<string, any> = {
             "bg-pink-900/30",
         ],
         baseBgLight: "bg-slate-50",
-        baseBgDark: "bg-black",
+        baseBgDark: "bg-zinc-950",
     },
     neon: {
         light: [
@@ -86,7 +86,7 @@ const themeConfigs: Record<string, any> = {
             "bg-teal-900/30",
         ],
         baseBgLight: "bg-neutral-50",
-        baseBgDark: "bg-black",
+        baseBgDark: "bg-zinc-950",
     }
 };
 

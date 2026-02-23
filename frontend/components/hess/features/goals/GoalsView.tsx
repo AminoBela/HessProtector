@@ -10,10 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Trash2, Target, Timer, Wallet } from "lucide-react";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, startOfDay } from "date-fns";
 import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
+import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 
 interface Goal {
   id: number;
@@ -60,12 +61,12 @@ export function GoalsView({
   const cardTitleColor = isLight ? "text-emerald-900/50" : "text-zinc-400";
 
   const inputStyle = isLight
-    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner"
-    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 backdrop-blur-xl transition-all !h-14 rounded-xl px-4 font-medium shadow-inner";
+    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner"
+    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-[border-color,box-shadow] !h-14 rounded-xl px-4 font-medium shadow-inner";
 
   const selectStyle = isLight
-    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium"
-    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-all shadow-inner font-medium";
+    ? "w-full !h-14 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium"
+    : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer transition-[border-color,box-shadow] shadow-inner font-medium";
 
   const labelColor = isLight ? "text-slate-500" : "text-zinc-400";
   const bigTextColor = isLight ? "text-slate-800" : "text-white";
@@ -124,20 +125,18 @@ export function GoalsView({
               }
             />
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
+              <div className="space-y-3">
                 <label className={`text-xs font-bold uppercase ${labelColor}`}>
                   Date Limite
                 </label>
-                <Input
-                  type="date"
-                  className={inputStyle}
-                  value={goalForm.deadline}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setGoalForm({ ...goalForm, deadline: e.target.value })
-                  }
+                <PremiumDatePicker
+                  date={goalForm.deadline ? new Date(goalForm.deadline) : undefined}
+                  setDate={(date) => setGoalForm({ ...goalForm, deadline: date ? date.toISOString().split("T")[0] : "" })}
+                  isLight={isLight}
+                  disabledDays={(date) => date < startOfDay(new Date())}
                 />
               </div>
-              <div className="space-y-1">
+              <div className="space-y-3">
                 <label className={`text-xs font-bold uppercase ${labelColor}`}>
                   Priorité
                 </label>
@@ -159,8 +158,11 @@ export function GoalsView({
               </div>
             </div>
             <Button
+              variant="premium"
+              size="xl"
               onClick={handleAddGoal}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 h-14 rounded-xl font-bold text-lg mt-4"
+              disabled={!goalForm.label || !goalForm.target}
+              className={`w-full mt-4 ${(!goalForm.label || !goalForm.target) ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {t.goals.add}
             </Button>
