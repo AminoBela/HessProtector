@@ -10,8 +10,8 @@ import { useSettings } from "@/context/SettingsContext";
 export default function PantryPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
-    const { data, loading } = useHessData(token);
-    const { pantryForm, setPantryForm, addPantryItem, deletePantryItem, scanReceipt, scanning, scannedTotal, setScannedTotal } = usePantry(token);
+    const { data, loading, refresh } = useHessData(token);
+    const { pantryForm, setPantryForm, addPantryItem, deletePantryItem, scanReceipt, scanning, scannedTotal, setScannedTotal } = usePantry(token, refresh);
     const { addTransaction } = useTransactions(token);
 
     if (loading || !data) {
@@ -23,8 +23,21 @@ export default function PantryPage() {
     }
 
     const handleUploadReceipt = async (e: any) => {
-        if (!e.target.files[0]) return;
-        await scanReceipt(e.target.files[0]);
+        try {
+            const file = e.target.files?.[0];
+            if (!file) {
+                alert("Aucun fichier sélectionné.");
+                return;
+            }
+
+            // Reset the input so selecting the same file again triggers onChange
+            e.target.value = null;
+
+            await scanReceipt(file);
+        } catch (err: any) {
+            console.error("Erreur de scan:", err);
+            alert("Erreur lors de l'upload : " + err.message);
+        }
     };
 
     return (

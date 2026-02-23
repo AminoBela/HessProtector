@@ -168,7 +168,7 @@ export function PantryView({
               </span>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/heic"
                 capture="environment"
                 onChange={handleUploadReceipt}
                 className="absolute inset-0 opacity-0 cursor-pointer"
@@ -264,7 +264,7 @@ export function PantryView({
                   </div>
                 ) : (
                   (data?.pantry || []).map((p: PantryItem) => (
-                    <motion.div variants={item} key={p.id}>
+                    <motion.div variants={item} initial="hidden" animate="show" layout key={p.id}>
                       <div
                         className={`flex justify-between items-center p-5 rounded-2xl border group ${isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80 transition-colors" : "bg-white/5 border-white/5 hover:bg-white/10 transition-colors"}`}
                       >

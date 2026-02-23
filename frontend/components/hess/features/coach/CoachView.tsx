@@ -94,7 +94,7 @@ export function CoachView({
       const json = await ApiService.get("/plans", token);
       setSavedPlans(json);
     } catch (e) {
-      console.error(e);
+      console.error("Error fetching plans:", e);
     }
   }, [token]);
 

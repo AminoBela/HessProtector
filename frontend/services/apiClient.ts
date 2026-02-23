@@ -8,9 +8,15 @@ export const ApiService = {
         if (token) {
             headers["Authorization"] = `Bearer ${token}`; // Keeping as a fallback
         }
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+
+        // Append a timestamp to prevent any browser/Next.js fetch caching
+        const url = new URL(`${API_BASE_URL}${endpoint}`);
+        url.searchParams.append('_t', Date.now().toString());
+
+        const res = await fetch(url.toString(), {
             headers,
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-store'
         });
         if (!res.ok) {
             if (res.status === 401) {
@@ -34,6 +40,7 @@ export const ApiService = {
             method: "POST",
             headers,
             credentials: 'include',
+            cache: 'no-store',
             body: JSON.stringify(data),
         });
         if (!res.ok) {
@@ -57,6 +64,7 @@ export const ApiService = {
             method: "PUT",
             headers,
             credentials: 'include',
+            cache: 'no-store',
             body: JSON.stringify(data),
         });
         if (!res.ok) {
@@ -79,7 +87,8 @@ export const ApiService = {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "DELETE",
             headers,
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-store'
         });
         if (!res.ok) {
             if (res.status === 401) {
@@ -95,12 +104,14 @@ export const ApiService = {
     async upload(endpoint: string, formData: FormData, token: string | null) {
         const headers: HeadersInit = {};
         if (token) {
+            // @ts-ignore
             headers["Authorization"] = `Bearer ${token}`;
         }
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers,
             credentials: 'include',
+            cache: 'no-store',
             body: formData,
         });
         if (!res.ok) {

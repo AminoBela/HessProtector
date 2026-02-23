@@ -94,6 +94,9 @@ export function CoachSavedPlans({
           return (
             <motion.div
               variants={item}
+              initial="hidden"
+              animate="show"
+              layout
               key={plan.id}
               className={`group relative flex flex-col p-6 rounded-[2rem] border transition-[box-shadow,background-color,border-color] duration-300 ${glassCard}`}
             >

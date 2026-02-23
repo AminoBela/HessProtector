@@ -13,10 +13,10 @@ export function usePantry(token: string | null, refresh?: () => void) {
             if (!token || !pantryForm.item) throw new Error("Missing data");
             return await PantryService.add(pantryForm as any, token);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
             setPantryForm({ item: "", qty: "", category: "Autre", expiry: "" });
-            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-            if (refresh) refresh();
+            if (refresh) await refresh();
+            await queryClient.invalidateQueries({ queryKey: ['dashboard', token] });
         },
         onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
@@ -28,9 +28,9 @@ export function usePantry(token: string | null, refresh?: () => void) {
             if (!token) throw new Error("Missing token");
             return await PantryService.delete(id, token);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-            if (refresh) refresh();
+        onSuccess: async () => {
+            if (refresh) await refresh();
+            await queryClient.invalidateQueries({ queryKey: ['dashboard', token] });
         },
         onError: (err) => {
             setError(err instanceof Error ? err.message : "Unknown error");
@@ -42,12 +42,12 @@ export function usePantry(token: string | null, refresh?: () => void) {
             if (!token) throw new Error("Missing token");
             return await PantryService.scanReceipt(file, token);
         },
-        onSuccess: (result) => {
+        onSuccess: async (result) => {
             if (result && result.total_amount) {
-                setScannedTotal(result.total_amount);
+                setScannedTotal(parseFloat(result.total_amount));
             }
-            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-            if (refresh) refresh();
+            if (refresh) await refresh();
+            await queryClient.invalidateQueries({ queryKey: ['dashboard', token] });
         },
         onError: (err) => {
             console.error("Scan error:", err);
@@ -65,7 +65,7 @@ export function usePantry(token: string | null, refresh?: () => void) {
             try { await deleteMutation.mutateAsync(id); return true; } catch { return false; }
         },
         scanReceipt: async (file: File) => {
-            try { return await scanMutation.mutateAsync(file); } catch { return null; }
+            return await scanMutation.mutateAsync(file);
         },
         loading: addMutation.isPending || deleteMutation.isPending || scanMutation.isPending,
         scanning: scanMutation.isPending,
