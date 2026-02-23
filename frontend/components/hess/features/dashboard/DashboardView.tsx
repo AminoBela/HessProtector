@@ -123,6 +123,7 @@ export function DashboardView({
 
   return (
     <motion.div
+      key={language}
       variants={container}
       initial="hidden"
       animate="show"

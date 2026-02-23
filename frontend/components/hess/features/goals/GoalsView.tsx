@@ -83,6 +83,7 @@ export function GoalsView({
 
   return (
     <motion.div
+      key={language}
       variants={container}
       initial="hidden"
       animate="show"
@@ -99,7 +100,7 @@ export function GoalsView({
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
-              placeholder="Nom (ex: PS5)"
+              placeholder={`${t.common.edit} (ex: PS5)`}
               className={inputStyle}
               value={goalForm.label}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -125,9 +126,9 @@ export function GoalsView({
               }
             />
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <label className={`text-xs font-bold uppercase ${labelColor}`}>
-                  Date Limite
+              <div className="space-y-4">
+                <label className={`block mb-2 text-xs font-bold uppercase ${labelColor}`}>
+                  {t.goals.deadline}
                 </label>
                 <PremiumDatePicker
                   date={goalForm.deadline ? new Date(goalForm.deadline) : undefined}
@@ -136,9 +137,9 @@ export function GoalsView({
                   disabledDays={(date) => date < startOfDay(new Date())}
                 />
               </div>
-              <div className="space-y-3">
-                <label className={`text-xs font-bold uppercase ${labelColor}`}>
-                  Priorité
+              <div className="space-y-4">
+                <label className={`block mb-2 text-xs font-bold uppercase ${labelColor}`}>
+                  {t.goals.priority}
                 </label>
                 <Select
                   value={goalForm.priority}
@@ -147,12 +148,12 @@ export function GoalsView({
                   }
                 >
                   <SelectTrigger className={selectStyle}>
-                    <SelectValue placeholder="Priorité" />
+                    <SelectValue placeholder={t.goals.priority} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Haute">Haute</SelectItem>
-                    <SelectItem value="Moyenne">Moyenne</SelectItem>
-                    <SelectItem value="Basse">Basse</SelectItem>
+                    <SelectItem value="Haute">{t.goals.high}</SelectItem>
+                    <SelectItem value="Moyenne">{t.goals.medium}</SelectItem>
+                    <SelectItem value="Basse">{t.goals.low}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -197,8 +198,8 @@ export function GoalsView({
                         <p
                           className={`text-xs uppercase font-bold tracking-widest ${labelColor}`}
                         >
-                          {g.deadline ? `Pour le ${g.deadline}` : "Pas de date"}{" "}
-                          • {g.priority}
+                          {g.deadline ? `${t.goals.deadline} ${g.deadline}` : t.goals.noDate}{" "}
+                          • {g.priority === "Haute" ? t.goals.high : g.priority === "Moyenne" ? t.goals.medium : t.goals.low}
                         </p>
                       </div>
                     </div>

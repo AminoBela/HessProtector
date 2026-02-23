@@ -227,7 +227,7 @@ export function SettingsView({
     : "bg-white/5 border border-white/5 rounded-2xl p-6";
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show">
+    <motion.div key={language} variants={container} initial="hidden" animate="show">
       <Card
         className={`border-0 ${cardGlass} rounded-3xl overflow-hidden min-h-[600px] flex flex-col`}
       >

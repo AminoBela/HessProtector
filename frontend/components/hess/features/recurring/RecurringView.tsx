@@ -59,6 +59,7 @@ export function RecurringView({
 
   return (
     <motion.div
+      key={language}
       variants={container}
       initial="hidden"
       animate="show"

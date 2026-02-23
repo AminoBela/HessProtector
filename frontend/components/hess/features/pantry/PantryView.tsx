@@ -137,6 +137,7 @@ export function PantryView({
 
   return (
     <motion.div
+      key={language}
       variants={container}
       initial="hidden"
       animate="show"
@@ -223,8 +224,8 @@ export function PantryView({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold uppercase text-zinc-400">Date de péremption</label>
+            <div className="space-y-2">
+              <label className="block mb-2 text-xs font-bold uppercase text-zinc-400">{t.pantry.expiryLabel}</label>
               <PremiumDatePicker
                 date={pantryForm.expiry ? new Date(pantryForm.expiry) : undefined}
                 setDate={(date) => setPantryForm({ ...pantryForm, expiry: date ? date.toISOString().split("T")[0] : "" })}

@@ -99,6 +99,13 @@ export function CoachResults({
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [newPlanName, setNewPlanName] = useState("");
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+
+  const toggleCheck = (index: number) => {
+    setCheckedItems(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
 
   const handleSaveConfirm = async () => {
     await onSavePlan(newPlanName);
@@ -167,6 +174,7 @@ export function CoachResults({
 
   return (
     <motion.div
+      key={language}
       variants={container}
       initial="hidden"
       animate="show"
@@ -349,53 +357,59 @@ export function CoachResults({
 
         { }
         <div className="lg:col-span-1 lg:sticky lg:top-24">
-          <motion.div variants={item} className={`rounded-xl overflow-hidden border ${receiptBg}`}>
+          <motion.div variants={item} className={`rounded-[2rem] overflow-hidden border ${isLight ? "bg-white/80 border-emerald-900/10 shadow-xl" : "bg-black/40 border-white/10 shadow-xl"}`}>
             { }
-            <div className="bg-zinc-950 p-6 text-center border-b border-white/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
-              <Receipt className="w-8 h-8 text-emerald-500 mx-auto mb-3" />
-              <h3 className="text-white font-mono font-bold text-xl uppercase tracking-widest">{t.shopping}</h3>
-              <p className="text-zinc-500 text-xs mt-1 font-mono uppercase">{new Date().toLocaleDateString()}</p>
-            </div>
-
-            { }
-            <ScrollArea className="h-[calc(100vh-350px)] max-h-[600px] bg-white/5 relative">
-              <div className="p-6 space-y-4">
-                {parsedData.shopping_list.map((item, i) => (
-                  <div key={i} className="flex justify-between items-baseline gap-4 group">
-                    <div className="flex-1">
-                      <p className={`text-sm font-medium font-mono leading-relaxed group-hover:text-emerald-500 transition-colors ${isLight ? "text-slate-600" : "text-zinc-300"}`}>
-                        {item.item.toUpperCase()}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-sm font-mono text-zinc-500">{item.price}</p>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="border-t border-dashed border-zinc-500/30 my-6" />
-
-                <div className="flex justify-between items-center text-lg font-bold font-mono">
-                  <span className={isLight ? "text-slate-900" : "text-white"}>TOTAL</span>
-                  <span className="text-emerald-500">{parsedData.total_estimated_cost || "?"}</span>
+            <div className={`p-6 border-b relative overflow-hidden ${isLight ? "bg-emerald-50/50 border-emerald-900/10" : "bg-zinc-950/50 border-white/10"}`}>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600" />
+              <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className={`p-3 rounded-xl ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
+                  <ShoppingCart className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className={`font-black text-xl tracking-tight ${isLight ? "text-slate-800" : "text-white"}`}>{t.shopping}</h3>
+                  <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? "text-slate-500" : "text-zinc-500"}`}>{new Date().toLocaleDateString()}</p>
                 </div>
               </div>
-
-              { }
-              <div
-                className="h-4 w-full bg-repeat-x bottom-0 absolute"
-                style={{
-                  backgroundImage: `radial-gradient(circle at 10px -5px, transparent 12px, ${isLight ? "#fff" : "#18181b"} 13px)`,
-                  backgroundSize: "20px 20px",
-                  transform: "rotate(180deg)"
-                }}
-              />
-            </ScrollArea>
-
-            <div className={`p-4 text-center text-[10px] uppercase tracking-widest text-zinc-500 font-mono ${isLight ? "bg-slate-50" : "bg-black/40"}`}>
-              Powered by HessProtector AI
             </div>
+
+            { }
+            <ScrollArea className="h-[calc(100vh-350px)] max-h-[600px] relative">
+              <div className="p-6 space-y-3">
+                {parsedData.shopping_list.map((item, i) => {
+                  const isChecked = checkedItems.includes(i);
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => toggleCheck(i)}
+                      className={`flex justify-between items-center gap-4 group p-3 rounded-2xl transition-[background-color,transform] cursor-pointer hover:scale-[1.02] ${isLight ? "hover:bg-slate-50" : "hover:bg-white/5"}`}
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${isChecked ? 'bg-emerald-500 border-emerald-500 scale-110' : isLight ? 'border-slate-300 group-hover:border-emerald-400' : 'border-zinc-700 group-hover:border-emerald-500'}`}>
+                          <Check className={`w-3.5 h-3.5 text-white transition-opacity duration-300 ${isChecked ? 'opacity-100' : 'opacity-0'}`} />
+                        </div>
+                        <p className={`text-sm font-bold leading-tight transition-all duration-300 ${isChecked ? 'line-through text-zinc-500/50' : isLight ? "text-slate-700 group-hover:text-emerald-600" : "text-zinc-200 group-hover:text-emerald-400"}`}>
+                          {item.item}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className={`text-sm font-black tracking-tight transition-colors duration-300 ${isChecked ? 'text-zinc-500/50' : isLight ? 'text-slate-900' : 'text-white'}`}>{item.price}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+
+                <div className={`border-t-2 border-dashed my-6 ${isLight ? "border-slate-200" : "border-white/10"}`} />
+
+                <div className={`flex justify-between items-center p-4 rounded-2xl ${isLight ? "bg-slate-50" : "bg-black/20"}`}>
+                  <div className="flex items-center gap-2">
+                    <Receipt className={`w-5 h-5 ${isLight ? "text-slate-400" : "text-zinc-500"}`} />
+                    <span className={`font-black tracking-tight ${isLight ? "text-slate-800" : "text-white"}`}>TOTAL</span>
+                  </div>
+                  <span className="text-xl font-black text-emerald-500">{parsedData.total_estimated_cost || "?"}</span>
+                </div>
+              </div>
+            </ScrollArea>
           </motion.div>
         </div >
       </div >

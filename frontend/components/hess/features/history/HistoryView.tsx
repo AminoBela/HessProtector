@@ -93,7 +93,7 @@ export function HistoryView({
     : "text-zinc-600 hover:text-blue-400";
 
   return (
-    <div>
+    <motion.div key={language} variants={container} initial="hidden" animate="show">
       <Card className={`border-0 ${cardGlass}`}>
         <CardContent className="p-8">
           <ScrollArea className="h-[600px] pr-4">
@@ -289,6 +289,6 @@ export function HistoryView({
           </Dialog>
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

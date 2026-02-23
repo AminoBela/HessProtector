@@ -126,6 +126,7 @@ export const Translations = {
             add: "Ajouter",
             empty: "Ton frigo est vide. Fais les courses !",
             scanning: "Analyse du ticket en cours...",
+            expiryLabel: "Date de péremption",
             categories: {
                 Autre: "Autre",
                 Viandes: "Viandes & Poissons",
@@ -146,7 +147,13 @@ export const Translations = {
             saved: "Épargné",
             add: "Ajouter",
             empty: "Aucun objectif défini. Commence maintenant !",
-            congrats: "Félicitations ! Objectif atteint 🎉"
+            congrats: "Félicitations ! Objectif atteint 🎉",
+            priority: "Priorité",
+            deadline: "Date limite",
+            high: "Haute",
+            medium: "Moyenne",
+            low: "Basse",
+            noDate: "Pas de date"
         },
         recurring: {
             title: "Charges Fixes",
@@ -377,6 +384,7 @@ export const Translations = {
             add: "Añadir",
             empty: "Tu despensa está vacía. ¡Ve de compras!",
             scanning: "Analizando recibo...",
+            expiryLabel: "Fecha de caducidad",
             categories: {
                 Autre: "Otro",
                 Viandes: "Carnes & Pescados",
@@ -397,7 +405,13 @@ export const Translations = {
             saved: "Ahorrado",
             add: "Añadir",
             empty: "Sin metas definidas. ¡Empieza ahora!",
-            congrats: "¡Felicidades! Meta alcanzada 🎉"
+            congrats: "¡Felicidades! Meta alcanzada 🎉",
+            priority: "Prioridad",
+            deadline: "Fecha límite",
+            high: "Alta",
+            medium: "Media",
+            low: "Baja",
+            noDate: "Sin fecha"
         },
         recurring: {
             title: "Gastos Fijos",
