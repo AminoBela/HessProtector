@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL = "http://34.78.42.145/api";
 
 export const ApiService = {
     async get(endpoint: string, token: string | null) {
