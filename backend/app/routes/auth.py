@@ -46,7 +46,7 @@ async def register(user: UserCreate, response: Response, session: Session = Depe
         samesite="lax",
         secure=False, # Set to True if testing explicitly over HTTPS
     )
-    return {"message": "Successfully registered", "username": user.username}
+    return {"message": "Successfully registered", "username": user.username, "access_token": access_token}
 
 @router.post("/login")
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends(), session: Session = Depends(get_session)):
@@ -73,7 +73,7 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
         samesite="lax",
         secure=False, # Set to True if using HTTPS
     )
-    return {"message": "Successfully logged in", "username": user.username}
+    return {"message": "Successfully logged in", "username": user.username, "access_token": access_token}
 
 @router.post("/logout")
 async def logout(response: Response):

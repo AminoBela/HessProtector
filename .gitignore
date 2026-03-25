@@ -28,6 +28,9 @@ backend/venv/
 backend/env/
 backend/.env
 backend/hess_protector.db
+backend/database.db
 
 # Root
 .env
+my_venv/
+.ruff_cache/

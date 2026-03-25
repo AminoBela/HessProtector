@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-const API_BASE_URL = "http://34.78.42.145/api";
+const API_BASE_URL = "http://localhost:8000/api";
 const AUTH_BASE_URL = API_BASE_URL;
 
 export function useAuth() {
@@ -11,11 +11,10 @@ export function useAuth() {
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        // Since JWT is in HttpOnly cookie, we just rely on the stored username to know if we are logged in
-        // A robust implementation would hit a /api/me endpoint here.
         const storedUser = localStorage.getItem('hess_user');
-        if (storedUser) {
-            setToken("cookie_token"); // Dummy token to bypass frontend checks, real token is in cookie
+        const storedToken = localStorage.getItem('hess_token');
+        if (storedUser && storedToken) {
+            setToken(storedToken);
             setUser(storedUser);
         }
         setLoading(false);
@@ -39,8 +38,10 @@ export function useAuth() {
             });
 
             if (res.ok) {
+                const data = await res.json();
                 localStorage.setItem('hess_user', username);
-                setToken("cookie_token");
+                localStorage.setItem('hess_token', data.access_token);
+                setToken(data.access_token);
                 setUser(username);
                 return true;
             }
@@ -61,8 +62,10 @@ export function useAuth() {
             });
 
             if (res.ok) {
+                const data = await res.json();
                 localStorage.setItem('hess_user', username);
-                setToken("cookie_token");
+                localStorage.setItem('hess_token', data.access_token);
+                setToken(data.access_token);
                 setUser(username);
                 return true;
             }

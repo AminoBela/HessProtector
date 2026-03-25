@@ -12,7 +12,6 @@
 ## 🛠️ Stack Technique
 - **Frontend** : Next.js 16, TypeScript, TailwindCSS, Framer Motion.
 - **Backend** : FastAPI (Python), SQLite, Google Gemini AI.
-- **DevOps** : Docker, Docker Compose, Makefile.
 
 ## 📦 Installation
 
@@ -22,26 +21,32 @@
    cd hess-protector
    ```
 
-2. **Configuration**
-   Définissez votre clé API Gemini dans le backend :
+2. **Installer les dépendances**
    ```bash
+   # Backend
    cd backend
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    cp .env.example .env
    # Editez .env et ajoutez votre GEMINI_API_KEY
    cd ..
+
+   # Frontend
+   cd frontend
+   npm install
+   cd ..
    ```
 
-3. **Lancer l'application (Docker)**
+3. **Lancer l'application**
    ```bash
-   make dev
+   make local
    ```
    L'application sera accessible sur :
    - Frontend : [http://localhost:3000](http://localhost:3000)
    - Backend API : [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ## 🧹 Commandes Utiles
-- `make dev` : Lance tout.
-- `make build` : Re-construit les images Docker.
-- `make down` : Stoppe les conteneurs.
+- `make local` : Lance le backend + frontend en une commande.
 
 ---
