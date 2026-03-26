@@ -28,17 +28,17 @@ export function SurvivalGauge({
   const text =
     language === "fr"
       ? {
-          title: "Mode Oracle",
-          safe: "Survie Probable",
-          danger: "Mort Financière",
-          burn: "Dépense/jour",
-        }
+        title: "Mode Oracle",
+        safe: "Survie Probable",
+        danger: "Mort Financière",
+        burn: "Dépense/jour",
+      }
       : {
-          title: "Modo Oráculo",
-          safe: "Supervivencia Probable",
-          danger: "Muerte Financiera",
-          burn: "Gasto/día",
-        };
+        title: "Modo Oráculo",
+        safe: "Supervivencia Probable",
+        danger: "Muerte Financiera",
+        burn: "Gasto/día",
+      };
 
   return (
     <div
@@ -61,7 +61,7 @@ export function SurvivalGauge({
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className={`text-4xl font-black mb-1 ${isSafe ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-lg select-none" : ""}`}
+          className={`text-4xl font-black mb-1 transition-all duration-500 ${isSafe ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-lg select-none" : "blur-none"}`}
         >
           {prediction.projected_end > 0 ? "+" : ""}
           {prediction.projected_end.toFixed(0)}€
@@ -82,14 +82,14 @@ export function SurvivalGauge({
           className={`mt-6 text-xs font-mono opacity-50 ${isLight ? "text-slate-500" : "text-zinc-400"}`}
         >
           ~
-          <span className={isBlurred ? "blur-sm" : ""}>
+          <span className={`transition-all duration-500 ${isBlurred ? "blur-sm" : "blur-none"}`}>
             {prediction.avg_daily_burn.toFixed(0)}€
           </span>{" "}
           {text.burn}
         </div>
       </div>
 
-      {}
+      { }
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-yellow-500 to-emerald-500 opacity-20" />
       <motion.div
         className={`absolute bottom-0 h-1 ${isSafe ? "bg-emerald-500" : "bg-rose-500"}`}

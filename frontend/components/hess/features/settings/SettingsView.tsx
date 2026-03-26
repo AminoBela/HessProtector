@@ -9,6 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Settings,
@@ -103,6 +111,9 @@ export function SettingsView({
   const [limitForm, setLimitForm] = useState({ category: "", amount: "" });
   const [limitStatus, setLimitStatus] = useState<"idle" | "saving">("idle");
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useEffect(() => {
     if (token && activeTab === "budget") {
       ApiService.get("/budget-limits", token)
@@ -192,16 +203,16 @@ export function SettingsView({
     }
   };
 
-  const handleDeleteAccount = async () => {
+  const confirmDeleteAccount = async () => {
     if (!token) return;
-    if (!confirm(t.account.deleteConfirm.replace(",", "\n"))) return;
-
+    setIsDeleting(true);
     try {
       await AccountService.deleteAccount(token);
       logout();
     } catch (e) {
       console.error(e);
       alert("Erreur lors de la suppression");
+      setIsDeleting(false);
     }
   };
 
@@ -435,13 +446,55 @@ export function SettingsView({
                         {t.account.deleteDesc}
                       </p>
                     </div>
-                    <Button
-                      variant="destructive"
-                      onClick={handleDeleteAccount}
-                      className="h-12 px-6 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-900/20 hover:shadow-rose-900/40 transition-all"
-                    >
-                      {t.account.delete}
-                    </Button>
+                    <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          className="h-12 px-6 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-900/20 hover:shadow-rose-900/40 transition-all"
+                        >
+                          {t.account.delete}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent
+                        className={
+                          isLight
+                            ? "bg-white/95 backdrop-blur-3xl border-rose-200 text-slate-800 rounded-3xl p-8 max-w-md"
+                            : "bg-zinc-950/95 backdrop-blur-3xl border-rose-900/30 text-white rounded-3xl p-8 max-w-md"
+                        }
+                      >
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-black text-rose-500 mb-2 flex items-center gap-3">
+                            <Trash2 className="w-6 h-6" /> {t.account.delete}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="py-4 space-y-4">
+                          <p className={`text-lg font-medium leading-relaxed ${isLight ? "text-slate-700" : "text-zinc-300"}`}>
+                            {t.account.deleteConfirm.split(',')[0]}
+                          </p>
+                          <p className={`p-4 rounded-xl border font-semibold ${isLight ? "bg-rose-50 border-rose-100 text-rose-700" : "bg-rose-500/10 border-rose-500/20 text-rose-400"}`}>
+                            ⚠️ {t.account.deleteConfirm.split(',')[1] || "Cette action est définitive et irréversible."}
+                          </p>
+                        </div>
+                        <DialogFooter className="mt-4 flex sm:justify-between gap-3">
+                          <Button
+                            variant="outline"
+                            onClick={() => setOpenDeleteDialog(false)}
+                            disabled={isDeleting}
+                            className={`flex-1 h-14 rounded-xl font-bold text-lg ${isLight ? "hover:bg-slate-100 border-slate-200" : "hover:bg-white/5 border-white/10"}`}
+                          >
+                            Annuler
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            onClick={confirmDeleteAccount}
+                            disabled={isDeleting}
+                            className="flex-1 h-14 rounded-xl font-black text-lg bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/20"
+                          >
+                            {isDeleting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Confirmer"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </TabsContent>

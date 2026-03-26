@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/context/SettingsContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { LoadingView } from "@/components/hess/common/LoadingView";
 
 import { AnimatedBackground } from "@/components/hess/common/AnimatedBackground";
 
@@ -20,11 +21,7 @@ export default function LoginPage() {
     }, [user, loading, router]);
 
     if (loading) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-black text-emerald-400 font-bold uppercase tracking-[0.5em] animate-pulse">
-                HessProtector...
-            </div>
-        );
+        return <LoadingView />;
     }
 
     if (user) return null;

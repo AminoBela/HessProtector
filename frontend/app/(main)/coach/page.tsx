@@ -3,12 +3,14 @@
 import { CoachView } from "@/components/hess/features/coach/CoachView";
 import { useAuth } from "@/hooks/useAuth";
 import { useHessData } from "@/hooks/useHessData";
+import { useCoach } from "@/hooks/domain/useCoach";
 import { useSettings } from "@/context/SettingsContext";
 
 export default function CoachPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
-    const { data, loading, groceryBudget, setGroceryBudget, generatePrompt, generatedPrompt, planDays, setPlanDays, planMeals, setPlanMeals, setGeneratedPrompt } = useHessData(token);
+    const { data, loading } = useHessData(token);
+    const { groceryBudget, setGroceryBudget, generatePrompt, generatedPrompt, planDays, setPlanDays, planMeals, setPlanMeals, setGeneratedPrompt } = useCoach(token);
 
     if (loading || !data) {
         return (

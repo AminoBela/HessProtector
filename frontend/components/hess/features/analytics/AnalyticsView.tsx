@@ -253,9 +253,9 @@ export function AnalyticsView({
           <div className={`absolute inset-0 border-0 ${cardGlass} z-0`} />
 
           <Card className="relative z-10 border-0 bg-transparent shadow-none p-6">
-            {}
+            { }
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-8 border-b border-white/5 pb-8">
-              {}
+              { }
               <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90">
                   <circle
@@ -291,7 +291,7 @@ export function AnalyticsView({
                 </div>
               </div>
 
-              {}
+              { }
               <div className="flex-1 text-center md:text-left">
                 <h2
                   className={`text-3xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
@@ -306,7 +306,7 @@ export function AnalyticsView({
               </div>
             </div>
 
-            {}
+            { }
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div
                 className={`p-6 rounded-2xl ${isLight ? "bg-emerald-50/50 border border-emerald-100" : "bg-emerald-900/10 border border-emerald-500/20"}`}
@@ -347,7 +347,7 @@ export function AnalyticsView({
               </div>
             </div>
 
-            {}
+            { }
             <div>
               <h3
                 className={`text-sm font-bold uppercase tracking-widest opacity-50 mb-4 ${isLight ? "text-slate-900" : "text-white"}`}
@@ -383,7 +383,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.income || "Revenus"}
               </p>
               <p
-                className={`text-3xl font-black ${isBlurred ? "blur-md select-none" : ""}`}
+                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.income.toFixed(2)}€
               </p>
@@ -399,7 +399,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.expense || "Dépenses"}
               </p>
               <p
-                className={`text-3xl font-black ${isBlurred ? "blur-md select-none" : ""}`}
+                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.expense.toFixed(2)}€
               </p>
@@ -415,7 +415,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.net || "Net"}
               </p>
               <p
-                className={`text-3xl font-black ${stats.net >= 0 ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : ""}`}
+                className={`text-3xl font-black transition-all duration-500 ${stats.net >= 0 ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.net.toFixed(2)}€
               </p>
@@ -431,7 +431,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.savings || "Épargne"}
               </p>
               <p
-                className={`text-3xl font-black ${isBlurred ? "blur-md select-none" : ""}`}
+                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.savings_rate.toFixed(1)}%
               </p>
@@ -541,7 +541,7 @@ export function AnalyticsView({
                           ></div>
                           <span className="opacity-80">{entry.name}</span>
                         </div>
-                        <span>{entry.value.toFixed(2)}€</span>
+                        <span className="transition-all duration-500">{entry.value.toFixed(2)}€</span>
                       </div>
                     </div>
                   ))}
@@ -562,7 +562,7 @@ export function AnalyticsView({
           </CardHeader>
           <CardContent className="px-8 pb-8">
             <div
-              className={`grid grid-cols-1 gap-2 ${isBlurred ? "blur-sm select-none transition-all duration-500" : ""}`}
+              className={`grid grid-cols-1 gap-2 transition-all duration-500 ${isBlurred ? "blur-sm select-none" : "blur-none"}`}
             >
               {top_expenses.map((t: any, i: number) => (
                 <div

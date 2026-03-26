@@ -30,6 +30,17 @@ def delete_pantry(
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}
 
+@router.put("/pantry/{id}")
+def update_pantry(
+    id: int,
+    item: PantryItem,
+    current_user: User = Depends(get_current_user),
+    repo: PantryRepository = Depends(get_pantry_repository),
+):
+
+    success = repo.update(id, item, current_user["id"])
+    return {"status": "updated" if success else "not_found"}
+
 @router.post("/scan-receipt")
 async def scan_receipt(
     file: UploadFile = File(...),

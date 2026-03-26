@@ -19,6 +19,7 @@ import {
 import { TrendingUp, Trash2, Pencil, Loader2 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
+import { usePrivacy } from "@/context/PrivacyContext";
 
 interface HistoryViewProps {
   data: any;
@@ -35,6 +36,7 @@ export function HistoryView({
   language,
   theme,
 }: HistoryViewProps) {
+  const { isBlurred } = usePrivacy();
   const [isSaving, setIsSaving] = useState(false);
   const [editingTx, setEditingTx] = useState<any>(null);
   const [deletingTxId, setDeletingTxId] = useState<number | null>(null);
@@ -104,7 +106,8 @@ export function HistoryView({
                 </div>
               ) : (
                 (data?.transactions || []).map((tx: any) => (
-                  <div
+                  <motion.div
+                    variants={item}
                     key={tx.id}
                     className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-colors duration-300 gap-4 ${itemBg}`}
                   >
@@ -127,7 +130,7 @@ export function HistoryView({
                     </div>
                     <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                       <span
-                        className={`font-mono text-xl font-bold ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"}`}
+                        className={`font-mono text-xl font-bold transition-all duration-300 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                       >
                         {tx.type === "revenu" ? "+" : "-"}
                         {tx.amount.toFixed(2)}€
@@ -151,7 +154,7 @@ export function HistoryView({
                         </Button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>

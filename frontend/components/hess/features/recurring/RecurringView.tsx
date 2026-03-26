@@ -15,6 +15,7 @@ import { format, getDaysInMonth, startOfMonth, getDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
+import { usePrivacy } from "@/context/PrivacyContext";
 
 interface RecurringViewProps {
   data: any;
@@ -35,6 +36,7 @@ export function RecurringView({
   language,
   theme,
 }: RecurringViewProps) {
+  const { isBlurred } = usePrivacy();
   const isLight = theme === "light";
   const cardGlass = isLight
     ? "card-glass card-glass-light"
@@ -135,7 +137,7 @@ export function RecurringView({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-black">
+              <div className={`text-4xl font-black ${isBlurred ? "blur-md select-none transition-all duration-300" : ""}`}>
                 {parseFloat(data?.monthly_burn || 0).toFixed(2)}€
               </div>
               <p className="text-xs text-zinc-500 mt-2">
@@ -224,7 +226,7 @@ export function RecurringView({
                             >
                               <span className="truncate w-12">{b.label}</span>
                               <div className="flex items-center gap-1">
-                                <span className="font-bold">
+                                <span className={`font-bold ${isBlurred ? "blur-sm select-none transition-all duration-300" : ""}`}>
                                   {parseFloat(b.amount).toFixed(2)}
                                 </span>
                                 <Trash2

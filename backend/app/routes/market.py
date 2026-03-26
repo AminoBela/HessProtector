@@ -26,21 +26,23 @@ def buy_item(
     try:
         transactions = session.exec(select(Transaction).where(Transaction.user_id == current_user["id"])).all()
         goals = session.exec(select(Goal).where(Goal.user_id == current_user["id"])).all()
+        profile = session.exec(select(Profile).where(Profile.user_id == current_user["id"])).first()
 
         balance = sum(
             t.amount if t.type == "revenu" else -t.amount for t in transactions
         )
 
         goals_completed = len([g for g in goals if g.saved >= g.target])
-        current_xp = gamification_service.calculate_xp(balance, goals_completed)
+        total_xp = gamification_service.calculate_xp(balance, goals_completed)
+        xp_spent = profile.xp_spent if profile else 0
+        available_xp = total_xp - xp_spent
 
-        if current_xp < price:
+        if available_xp < price:
             raise HTTPException(
                 status_code=400,
-                detail=f"Insufficient XP (have {current_xp}, need {price})",
+                detail=f"Insufficient XP (have {available_xp}, need {price})",
             )
 
-        profile = session.exec(select(Profile).where(Profile.user_id == current_user["id"])).first()
         unlocked = (
             profile.unlocked_themes.split(",")
             if profile and profile.unlocked_themes
@@ -53,6 +55,7 @@ def buy_item(
         unlocked.append(item_id)
         if profile:
             profile.unlocked_themes = ",".join(unlocked)
+            profile.xp_spent = xp_spent + price
             session.add(profile)
 
         user_theme = session.exec(select(UserTheme).where(UserTheme.user_id == current_user["id"], UserTheme.theme_id == item_id)).first()
@@ -61,7 +64,7 @@ def buy_item(
 
         session.commit()
 
-        return {"status": "purchased", "item_id": item_id, "new_xp": current_xp}
+        return {"status": "purchased", "item_id": item_id, "new_xp": available_xp - price}
     except Exception as e:
         session.rollback()
         raise e

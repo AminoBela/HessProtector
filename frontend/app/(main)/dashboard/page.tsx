@@ -7,6 +7,7 @@ import { useSettings } from "@/context/SettingsContext";
 import { Translations } from "@/lib/i18n";
 import { SetupWizard } from "@/components/hess/features/setup/SetupWizard";
 import { ApiService } from "@/services/apiClient";
+import { AnimatedBackground } from "@/components/hess/common/AnimatedBackground";
 
 const COLORS = [
     "#10b981", "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899", "#f43f5e",
@@ -35,6 +36,7 @@ export default function DashboardPage() {
     if (data && !data.is_setup) {
         return (
             <SetupWizard
+                bg={<AnimatedBackground themeId="default" isLight={theme === "light"} />}
                 onFinish={async (setupData) => {
                     await ApiService.post("/setup", setupData, token);
                     refresh();

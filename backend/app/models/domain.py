@@ -72,6 +72,7 @@ class Profile(SQLModel, table=True):
     initial_balance: float = 0.0
     active_theme: str = Field(default="default")
     unlocked_themes: str = Field(default="default")
+    xp_spent: int = Field(default=0)
     user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True)
 
     user: Optional[User] = Relationship(back_populates="profile")

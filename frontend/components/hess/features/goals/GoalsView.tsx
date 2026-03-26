@@ -15,6 +15,7 @@ import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
+import { usePrivacy } from "@/context/PrivacyContext";
 
 interface Goal {
   id: number;
@@ -52,6 +53,7 @@ export function GoalsView({
   language,
   theme,
 }: GoalsViewProps) {
+  const { isBlurred } = usePrivacy();
   const isLight = theme === "light";
 
   const cardGlass = isLight
@@ -209,8 +211,8 @@ export function GoalsView({
                     />
                   </div>
                   <div className="mt-6 mb-2 flex justify-between text-sm font-bold">
-                    <span className={bigTextColor}>{g.saved.toFixed(2)}€</span>
-                    <span className={labelColor}>{g.target.toFixed(2)}€</span>
+                    <span className={`${bigTextColor} ${isBlurred ? "blur-md select-none transition-all duration-300" : ""}`}>{g.saved.toFixed(2)}€</span>
+                    <span className={`${labelColor} ${isBlurred ? "blur-sm select-none transition-all duration-300" : ""}`}>{g.target.toFixed(2)}€</span>
                   </div>
                   <Progress
                     value={(g.saved / g.target) * 100}
@@ -226,7 +228,7 @@ export function GoalsView({
                       <Timer className="w-4 h-4" /> Reste {daysRemaining} jours
                     </div>
                     <div className="flex items-center gap-2">
-                      <Wallet className="w-4 h-4" /> Mettre {perMonth}€ / mois
+                      <Wallet className="w-4 h-4" /> Mettre <span className={isBlurred ? "blur-sm select-none transition-all duration-300" : ""}>{perMonth}€</span> / mois
                     </div>
                   </div>
                 </CardContent>

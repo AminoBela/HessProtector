@@ -153,7 +153,7 @@ export function MarketView({
           </p>
         </div>
         <div
-          className={`px-5 py-3 rounded-2xl flex items-center gap-3 font-black text-xl border ${isLight ? "bg-white border-amber-200 text-amber-600 shadow-lg shadow-amber-100" : "bg-amber-900/20 border-amber-500/20 text-amber-400"} ${isBlurred ? "blur-md" : ""}`}
+          className={`px-5 py-3 rounded-2xl flex items-center gap-3 font-black text-xl border transition-all duration-500 ${isLight ? "bg-white border-amber-200 text-amber-600 shadow-lg shadow-amber-100" : "bg-amber-900/20 border-amber-500/20 text-amber-400"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
         >
           <Star className="w-5 h-5 fill-current" /> {data.xp || 0} XP
         </div>

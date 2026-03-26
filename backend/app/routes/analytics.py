@@ -24,38 +24,81 @@ def get_monthly_analytics(
     year: str, month: str, current_user: dict = Depends(get_current_user), session: Session = Depends(get_session)
 ):
     m_str = month.zfill(2)
+    month_prefix = f"{year}-{m_str}"
 
     try:
         num_days = calendar.monthrange(int(year), int(month))[1]
     except ValueError:
         num_days = 30
 
+    # Single query: group by date and type for the whole month
+    daily_rows = session.exec(
+        select(
+            Transaction.date,
+            Transaction.type,
+            func.sum(Transaction.amount).label("total")
+        ).where(
+            Transaction.date.startswith(month_prefix),
+            Transaction.user_id == current_user["id"]
+        ).group_by(Transaction.date, Transaction.type)
+    ).all()
+
+    # Build a lookup dict: {day_number: {"income": x, "expense": y}}
+    daily_lookup = {}
+    for row in daily_rows:
+        try:
+            day_num = int(row.date.split("-")[2])
+        except (IndexError, ValueError):
+            continue
+        if day_num not in daily_lookup:
+            daily_lookup[day_num] = {"income": 0.0, "expense": 0.0}
+        if row.type == "revenu":
+            daily_lookup[day_num]["income"] = row.total or 0.0
+        else:
+            daily_lookup[day_num]["expense"] = row.total or 0.0
+
     daily_data = []
-
     for d in range(1, num_days + 1):
-        d_str = f"{year}-{m_str}-{str(d).zfill(2)}"
-        inc = session.exec(select(func.sum(Transaction.amount)).where(Transaction.type == 'revenu', Transaction.date == d_str, Transaction.user_id == current_user["id"])).first() or 0.0
-        exp = session.exec(select(func.sum(Transaction.amount)).where(Transaction.type == 'depense', Transaction.date == d_str, Transaction.user_id == current_user["id"])).first() or 0.0
-        daily_data.append({"day": d, "income": inc, "expense": exp})
+        entry = daily_lookup.get(d, {"income": 0.0, "expense": 0.0})
+        daily_data.append({"day": d, "income": entry["income"], "expense": entry["expense"]})
 
-    cat_rows = session.exec(select(Transaction.category, func.sum(Transaction.amount).label("total")).where(Transaction.type == 'depense', Transaction.date.startswith(f"{year}-{m_str}"), Transaction.user_id == current_user["id"]).group_by(Transaction.category)).all()
+    # Category breakdown (single query)
+    cat_rows = session.exec(
+        select(
+            Transaction.category,
+            func.sum(Transaction.amount).label("total")
+        ).where(
+            Transaction.type == "depense",
+            Transaction.date.startswith(month_prefix),
+            Transaction.user_id == current_user["id"]
+        ).group_by(Transaction.category)
+    ).all()
 
-    budget_rows = session.exec(select(BudgetLimit.category, BudgetLimit.amount).where(BudgetLimit.user_id == current_user["id"])).all()
+    budget_rows = session.exec(
+        select(BudgetLimit.category, BudgetLimit.amount).where(
+            BudgetLimit.user_id == current_user["id"]
+        )
+    ).all()
     limits = {row[0]: row[1] for row in budget_rows}
 
     cats = []
     for row in cat_rows:
         limit = limits.get(row.category, 0)
-        cats.append(
-            {
-                "name": row.category,
-                "value": row.total,
-                "limit": limit,
-                "percent": (row.total / limit * 100) if limit > 0 else 0,
-            }
-        )
+        cats.append({
+            "name": row.category,
+            "value": row.total,
+            "limit": limit,
+            "percent": (row.total / limit * 100) if limit > 0 else 0,
+        })
 
-    top_txs = session.exec(select(Transaction.label, Transaction.amount, Transaction.date).where(Transaction.type == 'depense', Transaction.date.startswith(f"{year}-{m_str}"), Transaction.user_id == current_user["id"]).order_by(Transaction.amount.desc()).limit(5)).all()
+    # Top expenses (single query)
+    top_txs = session.exec(
+        select(Transaction.label, Transaction.amount, Transaction.date).where(
+            Transaction.type == "depense",
+            Transaction.date.startswith(month_prefix),
+            Transaction.user_id == current_user["id"]
+        ).order_by(Transaction.amount.desc()).limit(5)
+    ).all()
     top = [{"label": tx.label, "amount": tx.amount, "date": tx.date} for tx in top_txs]
 
     total_inc = sum(d["income"] for d in daily_data)

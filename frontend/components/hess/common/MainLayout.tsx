@@ -169,22 +169,19 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   if (isSetupRequired) {
     return (
-      <div className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}>
-        {bg}
-        <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide bg-transparent p-4 md:p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, filter: "blur(10px)", y: 10 }}
-              animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              exit={{ opacity: 0, filter: "blur(10px)", y: -10 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className="h-full max-w-7xl mx-auto"
-            >
-              {children}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+      <div className={`fixed inset-0 z-50 overflow-hidden ${textColor}`}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
     );
   }

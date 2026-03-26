@@ -25,3 +25,14 @@ def delete_recurring(
 
     success = repo.delete(id, current_user["id"])
     return {"status": "deleted" if success else "not_found"}
+
+@router.put("/recurring/{id}")
+def update_recurring(
+    id: int,
+    rec: RecurringItem,
+    current_user: User = Depends(get_current_user),
+    repo: RecurringRepository = Depends(get_recurring_repository),
+):
+
+    success = repo.update(id, rec, current_user["id"])
+    return {"status": "updated" if success else "not_found"}

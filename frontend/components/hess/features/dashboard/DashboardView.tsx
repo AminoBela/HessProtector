@@ -170,7 +170,7 @@ export function DashboardView({
             <CardContent className="p-0 mt-6">
               <div className="flex items-baseline gap-2">
                 <span
-                  className={`text-6xl md:text-8xl font-black tracking-tighter ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : ""}`}
+                  className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter transition-all duration-500 ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : "blur-none"}`}
                 >
                   {statsData ? statsData.net_result.toFixed(2) : "..."}
                 </span>
@@ -182,7 +182,7 @@ export function DashboardView({
                 >
                   <TrendingUp className="w-5 h-5 text-emerald-500" />{" "}
                   {t.incoming}:{" "}
-                  <span className={isBlurred ? "blur-sm" : ""}>
+                  <span className={`transition-all duration-500 ${isBlurred ? "blur-sm" : "blur-none"}`}>
                     {statsData ? statsData.total_income.toFixed(2) : 0}€
                   </span>
                 </div>
@@ -190,7 +190,7 @@ export function DashboardView({
                   className={`px-5 py-3 rounded-2xl border flex items-center gap-3 ${pillBg} ${pillText}`}
                 >
                   <Zap className="w-5 h-5 text-rose-500" /> {t.outgoing}:{" "}
-                  <span className={isBlurred ? "blur-sm" : ""}>
+                  <span className={`transition-all duration-500 ${isBlurred ? "blur-sm" : "blur-none"}`}>
                     {statsData ? statsData.total_expense.toFixed(2) : 0}€
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export function DashboardView({
                   {t.safeBalance}
                 </h3>
                 <div
-                  className={`text-5xl md:text-7xl font-black tracking-tighter ${isBlurred ? "blur-md select-none" : ""}`}
+                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                 >
                   {data?.safe_balance?.toFixed(2)}€
                 </div>
@@ -273,7 +273,7 @@ export function DashboardView({
               </CardTitle>
             </CardHeader>
             <CardContent
-              className={`h-[300px] ${isBlurred ? "blur-lg transition-all duration-500" : ""}`}
+              className={`h-[300px] transition-all duration-500 ${isBlurred ? "blur-lg" : "blur-none"}`}
             >
               {statsData ? (
                 <ResponsiveContainer width="100%" height="100%">
@@ -341,7 +341,8 @@ export function DashboardView({
               <ScrollArea className="h-[300px] pr-4">
                 <div className="space-y-3">
                   {data.transactions.slice(0, 5).map((tx: any) => (
-                    <div
+                    <motion.div
+                      variants={item}
                       key={tx.id}
                       className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${itemBg}`}
                     >
@@ -365,12 +366,12 @@ export function DashboardView({
                         </div>
                       </div>
                       <span
-                        className={`font-mono text-xl font-bold ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-sm select-none" : ""}`}
+                        className={`font-mono text-xl font-bold transition-all duration-500 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-sm select-none" : "blur-none"}`}
                       >
                         {tx.type === "revenu" ? "+" : "-"}
                         {parseFloat(tx.amount).toFixed(2)}€
                       </span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </ScrollArea>

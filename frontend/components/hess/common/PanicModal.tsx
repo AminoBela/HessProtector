@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Siren, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ApiService } from "@/services/apiClient";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -26,19 +27,19 @@ export function PanicModal({ language, isLight }: PanicModalProps) {
   const t =
     language === "fr"
       ? {
-          btn: "URGENCE",
-          title: "ALERTE ROUGE",
-          subtitle: "Activation du Protocole de Survie",
-          loading: "Analyse de la situation critique...",
-          close: "Fermer",
-        }
+        btn: "URGENCE",
+        title: "ALERTE ROUGE",
+        subtitle: "Activation du Protocole de Survie",
+        loading: "Analyse de la situation critique...",
+        close: "Fermer",
+      }
       : {
-          btn: "EMERGENCIA",
-          title: "ALERTA ROJA",
-          subtitle: "Activando Protocolo de Supervivencia",
-          loading: "Analizando situación crítica...",
-          close: "Cerrar",
-        };
+        btn: "EMERGENCIA",
+        title: "ALERTA ROJA",
+        subtitle: "Activando Protocolo de Supervivencia",
+        loading: "Analizando situación crítica...",
+        close: "Cerrar",
+      };
 
   const handlePanic = async () => {
     setLoading(true);
@@ -68,9 +69,9 @@ export function PanicModal({ language, isLight }: PanicModalProps) {
         </Button>
       </DialogTrigger>
       <DialogContent
-        className={`${isLight ? "bg-white border-rose-200" : "bg-zinc-950 border-rose-900"} max-w-lg border-2 shadow-[0_0_50px_rgba(225,29,72,0.2)]`}
+        className={`${isLight ? "bg-white border-rose-200" : "bg-zinc-950 border-rose-900"} w-[95vw] md:max-w-3xl lg:max-w-4xl max-h-[90vh] flex flex-col border-2 shadow-[0_0_50px_rgba(225,29,72,0.2)] p-4 md:p-8`}
       >
-        <DialogHeader>
+        <DialogHeader className="shrink-0 mb-2">
           <DialogTitle className="text-center flex flex-col items-center gap-2">
             <AlertTriangle className="w-16 h-16 text-rose-500 animate-bounce" />
             <span className="text-3xl font-black uppercase text-rose-600 tracking-tighter">
@@ -82,7 +83,7 @@ export function PanicModal({ language, isLight }: PanicModalProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4">
+        <div className="flex-1 overflow-hidden flex flex-col min-h-0">
           {loading && (
             <div className="text-center py-10 space-y-4">
               <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -104,23 +105,25 @@ export function PanicModal({ language, isLight }: PanicModalProps) {
                 </p>
               </div>
 
-              <div className="space-y-3">
-                {plan.steps.map((step: any, i: number) => (
-                  <div
-                    key={i}
-                    className={`flex items-start gap-4 p-4 rounded-xl border ${isLight ? "bg-rose-50 border-rose-100" : "bg-rose-950/20 border-rose-900/50"}`}
-                  >
-                    <div className="text-2xl">{step.icon}</div>
-                    <div>
-                      <p
-                        className={`font-bold ${isLight ? "text-rose-900" : "text-rose-100"}`}
-                      >
-                        {step.action}
-                      </p>
+              <ScrollArea className="h-[50vh] pr-4 mt-6">
+                <div className="space-y-3 pb-4">
+                  {plan.steps.map((step: any, i: number) => (
+                    <div
+                      key={i}
+                      className={`flex items-start gap-4 p-4 rounded-xl border ${isLight ? "bg-rose-50 border-rose-100" : "bg-rose-950/20 border-rose-900/50"}`}
+                    >
+                      <div className="text-2xl mt-1 shrink-0">{step.icon}</div>
+                      <div>
+                        <p
+                          className={`font-bold leading-relaxed ${isLight ? "text-rose-900" : "text-rose-100"}`}
+                        >
+                          {step.action}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </ScrollArea>
             </motion.div>
           )}
         </div>

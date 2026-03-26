@@ -31,7 +31,7 @@ export function useHessData(token: string | null) {
         enabled: !!token && !!statsYear,
     });
 
-    // Form States (kept for settings only)
+    // Settings form state
     const [settingsForm, setSettingsForm] = useState({ supermarket: "", diet: "" });
 
     // Sync settings form with fetched profile
@@ -56,43 +56,6 @@ export function useHessData(token: string | null) {
         await updateSettingsMutation.mutateAsync(settingsForm);
     };
 
-    // Coach States
-    const [groceryBudget, setGroceryBudget] = useState([30]);
-    const [planDays, setPlanDays] = useState([3]);
-    const [planMeals, setPlanMeals] = useState<string[]>(["lunch", "dinner"]);
-    const [generatedPrompt, setGeneratedPrompt] = useState("");
-
-    const generatePromptMutation = useMutation({
-        mutationFn: (args: { language: string, meals: string[], currentPlanJson?: string }) =>
-            ApiService.post('/smart-prompt', {
-                type: "meal_plan",
-                budget: groceryBudget[0],
-                days: planDays[0],
-                meals: args.meals,
-                language: args.language,
-                current_plan: args.currentPlanJson
-            }, token as string),
-        onSuccess: (json) => {
-            if (json.error) {
-                console.error("Coach Error:", json.error);
-                return;
-            }
-            if (json.prompt) {
-                const promptStr = typeof json.prompt === 'string' ? json.prompt : JSON.stringify(json.prompt);
-                setGeneratedPrompt(promptStr);
-            }
-        },
-        onError: (e) => {
-            console.error("Generator Failed:", e);
-        }
-    });
-
-    const generatePrompt = async (language: string, planMeals: string[], currentPlanJson?: string) => {
-        if (!token) return;
-        setGeneratedPrompt("");
-        await generatePromptMutation.mutateAsync({ language, meals: planMeals, currentPlanJson });
-    };
-
     return {
         data: dashboardData,
         loading: isDashboardLoading,
@@ -100,9 +63,5 @@ export function useHessData(token: string | null) {
         statsYear, setStatsYear,
         years, statsData,
         settingsForm, setSettingsForm, updateSettings,
-        groceryBudget, setGroceryBudget,
-        planDays, setPlanDays,
-        planMeals, setPlanMeals,
-        generatedPrompt, setGeneratedPrompt, generatePrompt
     };
 }
