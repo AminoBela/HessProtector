@@ -16,6 +16,7 @@ class User(SQLModel, table=True):
     plans: List["Plan"] = Relationship(back_populates="user")
     budget_limits: List["BudgetLimit"] = Relationship(back_populates="user")
     themes: List["UserTheme"] = Relationship(back_populates="user")
+    fuel_entries: List["FuelEntry"] = Relationship(back_populates="user")
 
 class Transaction(SQLModel, table=True):
     __tablename__ = "transactions"
@@ -103,3 +104,18 @@ class UserTheme(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, foreign_key="users.id")
 
     user: Optional[User] = Relationship(back_populates="themes")
+
+class FuelEntry(SQLModel, table=True):
+    __tablename__ = "fuel_entries"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    date: str
+    liters: float
+    total_cost: float
+    odometer: float
+    fuel_type: str = Field(default="diesel")
+    station: Optional[str] = None
+    is_full_tank: bool = Field(default=True)
+    note: Optional[str] = None
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+
+    user: Optional[User] = Relationship(back_populates="fuel_entries")

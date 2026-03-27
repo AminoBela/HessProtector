@@ -18,6 +18,8 @@ from .profile import ProfileUpdate, SetupData
 
 from .budget import BudgetLimit
 
+from .fuel import FuelEntryCreate
+
 __all__ = [
     "User",
     "UserCreate",
@@ -33,4 +35,5 @@ __all__ = [
     "ProfileUpdate",
     "SetupData",
     "BudgetLimit",
+    "FuelEntryCreate",
 ]

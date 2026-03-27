@@ -20,7 +20,15 @@ import {
   Eye,
   EyeOff,
   ShoppingBag,
+  Menu,
+  Fuel,
 } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -152,7 +160,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <Icon
         className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
       />{" "}
-      <span className="hidden md:block text-sm uppercase tracking-widest font-black">
+      <span className="text-sm uppercase tracking-widest font-black">
         {label}
       </span>
     </Link>
@@ -186,186 +194,143 @@ export function MainLayout({ children }: MainLayoutProps) {
     );
   }
 
-  return (
-    <div
-      className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}
-    >
-      {bg}
-      <aside
-        className={`w-20 md:w-80 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}
+  const SidebarContent = () => (
+    <>
+      <div className="h-24 flex items-center justify-center md:justify-start gap-4 mb-4 mt-2 md:mt-0">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg">
+          <ShieldCheck className="w-7 h-7 text-black" />
+        </div>
+        <div>
+          <h1 className={`font-black text-2xl tracking-tighter ${textColor}`}>
+            Hess<span className="text-emerald-500">Protector</span>
+          </h1>
+        </div>
+      </div>
+
+      <div className="flex-1 space-y-1.5 overflow-y-auto scrollbar-hide px-3 py-2">
+        <SidebarItem
+          id="dashboard"
+          icon={LayoutDashboard}
+          label={t.sidebar.dashboard}
+        />
+        <SidebarItem
+          id="analytics"
+          icon={ChartPie}
+          label={t.sidebar.analytics}
+        />
+        <SidebarItem id="coach" icon={Bot} label={t.sidebar.coach} />
+        <SidebarItem
+          id="recurring"
+          icon={CalendarDays}
+          label={t.sidebar.recurring}
+        />
+        <SidebarItem id="pantry" icon={Utensils} label={t.sidebar.pantry} />
+        <SidebarItem id="goals" icon={Target} label={t.sidebar.goals} />
+        <SidebarItem
+          id="history"
+          icon={TrendingUp}
+          label={t.sidebar.history}
+        />
+        <SidebarItem id="fuel" icon={Fuel} label={t.sidebar.fuel} />
+        <SidebarItem id="market" icon={ShoppingBag} label="HessMarket" />
+        <SidebarItem
+          id="settings"
+          icon={Settings}
+          label={t.sidebar.settings}
+        />
+      </div>
+
+      <div
+        className={`mt-4 pt-4 border-t space-y-4 ${isLight ? "border-slate-200/60" : "border-white/5"}`}
       >
-        <div className="h-24 flex items-center justify-center md:justify-start gap-4 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg">
-            <ShieldCheck className="w-7 h-7 text-black" />
-          </div>
-          <div className="hidden md:block">
-            <h1 className={`font-black text-2xl tracking-tighter ${textColor}`}>
-              Hess<span className="text-emerald-500">Protector</span>
-            </h1>
-          </div>
-        </div>
-
-        <div className="flex-1 space-y-1.5 overflow-y-auto scrollbar-hide px-3 py-2">
-          <SidebarItem
-            id="dashboard"
-            icon={LayoutDashboard}
-            label={t.sidebar.dashboard}
-          />
-          <SidebarItem
-            id="analytics"
-            icon={ChartPie}
-            label={t.sidebar.analytics}
-          />
-          <SidebarItem id="coach" icon={Bot} label={t.sidebar.coach} />
-          <SidebarItem
-            id="recurring"
-            icon={CalendarDays}
-            label={t.sidebar.recurring}
-          />
-          <SidebarItem id="pantry" icon={Utensils} label={t.sidebar.pantry} />
-          <SidebarItem id="goals" icon={Target} label={t.sidebar.goals} />
-          <SidebarItem
-            id="history"
-            icon={TrendingUp}
-            label={t.sidebar.history}
-          />
-          <SidebarItem id="market" icon={ShoppingBag} label="HessMarket" />
-          <SidebarItem
-            id="settings"
-            icon={Settings}
-            label={t.sidebar.settings}
-          />
-        </div>
-
-        <div
-          className={`mt-4 pt-4 border-t space-y-4 ${isLight ? "border-slate-200/60" : "border-white/5"}`}
-        >
-          {data && data.rank && (
+        {data && data.rank && (
+          <div
+            className={`p-4 rounded-xl border relative overflow-hidden group transition-all
+                          ${isLight
+                ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md"
+                : "bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10"
+              }`}
+          >
             <div
-              className={`p-4 rounded-xl border relative overflow-hidden group transition-all
-                            ${isLight
-                  ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md"
-                  : "bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10"
-                }`}
-            >
+              className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isLight ? "bg-amber-100/30" : "bg-white/5"}`}
+            ></div>
+            <div className="flex items-center gap-3 mb-2">
               <div
-                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isLight ? "bg-amber-100/30" : "bg-white/5"}`}
-              ></div>
-              <div className="flex items-center gap-3 mb-2">
-                <div
-                  className={`p-2 rounded-lg ${isLight ? "bg-amber-100 text-amber-600" : "bg-yellow-500/20 text-yellow-400"}`}
-                >
-                  {data.rank === "Rentier" ? (
-                    <Crown className="w-5 h-5" />
-                  ) : data.rank === "Investisseur" ? (
-                    <Trophy className="w-5 h-5" />
-                  ) : (
-                    <Medal className="w-5 h-5" />
-                  )}
-                </div>
-                <div>
-                  <p
-                    className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? "text-slate-400" : "text-zinc-400"}`}
-                  >
-                    {t.rank.title}
-                  </p>
-                  <p
-                    className={`text-sm font-black ${isLight ? "text-slate-800" : "text-white"}`}
-                  >
-                    {language === "es"
-                      ? data.rank === "Rentier"
-                        ? "Rentista"
-                        : data.rank === "Investisseur"
-                          ? "Inversor"
-                          : data.rank === "Mendiant"
-                            ? "Mendigo"
-                            : data.rank
-                      : data.rank}
-                  </p>
-                </div>
-              </div>
-              <div
-                className={`relative h-2 rounded-full overflow-hidden ${isLight ? "bg-amber-100" : "bg-black/50"}`}
+                className={`p-2 rounded-lg ${isLight ? "bg-amber-100 text-amber-600" : "bg-yellow-500/20 text-yellow-400"}`}
               >
-                <div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-yellow-500 to-amber-600 transition-all duration-1000"
-                  style={{
-                    width: `${Math.min(100, (data.xp / data.next_rank_xp) * 100)}%`,
-                  }}
-                ></div>
+                {data.rank === "Rentier" ? (
+                  <Crown className="w-5 h-5" />
+                ) : data.rank === "Investisseur" ? (
+                  <Trophy className="w-5 h-5" />
+                ) : (
+                  <Medal className="w-5 h-5" />
+                )}
+              </div>
+              <div>
+                <p
+                  className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? "text-slate-400" : "text-zinc-400"}`}
+                >
+                  {t.rank.title}
+                </p>
+                <p
+                  className={`text-sm font-black ${isLight ? "text-slate-800" : "text-white"}`}
+                >
+                  {language === "es"
+                    ? data.rank === "Rentier"
+                      ? "Rentista"
+                      : data.rank === "Investisseur"
+                        ? "Inversor"
+                        : data.rank === "Mendiant"
+                          ? "Mendigo"
+                          : data.rank
+                    : data.rank}
+                </p>
               </div>
             </div>
-          )}
-
-          <div
-            className={`flex items-center gap-3 px-2 ${isLight ? "text-slate-600" : "text-zinc-400"}`}
-          >
-            <User className="w-5 h-5" />
-            <span className="text-sm font-bold truncate flex-1">{user}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={logout}
-              className="hover:text-red-500 hover:bg-red-500/10"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-      </aside>
-
-      <main className="flex-1 overflow-y-auto relative z-10 scrollbar-hide">
-        <div
-          className={`flex justify-between items-center sticky top-0 z-50 px-4 md:px-10 py-6 border-b transition-all duration-300 ${isLight ? "bg-white/95 border-emerald-900/5 shadow-sm" : "bg-zinc-950/95 border-white/5 shadow-md"}`}
-        >
-          <h2
-            className={`text-4xl font-black uppercase tracking-tighter drop-shadow-sm ${textColor}`}
-          >
-            {activeTab === "recurring"
-              ? t.header.recurring
-              : activeTab === "pantry"
-                ? t.header.pantry
-                : activeTab === "goals"
-                  ? t.header.goals
-                  : activeTab === "dashboard"
-                    ? t.header.dashboard
-                    : activeTab === "analytics"
-                      ? t.header.analytics
-                      : activeTab === "coach"
-                        ? t.header.coach
-                        : activeTab === "history"
-                          ? t.header.history
-                          : activeTab === "market"
-                            ? "HessMarket"
-                            : activeTab === "settings"
-                              ? t.header.settings
-                              : activeTab}
-          </h2>
-
-          <div className="flex items-center gap-4">
             <div
-              className={`flex rounded-full p-1 border backdrop-blur-md ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+              className={`relative h-2 rounded-full overflow-hidden ${isLight ? "bg-amber-100" : "bg-black/50"}`}
+            >
+              <div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-yellow-500 to-amber-600 transition-all duration-1000"
+                style={{
+                  width: `${Math.min(100, (data.xp / data.next_rank_xp) * 100)}%`,
+                }}
+              ></div>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3 py-2 border-b border-t-0">
+          <div className="flex justify-between items-center px-1">
+            <span className={`text-xs font-bold uppercase tracking-widest ${isLight ? "text-slate-400" : "text-zinc-500"}`}>
+              {t.sidebar.settings}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex-1 flex rounded-xl p-1 border backdrop-blur-md justify-center ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
             >
               <button
                 onClick={() => setTheme("dark")}
-                className={`p-2 rounded-full transition-all ${theme === "dark" ? "bg-zinc-800 text-white shadow-lg" : "text-zinc-500 hover:text-black"}`}
+                className={`flex-1 flex justify-center p-2 rounded-lg transition-all ${theme === "dark" ? "bg-zinc-800 text-white shadow-lg" : "text-zinc-500 hover:text-black"}`}
               >
                 <Moon className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setTheme("light")}
-                className={`p-2 rounded-full transition-all ${theme === "light" ? "bg-white text-orange-500 shadow-lg" : "text-zinc-500 hover:text-white"}`}
+                className={`flex-1 flex justify-center p-2 rounded-lg transition-all ${theme === "light" ? "bg-white text-orange-500 shadow-lg" : "text-zinc-500 hover:text-white"}`}
               >
                 <Sun className="w-4 h-4" />
               </button>
             </div>
 
             <div
-              className={`hidden md:flex rounded-full p-1 border backdrop-blur-md ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+              className={`flex rounded-xl p-1 border backdrop-blur-md ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
             >
               <button
                 onClick={toggleBlur}
-                className={`p-2 rounded-full transition-all ${isBlurred ? "bg-zinc-800 text-white shadow-lg" : isLight ? "text-zinc-400 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
+                className={`p-2 rounded-lg transition-all ${isBlurred ? "bg-zinc-800 text-white shadow-lg" : isLight ? "text-zinc-400 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
               >
                 {isBlurred ? (
                   <EyeOff className="w-4 h-4" />
@@ -374,33 +339,116 @@ export function MainLayout({ children }: MainLayoutProps) {
                 )}
               </button>
             </div>
+          </div>
 
-            <div
-              className={`flex rounded-full p-1 border backdrop-blur-md items-center ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
-            >
+          <div
+            className={`flex rounded-xl p-1 border backdrop-blur-md items-center justify-between ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+          >
+            <div className="flex items-center">
               <Globe
-                className={`w-4 h-4 ml-2 mr-1 ${isLight ? "text-zinc-400" : "text-zinc-600"}`}
+                className={`w-4 h-4 ml-3 mr-2 ${isLight ? "text-zinc-400" : "text-zinc-600"}`}
               />
+              <span className={`text-xs font-bold ${isLight ? "text-slate-500" : "text-zinc-500"}`}>
+                Langue
+              </span>
+            </div>
+            <div className="flex">
               <button
                 onClick={() => setLanguage("fr")}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${language === "fr" ? "bg-emerald-500 text-white" : "text-zinc-500"}`}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${language === "fr" ? "bg-emerald-500 text-white" : "text-zinc-500"}`}
               >
                 FR
               </button>
               <button
                 onClick={() => setLanguage("es")}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${language === "es" ? "bg-orange-500 text-white" : "text-zinc-500"}`}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${language === "es" ? "bg-orange-500 text-white" : "text-zinc-500"}`}
               >
                 ES
               </button>
             </div>
+          </div>
+        </div>
 
+        <div
+          className={`flex items-center gap-3 px-2 ${isLight ? "text-slate-600" : "text-zinc-400"}`}
+        >
+          <User className="w-5 h-5" />
+          <span className="text-sm font-bold truncate flex-1">{user}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            className="hover:text-red-500 hover:bg-red-500/10"
+          >
+            <LogOut className="w-5 h-5" />
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div
+      className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}
+    >
+      {bg}
+      <aside
+        className={`hidden md:flex w-80 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}
+      >
+        <SidebarContent />
+      </aside>
+
+      <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 scrollbar-hide w-full max-w-full">
+        <div
+          className={`flex justify-between items-center sticky top-0 z-50 px-4 md:px-10 py-6 border-b transition-all duration-300 ${isLight ? "bg-white/95 border-emerald-900/5 shadow-sm" : "bg-zinc-950/95 border-white/5 shadow-md"}`}
+        >
+          <div className="flex items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden mr-2">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className={`p-0 w-[280px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
+                <SheetTitle className="sr-only">Menu de Navigation</SheetTitle>
+                <div className="flex flex-col h-full p-6 pt-10">
+                  <SidebarContent />
+                </div>
+              </SheetContent>
+            </Sheet>
+            <h2
+              className={`text-2xl md:text-4xl font-black uppercase tracking-tighter drop-shadow-sm ${textColor}`}
+            >
+              {activeTab === "recurring"
+                ? t.header.recurring
+                : activeTab === "pantry"
+                  ? t.header.pantry
+                  : activeTab === "goals"
+                    ? t.header.goals
+                    : activeTab === "dashboard"
+                      ? t.header.dashboard
+                      : activeTab === "analytics"
+                        ? t.header.analytics
+                        : activeTab === "coach"
+                          ? t.header.coach
+                          : activeTab === "history"
+                            ? t.header.history
+                            : activeTab === "market"
+                              ? "HessMarket"
+                              : activeTab === "settings"
+                                ? t.header.settings
+                                : activeTab}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-4">
             <Dialog open={openTx} onOpenChange={setOpenTx}>
               <DialogTrigger asChild>
                 <Button
-                  className={`${isLight ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-white text-black hover:bg-zinc-200"} font-black rounded-full h-12 px-6 shadow-xl hover:scale-105 transition-all`}
+                  className={`${isLight ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-white text-black hover:bg-zinc-200"} font-black rounded-full md:rounded-2xl h-12 w-12 md:w-auto p-0 md:px-6 shadow-xl hover:scale-105 transition-all focus:ring-4 focus:ring-emerald-500/20`}
                 >
-                  <Plus className="mr-2 w-5 h-5" /> {t.dialog.newTx}
+                  <Plus className="w-5 h-5 md:mr-2" />
+                  <span className="hidden md:inline">{t.dialog.newTx}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent

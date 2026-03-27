@@ -38,6 +38,7 @@ export const Translations = {
             pantry: "Frigo & Scan",
             goals: "Épargne",
             history: "Historique",
+            fuel: "Carburant",
             settings: "Paramètres",
             analytics: "Analyses"
         },
@@ -245,6 +246,36 @@ export const Translations = {
             start: "Lancer HessProtector",
             billName: "Nom (ex: Loyer)",
             billAmount: "€"
+        },
+        fuel: {
+            title: "Suivi Carburant",
+            addBtn: "+ Ajouter un Plein",
+            date: "Date du plein",
+            liters: "Volume (Litres)",
+            cost: "Prix Payé (€)",
+            odometer: "Kilométrage (km)",
+            type: "Carburant",
+            station: "Station (ex: Total, Leclerc...)",
+            isFullTank: "Plein complet ?",
+            addSubmit: "Enregistrer le plein",
+            history: "Historique des Pleins",
+            empty: "Aucun plein enregistré pour le moment.",
+            kpi: {
+                avgConsumption: "Conso Moyenne",
+                costPerKm: "Coût au km",
+                totalDistance: "Distance Globale",
+                totalCost: "Budget Carburant",
+                l100km: "L/100km",
+                euroKm: "€/km",
+                km: "km"
+            },
+            types: {
+                diesel: "Gazole",
+                sp95: "SP95",
+                sp98: "SP98",
+                e85: "Superéthanol E85",
+                e10: "SP95-E10"
+            }
         }
     },
     es: {
@@ -296,6 +327,7 @@ export const Translations = {
             pantry: "Despensa",
             goals: "Metas",
             history: "Historial",
+            fuel: "Combustible",
             settings: "Ajustes",
             analytics: "Análisis"
         },
@@ -503,6 +535,36 @@ export const Translations = {
             start: "Iniciar HessProtector",
             billName: "Nombre (ej: Alquiler)",
             billAmount: "€"
+        },
+        fuel: {
+            title: "Seguimiento Combustible",
+            addBtn: "+ Añadir Repostaje",
+            date: "Fecha del repostaje",
+            liters: "Volumen (Litros)",
+            cost: "Precio Pagado (€)",
+            odometer: "Kilometraje (km)",
+            type: "Combustible",
+            station: "Estación (ej: Repsol...)",
+            isFullTank: "¿Tanque lleno?",
+            addSubmit: "Registrar repostaje",
+            history: "Historial de Repostajes",
+            empty: "Aún no hay repostajes registrados.",
+            kpi: {
+                avgConsumption: "Consumo Medio",
+                costPerKm: "Coste por km",
+                totalDistance: "Distancia Global",
+                totalCost: "Gasto Combustible",
+                l100km: "L/100km",
+                euroKm: "€/km",
+                km: "km"
+            },
+            types: {
+                diesel: "Diésel",
+                sp95: "Gasolina 95",
+                sp98: "Gasolina 98",
+                e85: "Bioetanol E85",
+                e10: "Gasolina 95-E10"
+            }
         }
     }
 }

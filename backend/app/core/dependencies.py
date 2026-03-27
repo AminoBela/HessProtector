@@ -10,6 +10,7 @@ from app.repositories import (
     ProfileRepository,
     PlansRepository,
     BudgetRepository,
+    FuelRepository,
 )
 
 def get_transaction_repository(session: Session = Depends(get_session)):
@@ -42,3 +43,6 @@ def get_coach_service():
 
 def get_gamification_service():
     return ServiceFactory.create_gamification_service()
+
+def get_fuel_repository(session: Session = Depends(get_session)):
+    return FuelRepository(session)

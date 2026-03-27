@@ -170,19 +170,21 @@ export function RecurringView({
             <CardContent>
               <div className="overflow-x-auto pb-2">
                 <div
-                  className={`min-w-[700px] grid grid-cols-7 gap-1 p-4 rounded-2xl border ${isLight ? "bg-slate-50 border-emerald-900/5" : "bg-black/20 border-white/5"}`}
+                  className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 md:min-w-[700px] gap-2 p-2 md:p-4 rounded-2xl border ${isLight ? "bg-slate-50 border-emerald-900/5" : "bg-black/20 border-white/5"}`}
                 >
-                  {t.recurring.weekDays.map((d: string, i: number) => (
-                    <div
-                      key={i}
-                      className={`p-2 text-center text-xs font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-                    >
-                      {d}
-                    </div>
-                  ))}
-                  {Array.from({ length: offset }).map((_, i) => (
-                    <div key={`e-${i}`} className="h-24"></div>
-                  ))}
+                  <div className="hidden md:contents">
+                    {t.recurring.weekDays.map((d: string, i: number) => (
+                      <div
+                        key={i}
+                        className={`p-2 text-center text-xs font-black ${isLight ? "text-slate-400" : "text-zinc-500"}`}
+                      >
+                        {d}
+                      </div>
+                    ))}
+                    {Array.from({ length: offset }).map((_, i) => (
+                      <div key={`e-${i}`} className="h-24"></div>
+                    ))}
+                  </div>
                   {Array.from({ length: currentMonthDays }).map((_, i) => {
                     const dayNum = i + 1;
                     const isToday = dayNum === today.getDate();
