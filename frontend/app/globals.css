@@ -135,7 +135,8 @@
 
 @layer components {
   .card-glass {
-    @apply backdrop-blur-2xl border transition-[border-color,box-shadow,transform] duration-500 transform-gpu overflow-hidden;
+    @apply backdrop-blur-md border transition-[border-color,box-shadow,transform] duration-500 transform-gpu overflow-hidden;
+    will-change: transform, backdrop-filter;
     border-radius: 1.5rem !important;
   }
 

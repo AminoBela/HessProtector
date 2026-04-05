@@ -155,12 +155,12 @@ export function MainLayout({ children }: MainLayoutProps) {
   const SidebarItem = ({ id, icon: Icon, label }: any) => (
     <Link
       href={`/${id}`}
-      className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}
+      className={`w-full flex items-center gap-4 px-4 py-3.5 md:py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}
     >
       <Icon
-        className={`w-5 h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
+        className={`w-6 h-6 md:w-5 md:h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
       />{" "}
-      <span className="text-sm uppercase tracking-widest font-black">
+      <span className="text-[15px] md:text-sm uppercase tracking-widest font-black">
         {label}
       </span>
     </Link>
@@ -245,7 +245,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       >
         {data && data.rank && (
           <div
-            className={`p-4 rounded-xl border relative overflow-hidden group transition-all
+            className={`p-3 rounded-xl border relative overflow-hidden group transition-all
                           ${isLight
                 ? "bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/60 shadow-md"
                 : "bg-gradient-to-br from-indigo-900/50 to-purple-900/50 border-white/10"
@@ -254,9 +254,9 @@ export function MainLayout({ children }: MainLayoutProps) {
             <div
               className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isLight ? "bg-amber-100/30" : "bg-white/5"}`}
             ></div>
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-1.5">
               <div
-                className={`p-2 rounded-lg ${isLight ? "bg-amber-100 text-amber-600" : "bg-yellow-500/20 text-yellow-400"}`}
+                className={`p-1.5 rounded-lg ${isLight ? "bg-amber-100 text-amber-600" : "bg-yellow-500/20 text-yellow-400"}`}
               >
                 {data.rank === "Rentier" ? (
                   <Crown className="w-5 h-5" />
@@ -273,7 +273,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   {t.rank.title}
                 </p>
                 <p
-                  className={`text-sm font-black ${isLight ? "text-slate-800" : "text-white"}`}
+                  className={`text-sm font-black leading-tight ${isLight ? "text-slate-800" : "text-white"}`}
                 >
                   {language === "es"
                     ? data.rank === "Rentier"
@@ -300,37 +300,57 @@ export function MainLayout({ children }: MainLayoutProps) {
           </div>
         )}
 
-        <div className="flex flex-col gap-3 py-2 border-b border-t-0">
+        <div className="flex flex-col gap-2 py-3 border-b border-t-0">
           <div className="flex justify-between items-center px-1">
-            <span className={`text-xs font-bold uppercase tracking-widest ${isLight ? "text-slate-400" : "text-zinc-500"}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? "text-slate-400" : "text-zinc-500"}`}>
               {t.sidebar.settings}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-1">
+            {/* Theme Toggle */}
             <div
-              className={`flex-1 flex rounded-xl p-1 border backdrop-blur-md justify-center ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+              className={`flex rounded-lg p-0.5 border ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
             >
               <button
                 onClick={() => setTheme("dark")}
-                className={`flex-1 flex justify-center p-2 rounded-lg transition-all ${theme === "dark" ? "bg-zinc-800 text-white shadow-lg" : "text-zinc-500 hover:text-black"}`}
+                className={`p-1.5 rounded-md transition-all ${theme === "dark" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-black"}`}
               >
                 <Moon className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setTheme("light")}
-                className={`flex-1 flex justify-center p-2 rounded-lg transition-all ${theme === "light" ? "bg-white text-orange-500 shadow-lg" : "text-zinc-500 hover:text-white"}`}
+                className={`p-1.5 rounded-md transition-all ${theme === "light" ? "bg-white text-orange-500 shadow-sm" : "text-zinc-500 hover:text-white"}`}
               >
                 <Sun className="w-4 h-4" />
               </button>
             </div>
 
+            {/* Language Toggle */}
             <div
-              className={`flex rounded-xl p-1 border backdrop-blur-md ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+              className={`flex rounded-lg p-0.5 border ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
+            >
+              <button
+                onClick={() => setLanguage("fr")}
+                className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${language === "fr" ? "bg-emerald-500 text-white" : "text-zinc-500"}`}
+              >
+                FR
+              </button>
+              <button
+                onClick={() => setLanguage("es")}
+                className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${language === "es" ? "bg-orange-500 text-white" : "text-zinc-500"}`}
+              >
+                ES
+              </button>
+            </div>
+
+            {/* Blur Toggle */}
+            <div
+              className={`flex rounded-lg p-0.5 border ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
             >
               <button
                 onClick={toggleBlur}
-                className={`p-2 rounded-lg transition-all ${isBlurred ? "bg-zinc-800 text-white shadow-lg" : isLight ? "text-zinc-400 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
+                className={`p-1.5 rounded-md transition-all ${isBlurred ? "bg-zinc-800 text-white shadow-sm" : isLight ? "text-zinc-400 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
               >
                 {isBlurred ? (
                   <EyeOff className="w-4 h-4" />
@@ -340,37 +360,10 @@ export function MainLayout({ children }: MainLayoutProps) {
               </button>
             </div>
           </div>
-
-          <div
-            className={`flex rounded-xl p-1 border backdrop-blur-md items-center justify-between ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/40 border-white/10"}`}
-          >
-            <div className="flex items-center">
-              <Globe
-                className={`w-4 h-4 ml-3 mr-2 ${isLight ? "text-zinc-400" : "text-zinc-600"}`}
-              />
-              <span className={`text-xs font-bold ${isLight ? "text-slate-500" : "text-zinc-500"}`}>
-                Langue
-              </span>
-            </div>
-            <div className="flex">
-              <button
-                onClick={() => setLanguage("fr")}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${language === "fr" ? "bg-emerald-500 text-white" : "text-zinc-500"}`}
-              >
-                FR
-              </button>
-              <button
-                onClick={() => setLanguage("es")}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${language === "es" ? "bg-orange-500 text-white" : "text-zinc-500"}`}
-              >
-                ES
-              </button>
-            </div>
-          </div>
         </div>
 
         <div
-          className={`flex items-center gap-3 px-2 ${isLight ? "text-slate-600" : "text-zinc-400"}`}
+          className={`flex items-center gap-3 px-2 py-1 ${isLight ? "text-slate-600" : "text-zinc-400"}`}
         >
           <User className="w-5 h-5" />
           <span className="text-sm font-bold truncate flex-1">{user}</span>
@@ -389,7 +382,7 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div
-      className={`flex h-screen font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}
+      className={`flex h-[100dvh] font-sans overflow-hidden selection:bg-emerald-500/30 ${textColor}`}
     >
       {bg}
       <aside
@@ -409,7 +402,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className={`p-0 w-[280px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
+              <SheetContent side="left" className={`p-0 w-[320px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
                 <SheetTitle className="sr-only">Menu de Navigation</SheetTitle>
                 <div className="flex flex-col h-full p-6 pt-10">
                   <SidebarContent />
