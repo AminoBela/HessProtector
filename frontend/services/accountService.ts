@@ -4,7 +4,7 @@ const BASE_URL = "/account";
 
 export const AccountService = {
     async exportData(token: string) {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8000/api');
         const url = `${apiBase}/account/export`;
         const headers: HeadersInit = {
             "Authorization": `Bearer ${token}`
