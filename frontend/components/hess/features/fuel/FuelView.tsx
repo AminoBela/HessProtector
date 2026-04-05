@@ -34,6 +34,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
     });
 
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [actionMenuEntry, setActionMenuEntry] = useState<any>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -221,13 +222,15 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ScrollArea className="h-fit max-h-[600px]">
+                            <ScrollArea className="h-[600px] pr-2 md:pr-4">
                                 {fuelLog.length === 0 ? (
                                     <div className="text-center py-20 opacity-50 italic font-medium">{t.fuel.empty}</div>
                                 ) : (
                                     <div className="space-y-4 p-4 md:p-6">
                                         {fuelLog.map((entry) => (
-                                            <motion.div key={entry.id} variants={item} className={`group relative overflow-hidden p-5 md:p-6 rounded-3xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 ${isLight ? "bg-white border-slate-100 hover:border-emerald-500/30" : "bg-black/40 border-white/5 hover:bg-zinc-900/80 hover:border-emerald-500/30"}`}>
+                                            <div key={entry.id}
+                                                onClick={() => setActionMenuEntry(entry)}
+                                                className={`group cursor-pointer relative p-4 md:p-6 rounded-3xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10 ${isLight ? "bg-white border-slate-100 hover:bg-emerald-50/50 hover:border-emerald-500/30" : "bg-black/40 border-white/5 hover:bg-emerald-500/5 hover:border-emerald-500/30"}`}>
                                                 <div className="flex items-center gap-5 relative z-10 w-full md:w-auto">
                                                     <div className={`p-4 rounded-2xl transition-colors duration-300 ${isLight ? "bg-emerald-100/50 text-emerald-600 group-hover:bg-emerald-100" : "bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20"}`}>
                                                         <Fuel className="w-6 h-6" />
@@ -260,8 +263,8 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-6 w-full md:w-auto mt-4 md:mt-0 justify-between md:justify-end relative z-10 border-t border-white/5 md:border-t-0 pt-4 md:pt-0">
-                                                    <div className="text-right">
+                                                <div className="flex items-center gap-6 w-full md:w-auto mt-2 md:mt-0 justify-end md:justify-end relative z-10 border-t border-white/5 md:border-t-0 pt-2 md:pt-0">
+                                                    <div className="text-right flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end w-full md:w-auto mt-2 md:mt-0 gap-2 md:gap-0">
                                                         <div className={`text-2xl font-black text-rose-500 tracking-tight transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}>
                                                             -{entry.total_cost.toFixed(2)}€
                                                         </div>
@@ -269,19 +272,8 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                                                             {(entry.total_cost / entry.liters).toFixed(3)} €/L
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-1.5 bg-slate-100/50 dark:bg-black/40 border border-slate-200/50 dark:border-white/5 p-1 rounded-xl">
-                                                        <Button variant="ghost" size="icon" onClick={() => handleEdit(entry)} className="h-9 w-9 rounded-lg hover:text-blue-500 hover:bg-blue-500/10 dark:hover:text-blue-400">
-                                                            <Pencil className="w-4 h-4" />
-                                                        </Button>
-                                                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(entry.id!)} className="h-9 w-9 rounded-lg hover:text-red-500 hover:bg-red-500/10 dark:hover:text-red-400">
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </Button>
-                                                    </div>
                                                 </div>
-                                                
-                                                {/* Decorative background glow */}
-                                                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                                            </motion.div>
+                                            </div>
                                         ))}
                                     </div>
                                 )}
@@ -290,6 +282,42 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                     </Card>
                 </div>
             </div>
+
+            <Dialog
+                open={!!actionMenuEntry}
+                onOpenChange={(open) => !open && setActionMenuEntry(null)}
+            >
+                <DialogContent
+                    className={
+                        isLight
+                            ? "bg-white/95 backdrop-blur-xl border-emerald-900/10 text-slate-800 w-11/12 max-w-sm rounded-3xl"
+                            : "bg-zinc-950/95 backdrop-blur-xl border-white/10 text-white w-11/12 max-w-sm rounded-3xl"
+                    }
+                >
+                    <DialogHeader>
+                        <DialogTitle className="text-center text-xl font-black">{actionMenuEntry?.date}</DialogTitle>
+                        <div className={`text-center font-bold text-sm text-rose-500`}>
+                            -{actionMenuEntry?.total_cost?.toFixed(2)}€
+                        </div>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 py-4">
+                        <Button
+                            variant="outline"
+                            className={`h-14 font-bold rounded-2xl flex items-center justify-start gap-4 px-6 shadow-sm border ${isLight ? "bg-slate-50 border-slate-200 hover:bg-slate-100" : "bg-black/20 border-white/5 hover:bg-white/5"}`}
+                            onClick={() => { handleEdit(actionMenuEntry); setActionMenuEntry(null); }}
+                        >
+                            <Pencil className="w-5 h-5 text-emerald-500" /> <span className="text-base">{t.common?.edit || "Modifier"}</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className={`h-14 font-bold rounded-2xl flex items-center justify-start gap-4 px-6 shadow-sm border text-rose-500 hover:text-rose-600 ${isLight ? "bg-rose-50 border-rose-100 hover:bg-rose-100" : "bg-rose-950/20 border-rose-900/30 hover:bg-rose-900/40"}`}
+                            onClick={() => { setDeleteId(actionMenuEntry.id); setActionMenuEntry(null); }}
+                        >
+                            <Trash2 className="w-5 h-5" /> <span className="text-base">{t.common?.delete || "Supprimer"}</span>
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <DialogContent className={`border-0 rounded-3xl p-6 md:p-8 overflow-hidden backdrop-blur-2xl shadow-2xl ${isLight ? "bg-white/80" : "bg-zinc-950/80"}`}>

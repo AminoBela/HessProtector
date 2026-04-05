@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ShieldCheck, ArrowRight, Plus, Rocket, Utensils, Coins, CheckCircle2, Wallet, X } from "lucide-react";
+import { ShieldCheck, ArrowRight, Plus, Rocket, Utensils, Coins, CheckCircle2, Wallet, X, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Translations } from "@/lib/i18n";
 import { useSettings } from "@/context/SettingsContext";
@@ -20,7 +20,7 @@ interface SetupWizardProps {
 }
 
 export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
-  const { theme } = useSettings();
+  const { theme, language } = useSettings();
   const isLight = theme === "light";
 
   const [setupStep, setSetupStep] = useState(0);
@@ -156,7 +156,12 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                   animate={{ opacity: 1, y: 0 }}
                   className={`space-y-4 pt-8 border-t ${isLight ? 'border-slate-200' : 'border-white/10'}`}
                 >
-                  <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>Préférences Coach</p>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className={`p-2 rounded-lg ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
+                      <Bot className="w-5 h-5" />
+                    </div>
+                    <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{language === "es" ? "Preferencias del Coach" : "Préférences Coach"}</p>
+                  </div>
                   <div className="flex items-center gap-4">
                     <div className={`p-4 rounded-2xl ${isLight ? "bg-slate-200 text-slate-500" : "bg-white/5 text-zinc-400"}`}>
                       <Utensils className="w-6 h-6" />

@@ -168,44 +168,44 @@ export function DashboardView({
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 mt-6">
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-1 mt-2">
                 <span
-                  className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter transition-all duration-500 ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : "blur-none"}`}
+                  className={`text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : "blur-none"}`}
                 >
                   {statsData ? statsData.net_result.toFixed(2) : "..."}
                 </span>
-                <span className="text-2xl md:text-3xl text-emerald-400 font-thin">€</span>
+                <span className="text-3xl md:text-5xl font-bold opacity-50">€</span>
               </div>
-              <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm font-bold">
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 font-bold">
                 <div
-                  className={`col-span-1 px-3 py-3 md:px-5 rounded-2xl border flex items-center justify-center md:justify-start gap-2 md:gap-3 ${pillBg} ${pillText}`}
+                  className={`col-span-1 p-4 md:p-5 rounded-[24px] border flex flex-col justify-center items-center gap-1 transition-all ${pillBg} ${pillText}`}
                 >
-                  <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-emerald-500 hidden md:block" />
-                  <span className="flex-1 text-center md:text-left">
-                    <span className="md:hidden block text-emerald-500 mb-1"><TrendingUp className="w-4 h-4 mx-auto" /></span>
-                    <span className={`transition-all duration-500 font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
-                      +{statsData ? statsData.total_income.toFixed(0) : 0}€
-                    </span>
+                  <span className="text-[10px] md:text-xs uppercase font-black opacity-50 tracking-wider">
+                    {language === "es" ? "Ingresos" : "Entrées"}
+                  </span>
+                  <span className={`text-lg md:text-xl font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
+                    +{statsData ? statsData.total_income.toFixed(0) : 0}€
                   </span>
                 </div>
                 <div
-                  className={`col-span-1 px-3 py-3 md:px-5 rounded-2xl border flex items-center justify-center md:justify-start gap-2 md:gap-3 ${pillBg} ${pillText}`}
+                  className={`col-span-1 p-4 md:p-5 rounded-[24px] border flex flex-col justify-center items-center gap-1 transition-all ${pillBg} ${pillText}`}
                 >
-                  <Zap className="w-4 h-4 md:w-5 md:h-5 text-rose-500 hidden md:block" />
-                  <span className="flex-1 text-center md:text-left">
-                    <span className="md:hidden block text-rose-500 mb-1"><Zap className="w-4 h-4 mx-auto" /></span>
-                    <span className={`transition-all duration-500 font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
-                      -{statsData ? statsData.total_expense.toFixed(0) : 0}€
-                    </span>
+                  <span className="text-[10px] md:text-xs uppercase font-black opacity-50 tracking-wider">
+                    {language === "es" ? "Gastos" : "Sorties"}
+                  </span>
+                  <span className={`text-lg md:text-xl font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
+                    -{statsData ? statsData.total_expense.toFixed(0) : 0}€
                   </span>
                 </div>
                 <div
-                  className={`col-span-2 md:col-span-1 px-4 py-3 md:px-5 rounded-2xl border flex items-center justify-center gap-2 md:gap-3 ${pillBg} ${statsData && statsData.net_result >= 0 ? "text-emerald-500" : "text-rose-500"}`}
+                  className={`col-span-2 md:col-span-1 p-4 md:p-5 rounded-[24px] border flex flex-col justify-center items-center gap-1 transition-all ${pillBg} ${statsData && statsData.net_result >= 0 ? "text-emerald-500" : "text-rose-500"}`}
                 >
-                  <Wallet className="w-5 h-5 hidden md:block" /> {t.balance}:{" "}
-                  {statsData && statsData.net_result >= 0
-                    ? t.surplus
-                    : t.deficit}
+                  <span className="text-[10px] md:text-xs uppercase font-black opacity-50 tracking-wider">
+                    {t.balance}
+                  </span>
+                  <span className="text-lg md:text-xl font-black">
+                    {statsData && statsData.net_result >= 0 ? t.surplus : t.deficit}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -226,11 +226,17 @@ export function DashboardView({
                 >
                   {t.safeBalance}
                 </h3>
-                <div
-                  className={`text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
-                >
-                  {data?.safe_balance?.toFixed(2)}€
+                <div className="flex items-baseline gap-1 mt-2">
+                  <span
+                    className={`text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                  >
+                    {data?.safe_balance?.toFixed(2)}
+                  </span>
+                  <span className="text-3xl md:text-5xl font-bold opacity-50">€</span>
                 </div>
+                <p className={`text-[10px] md:text-xs font-bold uppercase mt-2 opacity-50 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
+                  {language === "es" ? "Dinero real disponible tras gastos fijos" : "Reste à vivre réel après charges fixes"}
+                </p>
               </div>
               <div
                 className={`p-3 rounded-full ${isLight ? "bg-emerald-100/50 text-emerald-600" : "bg-emerald-500/10 text-emerald-400"}`}

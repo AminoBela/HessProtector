@@ -196,63 +196,9 @@ export function MainLayout({ children }: MainLayoutProps) {
     );
   }
 
-  const SidebarContent = () => (
-    <>
-      <div className="h-24 flex items-center justify-center md:justify-start gap-4 mb-4 mt-2 md:mt-0">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg">
-          <ShieldCheck className="w-7 h-7 text-black" />
-        </div>
-        <div>
-          <h1 className={`font-black text-2xl tracking-tighter ${textColor}`}>
-            Hess<span className="text-emerald-500">Protector</span>
-          </h1>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-1.5 overflow-y-auto scrollbar-hide px-3 py-2">
-        <SidebarItem
-          id="dashboard"
-          icon={LayoutDashboard}
-          label={t.sidebar.dashboard}
-        />
-        <SidebarItem
-          id="analytics"
-          icon={ChartPie}
-          label={t.sidebar.analytics}
-        />
-        <SidebarItem id="coach" icon={Bot} label={t.sidebar.coach} />
-        <SidebarItem
-          id="recurring"
-          icon={CalendarDays}
-          label={t.sidebar.recurring}
-        />
-        <SidebarItem id="pantry" icon={Utensils} label={t.sidebar.pantry} />
-        <SidebarItem id="goals" icon={Target} label={t.sidebar.goals} />
-        <SidebarItem
-          id="history"
-          icon={TrendingUp}
-          label={t.sidebar.history}
-        />
-        <SidebarItem id="fuel" icon={Fuel} label={t.sidebar.fuel} />
-        <SidebarItem id="market" icon={ShoppingBag} label="HessMarket" />
-        <SidebarItem
-          id="settings"
-          icon={Settings}
-          label={t.sidebar.settings}
-        />
-      </div>
-
-      <button
-        onClick={() => setShowSettingsOnMobile(!showSettingsOnMobile)}
-        className={`md:hidden mt-2 w-full flex items-center justify-between px-4 py-3 rounded-xl border ${isLight ? "bg-slate-50 border-slate-200 text-slate-700" : "bg-black/20 border-white/5 text-zinc-300"}`}
-      >
-        <span className="text-xs font-bold uppercase tracking-wider">Préférences</span>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showSettingsOnMobile ? "rotate-180" : ""}`} />
-      </button>
-
-      <div
-        className={`mt-2 md:mt-4 pt-2 md:pt-4 md:border-t space-y-3 md:space-y-4 ${isLight ? "md:border-slate-200/60" : "md:border-white/5"} ${showSettingsOnMobile ? "block" : "hidden md:block"}`}
-      >
+  const SidebarContent = () => {
+    const preferencesJSX = (
+      <>
         {data && data.rank && (
           <div
             className={`p-3 rounded-xl border relative overflow-hidden group transition-all
@@ -386,9 +332,83 @@ export function MainLayout({ children }: MainLayoutProps) {
             <LogOut className="w-5 h-5" />
           </Button>
         </div>
+      </>
+    );
+
+    return (
+      <>
+        <div className="h-24 flex items-center justify-center md:justify-start gap-4 mb-4 mt-2 md:mt-0">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg">
+          <ShieldCheck className="w-7 h-7 text-black" />
+        </div>
+        <div>
+          <h1 className={`font-black text-2xl tracking-tighter ${textColor}`}>
+            Hess<span className="text-emerald-500">Protector</span>
+          </h1>
+        </div>
       </div>
-    </>
-  );
+
+      <div className="flex-1 space-y-1.5 overflow-y-auto scrollbar-hide px-3 py-2">
+        <SidebarItem
+          id="dashboard"
+          icon={LayoutDashboard}
+          label={t.sidebar.dashboard}
+        />
+        <SidebarItem
+          id="analytics"
+          icon={ChartPie}
+          label={t.sidebar.analytics}
+        />
+        <SidebarItem id="coach" icon={Bot} label={t.sidebar.coach} />
+        <SidebarItem
+          id="recurring"
+          icon={CalendarDays}
+          label={t.sidebar.recurring}
+        />
+        <SidebarItem id="pantry" icon={Utensils} label={t.sidebar.pantry} />
+        <SidebarItem id="goals" icon={Target} label={t.sidebar.goals} />
+        <SidebarItem
+          id="history"
+          icon={TrendingUp}
+          label={t.sidebar.history}
+        />
+        <SidebarItem id="fuel" icon={Fuel} label={t.sidebar.fuel} />
+        <SidebarItem id="market" icon={ShoppingBag} label="HessMarket" />
+        <SidebarItem
+          id="settings"
+          icon={Settings}
+          label={t.sidebar.settings}
+        />
+      </div>
+
+      <button
+        onClick={() => setShowSettingsOnMobile(!showSettingsOnMobile)}
+        className={`md:hidden mt-2 w-full flex items-center justify-between px-4 py-3 rounded-xl border ${isLight ? "bg-slate-50 border-slate-200 text-slate-700" : "bg-black/20 border-white/5 text-zinc-300"}`}
+      >
+        <span className="text-xs font-bold uppercase tracking-wider">{language === "es" ? "Preferencias" : "Préférences"}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showSettingsOnMobile ? "rotate-180" : ""}`} />
+      </button>
+
+      <AnimatePresence initial={false}>
+        {showSettingsOnMobile && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden space-y-3 mt-2"
+          >
+            {preferencesJSX}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+        <div className={`hidden md:block space-y-4 md:border-t mt-4 pt-4 ${isLight ? "border-slate-200/60" : "border-white/5"}`}>
+          {preferencesJSX}
+        </div>
+      </>
+    );
+  };
 
   return (
     <div
@@ -398,7 +418,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <aside
         className={`hidden md:flex w-80 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}
       >
-        <SidebarContent />
+        {SidebarContent()}
       </aside>
 
       <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 scrollbar-hide w-full max-w-full">
@@ -415,7 +435,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <SheetContent side="left" className={`p-0 w-[320px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
                 <SheetTitle className="sr-only">Menu de Navigation</SheetTitle>
                 <div className="flex flex-col h-full p-6 pt-10">
-                  <SidebarContent />
+                  {SidebarContent()}
                 </div>
               </SheetContent>
             </Sheet>

@@ -268,8 +268,9 @@ export function SettingsView({
                 </TabsTrigger>
                 <TabsTrigger value="budget" className={tabTriggerStyle}>
                   <Shield className="w-4 h-4 mr-2" />
-                  Bouclier
-                </TabsTrigger>
+                  <p className="font-medium text-[10px] md:text-sm">
+                  {language === "es" ? "Escudo" : "Bouclier"}
+                </p></TabsTrigger>
               </TabsList>
             </div>
 
@@ -283,7 +284,9 @@ export function SettingsView({
                     <h3
                       className={`text-sm font-bold uppercase tracking-wider mb-4 opacity-70 flex items-center gap-2 ${isLight ? "text-slate-900" : "text-white"}`}
                     >
-                      <Settings className="w-4 h-4" /> Préférences
+                      <span className="flex items-center gap-2">
+                      <Settings className="w-4 h-4" /> {language === "es" ? "Preferencias" : "Préférences"}
+                    </span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-3">
@@ -667,7 +670,9 @@ export function SettingsView({
                     <h3
                       className={`text-sm font-bold uppercase tracking-wider mb-4 opacity-70 flex items-center gap-2 ${isLight ? "text-slate-900" : "text-white"}`}
                     >
-                      <Shield className="w-4 h-4" /> Bouclier Budgétaire
+                      <span className="flex items-center gap-2">
+                      <Shield className="w-4 h-4" /> {language === "es" ? "Escudo Presupuestario" : "Bouclier Budgétaire"}
+                    </span>
                     </h3>
                     <div className="flex gap-4 items-end mb-6">
                       <div className="flex-1 flex flex-col">

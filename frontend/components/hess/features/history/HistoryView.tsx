@@ -78,12 +78,12 @@ export function HistoryView({
     : "card-glass card-glass-dark";
 
   const inputStyle = isLight
-    ? "bg-white border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 h-12 rounded-xl"
-    : "bg-zinc-950/60 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 h-12 rounded-xl";
+    ? "bg-white/50 border-emerald-900/10 text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 min-h-[56px] h-14 rounded-2xl shadow-sm px-4"
+    : "bg-black/20 border-white/10 text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-emerald-500/50 min-h-[56px] h-14 rounded-2xl shadow-inner px-4";
 
   const selectStyle = isLight
-    ? "w-full h-12 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50"
-    : "w-full h-12 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50";
+    ? "w-full min-h-[56px] h-14 px-4 rounded-2xl border border-emerald-900/10 bg-white/50 text-slate-800 focus:ring-2 focus:ring-emerald-500/50 shadow-sm flex items-center justify-between"
+    : "w-full min-h-[56px] h-14 px-4 rounded-2xl border border-white/10 bg-black/20 text-white focus:ring-2 focus:ring-emerald-500/50 shadow-inner flex items-center justify-between";
 
   const itemBg = isLight
     ? "bg-white border-emerald-900/5 hover:bg-emerald-50/50"
@@ -100,8 +100,8 @@ export function HistoryView({
   return (
     <motion.div key={language} variants={container} initial="hidden" animate="show">
       <Card className={`border-0 ${cardGlass}`}>
-        <CardContent className="p-8">
-          <ScrollArea className="h-[600px] pr-4">
+        <CardContent className="p-4 md:p-8">
+          <ScrollArea className="h-[600px] pr-2 md:pr-4">
             <div className="space-y-3">
               {(data?.transactions || []).length === 0 ? (
                 <div className={`text-center mt-10 ${subTextColor}`}>
@@ -109,11 +109,10 @@ export function HistoryView({
                 </div>
               ) : (
                 (data?.transactions || []).map((tx: any) => (
-                  <motion.div
-                    variants={item}
+                  <div
                     key={tx.id}
                     onClick={() => setActionMenuTx(tx)}
-                    className={`flex flex-row justify-between items-center p-3 md:p-5 rounded-2xl border transition-all duration-300 gap-2 md:gap-4 cursor-pointer hover:scale-[1.01] ${itemBg}`}
+                    className={`flex flex-row justify-between items-center p-3 md:p-5 rounded-2xl border transition-all duration-300 gap-2 md:gap-4 cursor-pointer hover:shadow-lg ${itemBg}`}
                   >
                     <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
                       <div
@@ -140,7 +139,7 @@ export function HistoryView({
                         {tx.amount.toFixed(2)}€
                       </span>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               )}
             </div>
@@ -189,15 +188,17 @@ export function HistoryView({
             <DialogContent
               className={
                 isLight
-                  ? "bg-white/90 backdrop-blur-xl border-emerald-900/10 text-slate-800"
-                  : "bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white"
+                  ? "bg-white/95 backdrop-blur-2xl border-emerald-900/10 text-slate-800 w-11/12 max-w-lg rounded-[32px] p-6 md:p-8"
+                  : "bg-zinc-950/95 backdrop-blur-2xl border-white/10 text-white w-11/12 max-w-lg rounded-[32px] p-6 md:p-8"
               }
             >
-              <DialogHeader>
-                <DialogTitle>{t.common.edit || "Modifier"} {t.history.title || "Transaction"}</DialogTitle>
+              <DialogHeader className="mb-4">
+                <DialogTitle className="text-2xl font-black tracking-tight">{t.common.edit || "Modifier"} {t.history.title || "Transaction"}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
-                <Input
+              <div className="space-y-4 md:space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-2">{t.dialog.label || "Libellé"}</label>
+                  <Input
                   placeholder={t.dialog.label}
                   className={inputStyle}
                   value={editForm.label}
@@ -205,27 +206,36 @@ export function HistoryView({
                     setEditForm({ ...editForm, label: e.target.value })
                   }
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    type="number"
-                    placeholder={t.dialog.amount}
-                    className={inputStyle}
-                    value={editForm.amount}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, amount: e.target.value })
-                    }
-                  />
-                  <Input
+                </div>
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-2">{t.dialog.amount || "Montant"}</label>
+                    <Input
+                      type="number"
+                      placeholder={t.dialog.amount}
+                      className={inputStyle}
+                      value={editForm.amount}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, amount: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-2">Date</label>
+                    <Input
                     type="date"
                     className={inputStyle}
                     value={editForm.date}
                     onChange={(e) =>
                       setEditForm({ ...editForm, date: e.target.value })
                     }
-                  />
+                />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Select
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-4 md:gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-2">{t.dialog.type || "Type"}</label>
+                    <Select
                     value={editForm.type}
                     onValueChange={(val) =>
                       setEditForm({ ...editForm, type: val })
@@ -239,7 +249,10 @@ export function HistoryView({
                       <SelectItem value="revenu">{t.dialog.income}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-2">{t.dialog.category || "Catégorie"}</label>
+                    <Select
                     value={editForm.category}
                     onValueChange={(val) =>
                       setEditForm({ ...editForm, category: val })
@@ -258,12 +271,13 @@ export function HistoryView({
                       <SelectItem value="Autre">Autre</SelectItem>
                     </SelectContent>
                   </Select>
+                  </div>
                 </div>
                 <Button
                   variant="premium"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="w-full h-12 rounded-xl"
+                  className="w-full h-14 mt-4 rounded-2xl font-black tracking-wider text-base shadow-lg"
                 >
                   {isSaving ? (
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
