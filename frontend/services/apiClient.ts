@@ -10,10 +10,10 @@ export const ApiService = {
         }
 
         // Append a timestamp to prevent any browser/Next.js fetch caching
-        const url = new URL(`${API_BASE_URL}${endpoint}`);
-        url.searchParams.append('_t', Date.now().toString());
+        const separator = endpoint.includes('?') ? '&' : '?';
+        const urlStr = `${API_BASE_URL}${endpoint}${separator}_t=${Date.now()}`;
 
-        const res = await fetch(url.toString(), {
+        const res = await fetch(urlStr, {
             headers,
             credentials: 'include',
             cache: 'no-store'
