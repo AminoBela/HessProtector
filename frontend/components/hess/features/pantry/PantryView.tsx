@@ -35,6 +35,8 @@ import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
+import { differenceInDays } from "date-fns";
+import { AlertCircle } from "lucide-react";
 
 const getCategoryIcon = (cat: string) => {
   switch (cat) {
@@ -148,11 +150,22 @@ export function PantryView({
           className={`h-fit border-0 ${cardGlass} p-6 relative overflow-hidden`}
         >
           {scanning && (
-            <div className="absolute inset-0 bg-black/80 z-20 flex flex-col items-center justify-center">
-              <ScanLine className="w-16 h-16 text-emerald-400 animate-ping" />
-              <p className="mt-4 font-bold text-emerald-400 uppercase tracking-widest animate-pulse">
-                {t.pantry.scanning}
-              </p>
+            <div className="absolute inset-0 bg-black/95 z-30 flex flex-col items-center justify-center overflow-hidden rounded-3xl">
+              <div className="relative w-48 h-48 border-2 border-emerald-500/20 rounded-2xl p-4 flex items-center justify-center">
+                <motion.div 
+                  initial={{ top: "0%" }}
+                  animate={{ top: ["0%", "100%", "0%"] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 right-0 h-1 bg-emerald-400 blur-[2px] shadow-[0_0_20px_5px_rgba(52,211,153,0.8)] z-50 rounded-full"
+                />
+                <ScanLine className="w-20 h-20 text-emerald-500/40" />
+              </div>
+              <div className="mt-8 flex items-center gap-3">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                <p className="font-mono font-bold text-emerald-400 uppercase tracking-[0.2em] animate-pulse text-sm">
+                  {t.pantry.scanning || "ANALYSE IA EN COURS..."}
+                </p>
+              </div>
             </div>
           )}
           <CardHeader>
@@ -264,49 +277,88 @@ export function PantryView({
                     {t.pantry.empty}
                   </div>
                 ) : (
-                  (data?.pantry || []).map((p: PantryItem) => (
-                    <motion.div variants={item} initial="hidden" animate="show" layout key={p.id}>
-                      <div
-                        className={`flex justify-between items-center p-5 rounded-2xl border group ${isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80 transition-colors" : "bg-white/5 border-white/5 hover:bg-white/10 transition-colors"}`}
-                      >
-                        <div className="flex items-center gap-5">
-                          <div
-                            className={`p-4 rounded-xl ${isLight ? "bg-emerald-100/50" : "bg-black/40"}`}
-                          >
-                            {getCategoryIcon(p.category)}
+                  <div className="col-span-1 md:col-span-2 space-y-8">
+                    {Object.entries((data?.pantry || []).reduce((acc: any, p: PantryItem) => {
+                      if (!acc[p.category]) acc[p.category] = [];
+                      acc[p.category].push(p);
+                      return acc;
+                    }, {})).map(([category, items]: [string, any]) => (
+                      <div key={category} className="space-y-4">
+                        <div className="flex items-center gap-3 border-b pb-2 border-slate-200 dark:border-white/10">
+                          <div className={`p-2 rounded-lg ${isLight ? "bg-slate-100" : "bg-white/5"}`}>
+                            {getCategoryIcon(category)}
                           </div>
-                          <div>
-                            <div
-                              className={`font-bold text-lg ${isLight ? "text-slate-800" : "text-zinc-200"}`}
-                            >
-                              {p.item}
-                            </div>
-                            <div className="text-sm text-zinc-500 mt-1 font-medium">
-                              {p.qty} •{" "}
-                              <span
-                                className={
-                                  isLight
-                                    ? "text-emerald-600"
-                                    : "text-emerald-400"
-                                }
-                              >
-                                {cats[p.category as keyof typeof cats] ||
-                                  p.category}
-                              </span>
-                            </div>
-                          </div>
+                          <h3 className={`font-black text-lg tracking-wider uppercase ${isLight ? "text-slate-800" : "text-zinc-200"}`}>
+                            {cats[category as keyof typeof cats] || category}
+                          </h3>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${isLight ? "bg-slate-200 text-slate-600" : "bg-white/10 text-zinc-400"}`}>
+                            {items.length}
+                          </span>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeletePantry(p.id)}
-                          className="text-zinc-600 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {items.map((p: PantryItem) => {
+                            const expiryDays = p.expiry ? differenceInDays(new Date(p.expiry), new Date()) : null;
+                            const isExpiringSoon = expiryDays !== null && expiryDays <= 3 && expiryDays >= 0;
+                            const isExpired = expiryDays !== null && expiryDays < 0;
+
+                            return (
+                              <motion.div variants={item} initial="hidden" animate="show" layout key={p.id}>
+                                <div
+                                  className={`flex justify-between items-center p-5 rounded-2xl border group relative overflow-hidden ${
+                                    isExpired 
+                                    ? (isLight ? "bg-rose-50/50 border-rose-200" : "bg-rose-950/20 border-rose-900/50") 
+                                    : (isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80 transition-colors" : "bg-white/5 border-white/5 hover:bg-white/10 transition-colors")
+                                  }`}
+                                >
+                                  {isExpiringSoon && (
+                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.8)]" />
+                                  )}
+                                  {isExpired && (
+                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-600" />
+                                  )}
+                                  <div className="flex items-center gap-5">
+                                    <div
+                                      className={`p-4 rounded-xl ${isLight ? "bg-emerald-100/50" : "bg-black/40"}`}
+                                    >
+                                      {getCategoryIcon(p.category)}
+                                    </div>
+                                    <div>
+                                      <div
+                                        className={`font-bold text-lg flex items-center gap-2 ${isLight ? "text-slate-800" : "text-zinc-200"}`}
+                                      >
+                                        {p.item}
+                                        {isExpiringSoon && <AlertCircle className="w-4 h-4 text-rose-500 animate-pulse" />}
+                                      </div>
+                                      <div className="text-sm text-zinc-500 mt-1 font-medium flex items-center flex-wrap gap-2">
+                                        <span>{p.qty}</span>
+                                        {p.expiry && (
+                                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                                            isExpired ? "bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400" :
+                                            isExpiringSoon ? "bg-orange-100 text-orange-600 dark:bg-orange-900/40 dark:text-orange-400" :
+                                            "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400"
+                                          }`}>
+                                            {isExpired ? "Périmé" : isExpiringSoon ? `J-${expiryDays}` : `DLC: ${new Date(p.expiry).toLocaleDateString()}`}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleDeletePantry(p.id)}
+                                    className="text-zinc-600 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </Button>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </motion.div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </motion.div>
             </ScrollArea>

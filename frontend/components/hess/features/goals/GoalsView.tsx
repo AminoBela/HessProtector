@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
 import { usePrivacy } from "@/context/PrivacyContext";
+import confetti from "canvas-confetti";
 
 interface Goal {
   id: number;
@@ -82,6 +84,23 @@ export function GoalsView({
 
   const t =
     Translations[language as keyof typeof Translations] || Translations.fr;
+
+  useEffect(() => {
+    (data?.goals || []).forEach((g: Goal) => {
+      if (g.saved >= g.target && g.target > 0) {
+        const key = `confetti_goal_v1_${g.id}`;
+        if (!localStorage.getItem(key)) {
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#34d399', '#10b981', '#059669', '#fbbf24', '#f59e0b']
+          });
+          localStorage.setItem(key, "true");
+        }
+      }
+    });
+  }, [data?.goals]);
 
   return (
     <motion.div
@@ -214,13 +233,21 @@ export function GoalsView({
                     <span className={`${bigTextColor} ${isBlurred ? "blur-md select-none transition-all duration-300" : ""}`}>{g.saved.toFixed(2)}€</span>
                     <span className={`${labelColor} ${isBlurred ? "blur-sm select-none transition-all duration-300" : ""}`}>{g.target.toFixed(2)}€</span>
                   </div>
-                  <Progress
-                    value={(g.saved / g.target) * 100}
-                    className={`h-4 rounded-full ${progressBg}`}
-                    indicatorColor={
-                      g.priority === "Haute" ? "bg-rose-500" : "bg-indigo-500"
-                    }
-                  />
+                  <div className="relative group overflow-hidden rounded-full shadow-inner">
+                    <Progress
+                      value={Math.min((g.saved / g.target) * 100, 100)}
+                      className={`h-5 rounded-full ${progressBg}`}
+                      indicatorColor={
+                        g.priority === "Haute" ? "bg-rose-500" : "bg-indigo-500"
+                      }
+                    />
+                    <motion.div 
+                      className="absolute top-0 bottom-0 w-[100%] bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[30deg]"
+                      initial={{ left: "-100%" }}
+                      animate={{ left: "200%" }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                    />
+                  </div>
                   <div
                     className={`mt-4 flex gap-4 text-xs font-medium p-3 rounded-lg border ${infoBoxStyle}`}
                   >

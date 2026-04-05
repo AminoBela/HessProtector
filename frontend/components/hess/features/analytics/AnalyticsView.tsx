@@ -155,7 +155,7 @@ export function AnalyticsView({
     if (active && payload && payload.length) {
       return (
         <div
-          className={`p-4 rounded-2xl border ${isLight ? "bg-white border-emerald-900/10" : "bg-zinc-950 border-white/10"}`}
+          className={`p-4 rounded-3xl border shadow-2xl backdrop-blur-3xl ${isLight ? "bg-white/70 border-slate-200/60 shadow-slate-300/50" : "bg-black/60 border-white/10 shadow-emerald-500/10"}`}
         >
           {label && (
             <p
@@ -453,6 +453,16 @@ export function AnalyticsView({
             <CardContent className="flex-1 p-6 min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={daily_data}>
+                  <defs>
+                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={isLight ? 0.8 : 1}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={isLight ? 0.2 : 0}/>
+                    </linearGradient>
+                    <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={isLight ? 0.8 : 1}/>
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={isLight ? 0.2 : 0}/>
+                    </linearGradient>
+                  </defs>
                   <XAxis
                     dataKey="day"
                     stroke="#52525b"
@@ -476,13 +486,13 @@ export function AnalyticsView({
                   />
                   <Bar
                     dataKey="income"
-                    fill="#10b981"
+                    fill="url(#colorIncome)"
                     radius={[4, 4, 0, 0]}
                     name={t.analytics?.kpi.income || "Revenus"}
                   />
                   <Bar
                     dataKey="expense"
-                    fill="#f43f5e"
+                    fill="url(#colorExpense)"
                     radius={[4, 4, 0, 0]}
                     name={t.analytics?.kpi.expense || "Dépenses"}
                   />
