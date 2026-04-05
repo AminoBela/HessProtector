@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 const AUTH_BASE_URL = API_BASE_URL;
 
 export function useAuth() {

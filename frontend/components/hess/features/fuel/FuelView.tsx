@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Flame, Coins, MapPin, Fuel, Trash2, Pencil, Calendar, Save } from "lucide-react";
-import { motion } from "framer-motion";
+import { Flame, Coins, MapPin, Fuel, Trash2, Pencil, Calendar, Save, Loader2, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Translations } from "@/lib/i18n";
 import { container, item } from "@/lib/animations";
 import { PremiumDatePicker } from "@/components/ui/premium-date-picker";
@@ -20,7 +20,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
     const { token } = useAuth();
     const { language } = useSettings();
     const t = Translations[language as keyof typeof Translations];
-    const { fuelLog, fuelStats, addFuel, deleteFuel, updateFuel, isLoading } = useFuel(token);
+    const { fuelLog, fuelStats, addFuel, deleteFuel, updateFuel, isLoading, isAdding, isUpdating } = useFuel(token);
 
     const [form, setForm] = useState<Partial<FuelEntry>>({
         date: new Date().toISOString().split("T")[0],
@@ -35,15 +35,20 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async () => {
-        if (!form.date || !form.liters || !form.total_cost || !form.odometer) return;
+        setError(null);
+        if (!form.date || !form.liters || !form.total_cost) {
+            setError("Veuillez remplir les champs obligatoires (Date, Litres, Coût).");
+            return;
+        }
 
         const entry: FuelEntry = {
             date: form.date,
             liters: Number(form.liters),
             total_cost: Number(form.total_cost),
-            odometer: Number(form.odometer),
+            odometer: form.odometer ? Number(form.odometer) : null,
             fuel_type: form.fuel_type || "diesel",
             station: form.station,
             is_full_tank: form.is_full_tank ?? true,
@@ -77,14 +82,15 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
 
     const cardGlass = isLight ? "card-glass card-glass-light" : "card-glass card-glass-dark";
     const inputStyle = isLight
-        ? "w-full bg-white/50 border border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/50 h-12 rounded-xl px-4 font-medium shadow-sm transition-all"
-        : "w-full bg-zinc-950/50 border border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-2 focus:ring-emerald-500/50 h-12 rounded-xl px-4 font-medium shadow-inner transition-all";
+        ? "w-full bg-white border border-emerald-900/10 text-slate-900 placeholder:text-slate-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 !h-14 rounded-2xl px-5 font-bold shadow-sm transition-all"
+        : "w-full bg-zinc-950/50 border border-emerald-500/20 text-white placeholder:text-zinc-600 focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 !h-14 rounded-2xl px-5 font-bold shadow-inner transition-all";
+    const labelStyle = "text-[10px] font-black uppercase tracking-widest opacity-60 ml-1 block text-emerald-600 dark:text-emerald-400";
 
     const kpiCards = [
-        { title: t.fuel.kpi.avgConsumption, value: fuelStats.avg_consumption, unit: t.fuel.kpi.l100km, icon: <Flame className="w-5 h-5 text-orange-500" />, color: isLight ? "from-orange-500/10 to-transparent border-orange-200" : "from-orange-500/10 to-transparent border-orange-500/30" },
-        { title: t.fuel.kpi.costPerKm, value: fuelStats.cost_per_km, unit: t.fuel.kpi.euroKm, icon: <Coins className="w-5 h-5 text-emerald-500" />, color: isLight ? "from-emerald-500/10 to-transparent border-emerald-200" : "from-emerald-500/10 to-transparent border-emerald-500/30" },
-        { title: t.fuel.kpi.totalDistance, value: fuelStats.total_distance, unit: t.fuel.kpi.km, icon: <MapPin className="w-5 h-5 text-blue-500" />, color: isLight ? "from-blue-500/10 to-transparent border-blue-200" : "from-blue-500/10 to-transparent border-blue-500/30" },
-        { title: t.fuel.kpi.totalCost, value: fuelStats.total_cost, unit: "€", icon: <Fuel className="w-5 h-5 text-purple-500" />, blur: true, color: isLight ? "from-purple-500/10 to-transparent border-purple-200" : "from-purple-500/10 to-transparent border-purple-500/30" }
+        { title: t.fuel.kpi.avgConsumption, value: isNaN(fuelStats.avg_consumption) || !isFinite(fuelStats.avg_consumption) ? "0.00" : fuelStats.avg_consumption.toFixed(2), unit: t.fuel.kpi.l100km, icon: <Flame className="w-5 h-5 text-orange-500" />, color: isLight ? "from-orange-500/10 to-transparent border-orange-200" : "from-orange-500/10 to-transparent border-orange-500/30" },
+        { title: t.fuel.kpi.costPerKm, value: isNaN(fuelStats.cost_per_km) || !isFinite(fuelStats.cost_per_km) ? "0.00" : fuelStats.cost_per_km.toFixed(3), unit: t.fuel.kpi.euroKm, icon: <Coins className="w-5 h-5 text-emerald-500" />, color: isLight ? "from-emerald-500/10 to-transparent border-emerald-200" : "from-emerald-500/10 to-transparent border-emerald-500/30" },
+        { title: t.fuel.kpi.totalDistance, value: isNaN(fuelStats.total_distance) || !isFinite(fuelStats.total_distance) ? "0" : fuelStats.total_distance.toLocaleString(), unit: t.fuel.kpi.km, icon: <MapPin className="w-5 h-5 text-blue-500" />, color: isLight ? "from-blue-500/10 to-transparent border-blue-200" : "from-blue-500/10 to-transparent border-blue-500/30" },
+        { title: t.fuel.kpi.totalCost, value: isNaN(fuelStats.total_cost) || !isFinite(fuelStats.total_cost) ? "0.00" : fuelStats.total_cost.toFixed(2), unit: "€", icon: <Fuel className="w-5 h-5 text-purple-500" />, blur: true, color: isLight ? "from-purple-500/10 to-transparent border-purple-200" : "from-purple-500/10 to-transparent border-purple-500/30" }
     ];
 
     if (isLoading) {
@@ -125,30 +131,30 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                                 {editingId ? t.common.edit : t.fuel.addBtn}
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-5">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.date}</label>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-1.5">
+                                <label className={labelStyle}>{t.fuel.date}</label>
                                 <PremiumDatePicker date={form.date ? new Date(form.date) : undefined} setDate={(d) => setForm({ ...form, date: d ? d.toISOString().split("T")[0] : "" })} isLight={isLight} />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.liters}</label>
+                                <div className="space-y-1.5">
+                                    <label className={labelStyle}>{t.fuel.liters}</label>
                                     <Input type="number" step="0.01" className={inputStyle} value={form.liters || ""} onChange={e => setForm({ ...form, liters: parseFloat(e.target.value) })} />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.cost}</label>
+                                <div className="space-y-1.5">
+                                    <label className={labelStyle}>{t.fuel.cost}</label>
                                     <Input type="number" step="0.01" className={inputStyle} value={form.total_cost || ""} onChange={e => setForm({ ...form, total_cost: parseFloat(e.target.value) })} />
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.odometer}</label>
+                            <div className="space-y-1.5">
+                                <label className={labelStyle}>{t.fuel.odometer} <span className="normal-case opacity-50 ml-1">(optionnel)</span></label>
                                 <Input type="number" className={inputStyle} value={form.odometer || ""} onChange={e => setForm({ ...form, odometer: parseFloat(e.target.value) })} />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.type}</label>
+                            <div className="space-y-1.5">
+                                <label className={labelStyle}>{t.fuel.type}</label>
                                 <Select value={form.fuel_type} onValueChange={(v: string) => setForm({ ...form, fuel_type: v })}>
                                     <SelectTrigger className={inputStyle}>
                                         <SelectValue />
@@ -163,29 +169,41 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                                 </Select>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase opacity-70 ml-1">{t.fuel.station}</label>
+                            <div className="space-y-1.5">
+                                <label className={labelStyle}>{t.fuel.station}</label>
                                 <Input className={inputStyle} value={form.station || ""} onChange={e => setForm({ ...form, station: e.target.value })} />
                             </div>
 
-                            <div className={`flex items-center justify-between p-4 rounded-xl border ${isLight ? "bg-white/50 border-emerald-900/10" : "bg-black/30 border-white/5"}`}>
-                                <label className="text-sm font-bold">{t.fuel.isFullTank}</label>
+                            <div className={`flex items-center justify-between p-5 rounded-2xl border transition-all ${isLight ? "bg-white border-emerald-900/10 shadow-sm" : "bg-zinc-950/50 border-emerald-500/20 shadow-inner"}`}>
+                                <div className="space-y-1">
+                                    <label className="text-sm font-black uppercase tracking-wider">{t.fuel.isFullTank}</label>
+                                    <p className="text-[10px] font-bold opacity-50 uppercase">Activez pour une stat correcte</p>
+                                </div>
                                 <input
                                     type="checkbox"
-                                    className="w-5 h-5 accent-emerald-500 rounded-lg cursor-pointer"
+                                    className="w-6 h-6 accent-emerald-500 rounded-lg cursor-pointer"
                                     checked={form.is_full_tank}
                                     onChange={(e) => setForm({ ...form, is_full_tank: e.target.checked })}
                                 />
                             </div>
 
+                            <AnimatePresence>
+                                {error && (
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="text-sm font-bold text-red-500 flex items-center gap-2 bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+                                        <AlertCircle className="w-4 h-4" />
+                                        {error}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             <div className="flex gap-3 pt-2">
                                 {editingId && (
-                                    <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => setEditingId(null)}>
+                                    <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => { setEditingId(null); setError(null); }} disabled={isAdding || isUpdating}>
                                         {t.common.cancel}
                                     </Button>
                                 )}
-                                <Button className={`flex-1 rounded-xl font-bold ${isLight ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-white text-black hover:bg-zinc-200"}`} onClick={handleSubmit}>
-                                    {editingId ? <Save className="w-4 h-4 mr-2" /> : <Fuel className="w-4 h-4 mr-2" />}
+                                <Button disabled={isAdding || isUpdating} className={`flex-1 rounded-xl font-bold ${isLight ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-white text-black hover:bg-zinc-200"}`} onClick={handleSubmit}>
+                                    {(isAdding || isUpdating) ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : (editingId ? <Save className="w-4 h-4 mr-2" /> : <Fuel className="w-4 h-4 mr-2" />)}
                                     {editingId ? t.common.update : t.fuel.addSubmit}
                                 </Button>
                             </div>
@@ -203,55 +221,66 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ScrollArea className="h-[600px] pr-4">
+                            <ScrollArea className="h-[600px]">
                                 {fuelLog.length === 0 ? (
                                     <div className="text-center py-20 opacity-50 italic font-medium">{t.fuel.empty}</div>
                                 ) : (
-                                    <div className="space-y-4">
+                                    <div className="space-y-4 p-4 md:p-6">
                                         {fuelLog.map((entry) => (
-                                            <motion.div key={entry.id} variants={item} className={`p-5 rounded-2xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:scale-[1.01] ${isLight ? "bg-white/50 border-slate-200" : "bg-white/5 border-white/5"}`}>
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`p-4 rounded-full ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
+                                            <motion.div key={entry.id} variants={item} className={`group relative overflow-hidden p-5 md:p-6 rounded-3xl border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10 ${isLight ? "bg-white border-slate-100 hover:border-emerald-500/30" : "bg-black/40 border-white/5 hover:bg-zinc-900/80 hover:border-emerald-500/30"}`}>
+                                                <div className="flex items-center gap-5 relative z-10 w-full md:w-auto">
+                                                    <div className={`p-4 rounded-2xl transition-colors duration-300 ${isLight ? "bg-emerald-100/50 text-emerald-600 group-hover:bg-emerald-100" : "bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20"}`}>
                                                         <Fuel className="w-6 h-6" />
                                                     </div>
-                                                    <div>
-                                                        <div className="flex items-center gap-2">
-                                                            <h3 className={`font-bold text-lg ${isLight ? "text-slate-900" : "text-white"}`}>{entry.date}</h3>
+                                                    <div className="flex-1">
+                                                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                                                            <h3 className={`font-black tracking-wide text-lg ${isLight ? "text-slate-900" : "text-white"}`}>{entry.date}</h3>
                                                             {entry.station && (
-                                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-500 border border-blue-500/20">
                                                                     {entry.station}
                                                                 </span>
                                                             )}
                                                             {!entry.is_full_tank && (
-                                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                                                                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-orange-500/10 text-orange-500 border border-orange-500/20">
                                                                     Partiel
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <p className={`text-sm font-semibold opacity-70 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
-                                                            {entry.liters} L • {t.fuel.types[entry.fuel_type as keyof typeof t.fuel.types] || entry.fuel_type} • {entry.odometer.toLocaleString()} km
+                                                        <p className={`text-sm font-semibold tracking-wide flex items-center gap-1.5 opacity-80 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
+                                                            <span>{entry.liters} L</span>
+                                                            <span className="w-1 h-1 rounded-full bg-current opacity-50" />
+                                                            <span>{t.fuel.types[entry.fuel_type as keyof typeof t.fuel.types] || entry.fuel_type}</span>
+                                                            {entry.odometer && (
+                                                                <>
+                                                                    <span className="w-1 h-1 rounded-full bg-current opacity-50" />
+                                                                    <span>{entry.odometer.toLocaleString()} km</span>
+                                                                </>
+                                                            )}
                                                         </p>
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-6 w-full md:w-auto mt-2 md:mt-0 justify-between md:justify-end">
+                                                <div className="flex items-center gap-6 w-full md:w-auto mt-4 md:mt-0 justify-between md:justify-end relative z-10 border-t border-white/5 md:border-t-0 pt-4 md:pt-0">
                                                     <div className="text-right">
-                                                        <div className={`text-2xl font-black text-rose-500 transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}>
+                                                        <div className={`text-2xl font-black text-rose-500 tracking-tight transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}>
                                                             -{entry.total_cost.toFixed(2)}€
                                                         </div>
-                                                        <div className="text-xs font-bold opacity-60">
+                                                        <div className="text-xs font-bold opacity-60 tracking-wider">
                                                             {(entry.total_cost / entry.liters).toFixed(3)} €/L
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2">
-                                                        <Button variant="ghost" size="icon" onClick={() => handleEdit(entry)} className="hover:text-blue-500 hover:bg-blue-500/10">
+                                                    <div className="flex gap-1.5 bg-slate-100/50 dark:bg-black/40 border border-slate-200/50 dark:border-white/5 p-1 rounded-xl">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleEdit(entry)} className="h-9 w-9 rounded-lg hover:text-blue-500 hover:bg-blue-500/10 dark:hover:text-blue-400">
                                                             <Pencil className="w-4 h-4" />
                                                         </Button>
-                                                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(entry.id!)} className="hover:text-red-500 hover:bg-red-500/10">
+                                                        <Button variant="ghost" size="icon" onClick={() => setDeleteId(entry.id!)} className="h-9 w-9 rounded-lg hover:text-red-500 hover:bg-red-500/10 dark:hover:text-red-400">
                                                             <Trash2 className="w-4 h-4" />
                                                         </Button>
                                                     </div>
                                                 </div>
+                                                
+                                                {/* Decorative background glow */}
+                                                <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                                             </motion.div>
                                         ))}
                                     </div>

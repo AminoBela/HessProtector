@@ -111,7 +111,7 @@ class FuelEntry(SQLModel, table=True):
     date: str
     liters: float
     total_cost: float
-    odometer: float
+    odometer: Optional[float] = None
     fuel_type: str = Field(default="diesel")
     station: Optional[str] = None
     is_full_tank: bool = Field(default=True)

@@ -63,11 +63,11 @@ class FuelRepository(BaseRepository):
 
     def get_stats(self, user_id: int) -> dict:
         """Calculate fuel consumption stats from all entries."""
-        entries = self.session.exec(
-            select(FuelEntry).where(FuelEntry.user_id == user_id).order_by(FuelEntry.odometer.asc())
+        all_entries = self.session.exec(
+            select(FuelEntry).where(FuelEntry.user_id == user_id)
         ).all()
 
-        if not entries:
+        if not all_entries:
             return {
                 "total_cost": 0,
                 "total_liters": 0,
@@ -78,26 +78,44 @@ class FuelRepository(BaseRepository):
                 "entry_count": 0,
             }
 
-        total_cost = sum(e.total_cost for e in entries)
-        total_liters = sum(e.liters for e in entries)
-        entry_count = len(entries)
+        total_cost = sum(e.total_cost for e in all_entries)
+        total_liters = sum(e.liters for e in all_entries)
+        entry_count = len(all_entries)
         avg_price_per_liter = total_cost / total_liters if total_liters > 0 else 0
 
-        # Distance & consumption calculated between consecutive FULL tank entries
+        # Only use entries WITH an odometer for distance/consumption calculations
+        entries_with_odo = sorted(
+            [e for e in all_entries if e.odometer is not None],
+            key=lambda e: e.odometer
+        )
+
         total_distance = 0
+        if len(entries_with_odo) >= 2:
+            total_distance = entries_with_odo[-1].odometer - entries_with_odo[0].odometer
+
         consumption_liters = 0
         consumption_distance = 0
+        
+        last_full_tank_odo = None
+        liters_since_last_full_tank = 0
 
-        for i in range(1, len(entries)):
-            dist = entries[i].odometer - entries[i - 1].odometer
-            if dist > 0:
-                total_distance += dist
-                if entries[i].is_full_tank:
-                    consumption_liters += entries[i].liters
-                    consumption_distance += dist
+        for entry in entries_with_odo:
+            if not entry.is_full_tank:
+                if last_full_tank_odo is not None:
+                    liters_since_last_full_tank += entry.liters
+            else:
+                if last_full_tank_odo is not None:
+                    dist = entry.odometer - last_full_tank_odo
+                    if dist > 0:
+                        consumption_distance += dist
+                        consumption_liters += (liters_since_last_full_tank + entry.liters)
+                
+                last_full_tank_odo = entry.odometer
+                liters_since_last_full_tank = 0
 
         avg_consumption = (consumption_liters / consumption_distance * 100) if consumption_distance > 0 else 0
-        cost_per_km = total_cost / total_distance if total_distance > 0 else 0
+        # Calculate cost per km based on robust averages rather than absolute mismatched totals
+        cost_per_km = (avg_consumption / 100) * avg_price_per_liter if avg_consumption > 0 and avg_price_per_liter > 0 else 0
 
         return {
             "total_cost": round(total_cost, 2),
@@ -108,3 +126,4 @@ class FuelRepository(BaseRepository):
             "avg_price_per_liter": round(avg_price_per_liter, 3),
             "entry_count": entry_count,
         }
+

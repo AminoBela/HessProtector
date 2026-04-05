@@ -6,7 +6,7 @@ export interface FuelEntry {
     date: string;
     liters: number;
     total_cost: number;
-    odometer: number;
+    odometer?: number | null;
     fuel_type: string;
     station?: string;
     is_full_tank: boolean;

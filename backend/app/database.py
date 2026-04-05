@@ -2,20 +2,38 @@ import os
 import sqlite3
 from sqlmodel import SQLModel, create_engine, Session
 
-DB_FILE = os.getenv("SQLITE_DB_PATH", os.getenv("DATABASE_URL", "hess_protector.db"))
-if not DB_FILE.startswith("sqlite:///"):
-    DB_FILE = f"sqlite:///{DB_FILE}"
+# Priority:
+# 1. DATABASE_URL
+# 2. Vercel Postgres: POSTGRES_URL
+db_url = os.getenv("DATABASE_URL", os.getenv("POSTGRES_URL"))
 
-engine = create_engine(DB_FILE, echo=False, connect_args={"check_same_thread": False})
+if db_url:
+    # SQLAlchemy requires "postgresql://" instead of "postgres://"
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+        
+    engine_kwargs = {}
+    if db_url.startswith("sqlite"):
+         engine_kwargs = {"check_same_thread": False}
+         
+    engine = create_engine(db_url, echo=False, **engine_kwargs)
+else:
+    # Local SQLite fallback
+    DB_FILE = os.getenv("SQLITE_DB_PATH", "hess_protector.db")
+    if not DB_FILE.startswith("sqlite:///"):
+        DB_FILE = f"sqlite:///{DB_FILE}"
+        
+    engine = create_engine(DB_FILE, echo=False, connect_args={"check_same_thread": False})
 
 def _get_raw_db_path():
-    path = DB_FILE.replace("sqlite:///", "")
-    return path
+    if "sqlite" in str(engine.url):
+        return str(engine.url).replace("sqlite:///", "")
+    return None
 
 def _migrate_columns():
     """Add missing columns to existing tables (SQLAlchemy create_all doesn't do this)."""
     db_path = _get_raw_db_path()
-    if not os.path.exists(db_path):
+    if not db_path or not os.path.exists(db_path):
         return
 
     migrations = [
