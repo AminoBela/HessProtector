@@ -41,6 +41,7 @@ export function HistoryView({
   const t = Translations[language as keyof typeof Translations] || Translations.fr;
   const [isSaving, setIsSaving] = useState(false);
   const [editingTx, setEditingTx] = useState<any>(null);
+  const [actionMenuTx, setActionMenuTx] = useState<any>(null);
   const [deletingTxId, setDeletingTxId] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<any>({
     label: "",
@@ -111,7 +112,8 @@ export function HistoryView({
                   <motion.div
                     variants={item}
                     key={tx.id}
-                    className={`flex flex-row justify-between items-center p-3 md:p-5 rounded-2xl border transition-colors duration-300 gap-2 md:gap-4 ${itemBg}`}
+                    onClick={() => setActionMenuTx(tx)}
+                    className={`flex flex-row justify-between items-center p-3 md:p-5 rounded-2xl border transition-all duration-300 gap-2 md:gap-4 cursor-pointer hover:scale-[1.01] ${itemBg}`}
                   >
                     <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
                       <div
@@ -137,32 +139,48 @@ export function HistoryView({
                         {tx.type === "revenu" ? "+" : "-"}
                         {tx.amount.toFixed(2)}€
                       </span>
-
-                      <div className="flex gap-1 md:gap-2 shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="w-8 h-8 md:w-10 md:h-10 shrink-0"
-                          onClick={() => openEdit(tx)}
-                        >
-                          <Pencil className={`w-4 h-4 md:w-5 md:h-5 ${editColor}`} />
-                        </Button>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="w-8 h-8 md:w-10 md:h-10"
-                          onClick={() => setDeletingTxId(tx.id)}
-                        >
-                          <Trash2 className={`w-4 h-4 md:w-5 md:h-5 ${trashColor}`} />
-                        </Button>
-                      </div>
                     </div>
                   </motion.div>
                 ))
               )}
             </div>
           </ScrollArea>
+
+          <Dialog
+            open={!!actionMenuTx}
+            onOpenChange={(open) => !open && setActionMenuTx(null)}
+          >
+            <DialogContent
+              className={
+                isLight
+                  ? "bg-white/95 backdrop-blur-xl border-emerald-900/10 text-slate-800 w-11/12 max-w-sm rounded-3xl"
+                  : "bg-zinc-950/95 backdrop-blur-xl border-white/10 text-white w-11/12 max-w-sm rounded-3xl"
+              }
+            >
+              <DialogHeader>
+                <DialogTitle className="text-center text-xl font-black">{actionMenuTx?.label}</DialogTitle>
+                <div className={`text-center font-bold text-sm ${actionMenuTx?.type === "revenu" ? "text-emerald-500" : "text-rose-500"}`}>
+                  {actionMenuTx?.type === "revenu" ? "+" : "-"}{actionMenuTx?.amount.toFixed(2)}€
+                </div>
+              </DialogHeader>
+              <div className="flex flex-col gap-3 py-4">
+                <Button
+                  variant="outline"
+                  className={`h-14 font-bold rounded-2xl flex items-center justify-start gap-4 px-6 shadow-sm border ${isLight ? "bg-slate-50 border-slate-200 hover:bg-slate-100" : "bg-black/20 border-white/5 hover:bg-white/5"}`}
+                  onClick={() => { openEdit(actionMenuTx); setActionMenuTx(null); }}
+                >
+                  <Pencil className="w-5 h-5 text-emerald-500" /> <span className="text-base">{t.common?.edit || "Modifier"}</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className={`h-14 font-bold rounded-2xl flex items-center justify-start gap-4 px-6 shadow-sm border text-rose-500 hover:text-rose-600 ${isLight ? "bg-rose-50 border-rose-100 hover:bg-rose-100" : "bg-rose-950/20 border-rose-900/30 hover:bg-rose-900/40"}`}
+                  onClick={() => { setDeletingTxId(actionMenuTx.id); setActionMenuTx(null); }}
+                >
+                  <Trash2 className="w-5 h-5" /> <span className="text-base">{t.common?.delete || "Supprimer"}</span>
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <Dialog
             open={!!editingTx}

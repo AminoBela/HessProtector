@@ -81,8 +81,8 @@ export function AnalyticsView({
     : "bg-zinc-900/60 shadow-lg rounded-3xl overflow-hidden";
 
   const selectStyle = isLight
-    ? "w-32 h-10 px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50"
-    : "w-32 h-10 px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50";
+    ? "w-full min-h-[56px] px-4 rounded-xl border border-emerald-900/10 bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-[border-color,box-shadow] shadow-inner font-bold flex items-center justify-between"
+    : "w-full min-h-[56px] px-4 rounded-xl border border-white/10 bg-zinc-950/60 text-white focus:ring-2 focus:ring-emerald-500/50 cursor-pointer backdrop-blur-xl transition-[border-color,box-shadow] shadow-inner font-bold flex items-center justify-between";
 
   const t =
     Translations[language as keyof typeof Translations] || Translations.fr;
@@ -231,7 +231,7 @@ export function AnalyticsView({
           <Button
             onClick={runAudit}
             disabled={auditLoading}
-            className={`w-full md:w-auto h-14 px-6 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLight ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-indigo-500 hover:bg-indigo-400 text-white"}`}
+            className={`w-full md:w-auto h-[56px] px-6 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLight ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-indigo-500 hover:bg-indigo-400 text-white"}`}
           >
             {auditLoading ? (
               <Sparkles className="animate-spin w-4 h-4" />
@@ -252,12 +252,12 @@ export function AnalyticsView({
         >
           <div className={`absolute inset-0 border-0 ${cardGlass} z-0`} />
 
-          <Card className="relative z-10 border-0 bg-transparent shadow-none p-6">
+          <Card className="relative z-10 border-0 bg-transparent shadow-none p-4 md:p-6">
             { }
-            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start mb-8 border-b border-white/5 pb-8">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start mb-6 md:mb-8 border-b border-white/5 pb-6 md:pb-8">
               { }
-              <div className="relative w-32 h-32 shrink-0 flex items-center justify-center">
-                <svg className="w-full h-full transform -rotate-90">
+              <div className="relative w-24 h-24 md:w-32 md:h-32 shrink-0 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
                   <circle
                     cx="64"
                     cy="64"
@@ -281,25 +281,25 @@ export function AnalyticsView({
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span
-                    className={`text-4xl font-black ${getScoreColor(audit.score)}`}
+                    className={`text-3xl md:text-4xl font-black ${getScoreColor(audit.score)}`}
                   >
                     {audit.score}
                   </span>
-                  <span className="text-xs uppercase font-bold opacity-50">
+                  <span className="text-[10px] md:text-xs uppercase font-bold opacity-50">
                     Score
                   </span>
                 </div>
               </div>
 
               { }
-              <div className="flex-1 text-center md:text-left">
+              <div className="flex-1 text-center md:text-left mt-2 md:mt-0">
                 <h2
-                  className={`text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
+                  className={`text-xl md:text-3xl font-black uppercase tracking-tight mb-1 md:mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
                 >
                   {audit.title}
                 </h2>
                 <p
-                  className={`text-lg leading-relaxed ${isLight ? "text-slate-600" : "text-zinc-400"}`}
+                  className={`text-sm md:text-lg leading-relaxed ${isLight ? "text-slate-600" : "text-zinc-400"}`}
                 >
                   &quot;{audit.roast}&quot;
                 </p>
@@ -307,20 +307,20 @@ export function AnalyticsView({
             </div>
 
             { }
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-8">
               <div
-                className={`p-6 rounded-2xl ${isLight ? "bg-emerald-50/50 border border-emerald-100" : "bg-emerald-900/10 border border-emerald-500/20"}`}
+                className={`p-4 md:p-6 rounded-2xl ${isLight ? "bg-emerald-50/50 border border-emerald-100" : "bg-emerald-900/10 border border-emerald-500/20"}`}
               >
-                <h3 className="flex items-center gap-2 text-emerald-500 font-bold uppercase tracking-wider mb-4">
+                <h3 className="flex items-center gap-2 text-emerald-500 font-bold uppercase tracking-wider mb-3 md:mb-4">
                   <TrendingUp className="w-5 h-5" /> Top
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-2 md:space-y-3">
                   {audit.pros.map((pro, i) => (
                     <li
                       key={i}
-                      className={`flex items-start gap-2 text-sm font-medium ${isLight ? "text-emerald-900" : "text-emerald-100"}`}
+                      className={`flex items-start gap-2 text-xs md:text-sm font-medium ${isLight ? "text-emerald-900" : "text-emerald-100"}`}
                     >
-                      <Check className="w-4 h-4 mt-0.5 opacity-50" />
+                      <Check className="w-4 h-4 mt-0.5 opacity-50 shrink-0" />
                       {pro}
                     </li>
                   ))}
@@ -328,18 +328,18 @@ export function AnalyticsView({
               </div>
 
               <div
-                className={`p-6 rounded-2xl ${isLight ? "bg-rose-50/50 border border-rose-100" : "bg-rose-900/10 border border-rose-500/20"}`}
+                className={`p-4 md:p-6 rounded-2xl ${isLight ? "bg-rose-50/50 border border-rose-100" : "bg-rose-900/10 border border-rose-500/20"}`}
               >
-                <h3 className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-wider mb-4">
+                <h3 className="flex items-center gap-2 text-rose-500 font-bold uppercase tracking-wider mb-3 md:mb-4">
                   <TrendingDown className="w-5 h-5" /> Flop
                 </h3>
                 <ul className="space-y-3">
                   {audit.cons.map((con, i) => (
                     <li
                       key={i}
-                      className={`flex items-start gap-2 text-sm font-medium ${isLight ? "text-rose-900" : "text-rose-100"}`}
+                      className={`flex items-start gap-2 text-xs md:text-sm font-medium ${isLight ? "text-rose-900" : "text-rose-100"}`}
                     >
-                      <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 opacity-50" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 opacity-50 shrink-0" />
                       {con}
                     </li>
                   ))}
