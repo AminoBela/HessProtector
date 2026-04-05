@@ -228,8 +228,8 @@ export function SettingsView({
     : "w-full !h-14 px-4 rounded-xl border border-white/10 bg-zinc-950/50 text-white focus:ring-2 focus:ring-emerald-500/50 font-medium";
 
   const tabTriggerStyle = `
-        relative px-6 py-3 rounded-xl font-bold transition-all duration-300 z-10 
-        data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105
+        relative px-3 py-2.5 md:px-6 md:py-3 rounded-xl text-xs md:text-sm font-bold transition-all duration-300 z-10 w-full md:w-auto flex justify-center items-center
+        data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-[1.02] md:data-[state=active]:scale-105
         ${isLight ? "text-slate-500 hover:bg-slate-100" : "text-zinc-400 hover:bg-white/5"}
     `;
 
@@ -249,10 +249,10 @@ export function SettingsView({
             className="h-full flex flex-col"
           >
             <div
-              className={`px-8 py-6 border-b ${isLight ? "border-slate-100" : "border-white/5"}`}
+              className={`p-4 md:px-8 md:py-6 border-b ${isLight ? "border-slate-100" : "border-white/5"}`}
             >
               <TabsList
-                className={`h-auto p-1 bg-transparent gap-3 flex-wrap justify-start`}
+                className={`h-auto p-0 bg-transparent grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-3 w-full justify-start`}
               >
                 <TabsTrigger value="general" className={tabTriggerStyle}>
                   <Settings className="w-4 h-4 mr-2" />
@@ -273,7 +273,7 @@ export function SettingsView({
               </TabsList>
             </div>
 
-            <div className="p-8 flex-1 overflow-y-auto">
+            <div className="p-4 md:p-8 flex-1 overflow-y-auto">
               <TabsContent
                 value="general"
                 className="mt-0 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"

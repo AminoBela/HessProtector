@@ -201,8 +201,8 @@ export function AnalyticsView({
       animate="show"
       className="space-y-8 pb-20"
     >
-      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4">
-        <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-4 w-full">
+        <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
           <Select value={month} onValueChange={setMonth}>
             <SelectTrigger className={selectStyle}>
               <SelectValue placeholder={t.analytics?.month || "Mois"} />
@@ -227,10 +227,11 @@ export function AnalyticsView({
             </SelectContent>
           </Select>
 
+          </div>
           <Button
             onClick={runAudit}
             disabled={auditLoading}
-            className={`h-10 px-6 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all hover:scale-105 ${isLight ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-indigo-500 hover:bg-indigo-400 text-white"}`}
+            className={`w-full md:w-auto h-14 px-6 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] ${isLight ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-indigo-500 hover:bg-indigo-400 text-white"}`}
           >
             {auditLoading ? (
               <Sparkles className="animate-spin w-4 h-4" />
@@ -239,7 +240,6 @@ export function AnalyticsView({
             )}
             {t.audit?.button || (language === "fr" ? "Audit" : "Audit")}
           </Button>
-        </div>
       </div>
 
       {audit && (

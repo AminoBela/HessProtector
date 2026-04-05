@@ -111,37 +111,38 @@ export function HistoryView({
                   <motion.div
                     variants={item}
                     key={tx.id}
-                    className={`flex flex-row justify-between items-center p-4 md:p-5 rounded-2xl border transition-colors duration-300 gap-2 md:gap-4 ${itemBg}`}
+                    className={`flex flex-row justify-between items-center p-3 md:p-5 rounded-2xl border transition-colors duration-300 gap-2 md:gap-4 ${itemBg}`}
                   >
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
                       <div
-                        className={`p-3 rounded-xl ${tx.type === "revenu" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}
+                        className={`p-2 md:p-3 shrink-0 rounded-xl ${tx.type === "revenu" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}
                       >
-                        <TrendingUp className="w-5 h-5" />
+                        <TrendingUp className="w-4 h-4 md:w-5 md:h-5" />
                       </div>
-                      <div>
-                        <div className={`font-bold text-sm md:text-lg line-clamp-1 break-all ${bigTextColor}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className={`font-bold text-sm md:text-lg truncate ${bigTextColor}`}>
                           {tx.label}
                         </div>
                         <div
-                          className={`text-xs uppercase font-bold tracking-wider ${subTextColor}`}
+                          className={`text-[10px] md:text-xs uppercase font-bold tracking-wider truncate ${subTextColor}`}
                         >
                           {tx.date} • {tx.category}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 md:gap-4 justify-end">
+                    <div className="flex items-center gap-1 md:gap-4 justify-end shrink-0">
                       <span
-                        className={`font-mono text-xl font-bold transition-all duration-300 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                        className={`font-mono text-sm md:text-xl font-bold transition-all duration-300 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                       >
                         {tx.type === "revenu" ? "+" : "-"}
                         {tx.amount.toFixed(2)}€
                       </span>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-1 md:gap-2 shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="w-8 h-8 md:w-10 md:h-10 shrink-0"
                           onClick={() => openEdit(tx)}
                         >
                           <Pencil className={`w-4 h-4 md:w-5 md:h-5 ${editColor}`} />

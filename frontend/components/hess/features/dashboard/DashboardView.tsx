@@ -213,7 +213,7 @@ export function DashboardView({
         </motion.div>
         <motion.div
           variants={item}
-          className="md:col-span-1 relative min-h-[320px] flex flex-col justify-between"
+          className="md:col-span-1 relative min-h-[160px] md:min-h-[320px] flex flex-col justify-between"
         >
           <div
             className={`absolute inset-0 border-0 ${cardGlass} rounded-3xl z-0`}
@@ -227,7 +227,7 @@ export function DashboardView({
                   {t.safeBalance}
                 </h3>
                 <div
-                  className={`text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                  className={`text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                 >
                   {data?.safe_balance?.toFixed(2)}€
                 </div>
@@ -240,7 +240,7 @@ export function DashboardView({
             </div>
 
             <div
-              className={`mt-8 p-4 rounded-2xl border ${isLight ? "bg-indigo-50/50 border-indigo-100" : "bg-indigo-500/10 border-indigo-500/10"}`}
+              className={`mt-4 md:mt-8 p-3 md:p-4 rounded-2xl border ${isLight ? "bg-indigo-50/50 border-indigo-100" : "bg-indigo-500/10 border-indigo-500/10"}`}
             >
               <div className="flex items-center gap-3">
                 <div
