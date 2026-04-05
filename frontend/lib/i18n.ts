@@ -390,7 +390,7 @@ export const Translations = {
             recalc: "Recalcular con IA",
             analysis: "Análisis del Chef",
             shopping: "Lista de Compras",
-            powered: "",
+            powered: "Potenciado por Gemini 2.0 Flash",
             savedTitle: "Planes Guardados",
             load: "Cargar",
             noPlans: "No hay planes guardados.",

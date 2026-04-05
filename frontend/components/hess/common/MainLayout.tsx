@@ -22,6 +22,7 @@ import {
   ShoppingBag,
   Menu,
   Fuel,
+  ChevronDown,
 } from "lucide-react";
 import {
   Sheet,
@@ -117,6 +118,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { data } = useHessData(token);
   const { txForm, setTxForm, addTransaction } = useTransactions(token);
   const [openTx, setOpenTx] = useState(false);
+  const [showSettingsOnMobile, setShowSettingsOnMobile] = useState(false);
   const pathname = usePathname();
   const activeTab = pathname === "/" ? "dashboard" : pathname.split("/")[1] || "dashboard";
 
@@ -155,12 +157,12 @@ export function MainLayout({ children }: MainLayoutProps) {
   const SidebarItem = ({ id, icon: Icon, label }: any) => (
     <Link
       href={`/${id}`}
-      className={`w-full flex items-center gap-4 px-4 py-3.5 md:py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}
+      className={`w-full flex items-center gap-4 px-3 py-2.5 md:px-4 md:py-3 rounded-2xl transition-all duration-300 group ${activeTab === id ? sidebarActive : sidebarText}`}
     >
       <Icon
-        className={`w-6 h-6 md:w-5 md:h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
+        className={`w-5 h-5 md:w-5 md:h-5 flex-shrink-0 ${activeTab === id ? "text-white" : `${iconHover} transition-colors`}`}
       />{" "}
-      <span className="text-[15px] md:text-sm uppercase tracking-widest font-black">
+      <span className="text-xs md:text-sm uppercase tracking-widest font-black">
         {label}
       </span>
     </Link>
@@ -240,8 +242,16 @@ export function MainLayout({ children }: MainLayoutProps) {
         />
       </div>
 
+      <button
+        onClick={() => setShowSettingsOnMobile(!showSettingsOnMobile)}
+        className={`md:hidden mt-2 w-full flex items-center justify-between px-4 py-3 rounded-xl border ${isLight ? "bg-slate-50 border-slate-200 text-slate-700" : "bg-black/20 border-white/5 text-zinc-300"}`}
+      >
+        <span className="text-xs font-bold uppercase tracking-wider">Préférences</span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showSettingsOnMobile ? "rotate-180" : ""}`} />
+      </button>
+
       <div
-        className={`mt-4 pt-4 border-t space-y-4 ${isLight ? "border-slate-200/60" : "border-white/5"}`}
+        className={`mt-2 md:mt-4 pt-2 md:pt-4 md:border-t space-y-3 md:space-y-4 ${isLight ? "md:border-slate-200/60" : "md:border-white/5"} ${showSettingsOnMobile ? "block" : "hidden md:block"}`}
       >
         {data && data.rank && (
           <div

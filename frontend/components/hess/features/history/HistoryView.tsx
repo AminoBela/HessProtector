@@ -20,6 +20,7 @@ import { TrendingUp, Trash2, Pencil, Loader2 } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import { container, item } from "@/lib/animations";
 import { usePrivacy } from "@/context/PrivacyContext";
+import { Translations } from "@/lib/i18n";
 
 interface HistoryViewProps {
   data: any;
@@ -37,6 +38,7 @@ export function HistoryView({
   theme,
 }: HistoryViewProps) {
   const { isBlurred } = usePrivacy();
+  const t = Translations[language as keyof typeof Translations] || Translations.fr;
   const [isSaving, setIsSaving] = useState(false);
   const [editingTx, setEditingTx] = useState<any>(null);
   const [deletingTxId, setDeletingTxId] = useState<number | null>(null);
@@ -102,7 +104,7 @@ export function HistoryView({
             <div className="space-y-3">
               {(data?.transactions || []).length === 0 ? (
                 <div className={`text-center mt-10 ${subTextColor}`}>
-                  Aucun historique
+                  {t?.history?.empty || "Aucun historique"}
                 </div>
               ) : (
                 (data?.transactions || []).map((tx: any) => (
@@ -173,11 +175,11 @@ export function HistoryView({
               }
             >
               <DialogHeader>
-                <DialogTitle>Modifier la Transaction</DialogTitle>
+                <DialogTitle>{t.common.edit || "Modifier"} {t.history.title || "Transaction"}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <Input
-                  placeholder="Libellé"
+                  placeholder={t.dialog.label}
                   className={inputStyle}
                   value={editForm.label}
                   onChange={(e) =>
@@ -187,7 +189,7 @@ export function HistoryView({
                 <div className="grid grid-cols-2 gap-4">
                   <Input
                     type="number"
-                    placeholder="Montant"
+                    placeholder={t.dialog.amount}
                     className={inputStyle}
                     value={editForm.amount}
                     onChange={(e) =>
@@ -211,11 +213,11 @@ export function HistoryView({
                     }
                   >
                     <SelectTrigger className={selectStyle}>
-                      <SelectValue placeholder="Type" />
+                      <SelectValue placeholder={t.dialog.type} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="depense">Dépense</SelectItem>
-                      <SelectItem value="revenu">Revenu</SelectItem>
+                      <SelectItem value="depense">{t.dialog.expense}</SelectItem>
+                      <SelectItem value="revenu">{t.dialog.income}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select
@@ -225,7 +227,7 @@ export function HistoryView({
                     }
                   >
                     <SelectTrigger className={selectStyle}>
-                      <SelectValue placeholder="Catégorie" />
+                      <SelectValue placeholder={t.dialog.category} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Alimentation">Alimentation</SelectItem>
@@ -247,7 +249,7 @@ export function HistoryView({
                   {isSaving ? (
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
                   ) : (
-                    "Enregistrer"
+                    t.common.save
                   )}
                 </Button>
               </div>
@@ -266,12 +268,11 @@ export function HistoryView({
               }
             >
               <DialogHeader>
-                <DialogTitle>Supprimer la Transaction</DialogTitle>
+                <DialogTitle>{t.common.delete}</DialogTitle>
               </DialogHeader>
               <div className="py-4 space-y-4">
                 <p className={subTextColor}>
-                  Êtes-vous sûr de vouloir supprimer cette transaction ? Cette
-                  action est irréversible.
+                  {t.settings?.account?.deleteDesc || "Action irreversible."}
                 </p>
                 <div className="flex gap-4 pt-2">
                   <Button
@@ -279,13 +280,13 @@ export function HistoryView({
                     onClick={() => setDeletingTxId(null)}
                     className="flex-1 h-12 rounded-xl font-bold"
                   >
-                    Annuler
+                    {t.common.cancel}
                   </Button>
                   <Button
                     onClick={confirmDelete}
                     className="flex-1 h-12 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-lg"
                   >
-                    Supprimer
+                    {t.common.confirm}
                   </Button>
                 </div>
               </div>

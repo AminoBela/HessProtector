@@ -187,7 +187,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
             <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-emerald-400 to-cyan-500">
               <ShieldCheck className="w-6 h-6 text-white" />
             </div>
-            <span className={`text-3xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
+            <span className={`text-2xl md:text-3xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
               Hess<span className="text-emerald-500">Protector</span>
             </span>
           </div>
@@ -210,7 +210,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                   <h3 className={`text-sm font-black uppercase tracking-widest mb-1 ${steps[setupStep].color}`}>
                     Étape {setupStep + 1} de 3
                   </h3>
-                  <h2 className={`text-3xl md:text-3xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
+                  <h2 className={`text-2xl md:text-3xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
                     {steps[setupStep].title}
                   </h2>
                 </div>

@@ -99,7 +99,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
 
     return (
         <motion.div variants={container} initial="hidden" animate="show" className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
-            <h1 className={`text-3xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
+            <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
                 {t.fuel.title}
             </h1>
 
@@ -221,7 +221,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ScrollArea className="h-[600px]">
+                            <ScrollArea className="h-fit max-h-[600px]">
                                 {fuelLog.length === 0 ? (
                                     <div className="text-center py-20 opacity-50 italic font-medium">{t.fuel.empty}</div>
                                 ) : (
@@ -296,7 +296,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                     <DialogHeader>
                         <DialogTitle className={`text-2xl font-black uppercase tracking-wider mb-2 ${isLight ? "text-slate-900" : "text-white"}`}>{t.common.confirm}</DialogTitle>
                         <DialogDescription className={`text-lg font-medium opacity-80 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
-                            Es-tu sûr de vouloir supprimer ce relevé ? Les statistiques de consommation seront recalculées.
+                            {language === "es" ? "¿Seguro que quieres eliminar este repostaje? Las estadísticas se recalcularán." : "Es-tu sûr de vouloir supprimer ce relevé ? Les statistiques de consommation seront recalculées."}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-8 gap-3 sm:gap-0">

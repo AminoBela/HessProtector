@@ -170,7 +170,7 @@ export function RecurringView({
             <CardContent>
               <div className="overflow-x-auto pb-2">
                 <div
-                  className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 md:min-w-[700px] gap-2 p-2 md:p-4 rounded-2xl border ${isLight ? "bg-slate-50 border-emerald-900/5" : "bg-black/20 border-white/5"}`}
+                  className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 p-2 md:p-4 rounded-2xl border ${isLight ? "bg-slate-50 border-emerald-900/5" : "bg-black/20 border-white/5"}`}
                 >
                   <div className="hidden md:contents">
                     {t.recurring.weekDays.map((d: string, i: number) => (

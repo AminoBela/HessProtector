@@ -141,7 +141,7 @@ export function MarketView({
       <div className="flex justify-between items-end">
         <div>
           <h2
-            className={`text-3xl font-black uppercase tracking-tighter ${isLight ? "text-slate-800" : "text-white"}`}
+            className={`text-2xl md:text-3xl font-black uppercase tracking-tighter ${isLight ? "text-slate-800" : "text-white"}`}
           >
             <ShoppingBag className="inline w-8 h-8 mr-2 -mt-1" />
             {t.title}

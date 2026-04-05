@@ -294,7 +294,7 @@ export function AnalyticsView({
               { }
               <div className="flex-1 text-center md:text-left">
                 <h2
-                  className={`text-3xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
+                  className={`text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-900" : "text-white"}`}
                 >
                   {audit.title}
                 </h2>

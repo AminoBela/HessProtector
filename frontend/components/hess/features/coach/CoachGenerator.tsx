@@ -91,7 +91,7 @@ export function CoachGenerator({
         <div className={`inline-flex items-center justify-center p-4 rounded-3xl mb-2 shadow-lg backdrop-blur-sm ${isLight ? "bg-gradient-to-tr from-emerald-100 to-teal-50 text-emerald-600 border border-emerald-100" : "bg-gradient-to-tr from-emerald-500/20 to-teal-500/10 text-emerald-400 border border-emerald-500/20"}`}>
           <ChefHat className="w-10 h-10 drop-shadow-sm" />
         </div>
-        <h1 className={`text-5xl font-extrabold tracking-tight ${isLight ? "text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 to-zinc-600" : "text-white"}`}>
+        <h1 className={`text-3xl md:text-5xl font-extrabold tracking-tight ${isLight ? "text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 to-zinc-600" : "text-white"}`}>
           {t.title}
         </h1>
         <p className={`text-base font-medium flex items-center justify-center gap-2 ${isLight ? "text-zinc-500" : "text-zinc-400"}`}>
@@ -124,16 +124,16 @@ export function CoachGenerator({
               </div>
             </div>
 
-            <div className={`p-6 rounded-3xl border ${inputGroupStyle}`}>
+            <div className={`p-4 md:p-6 rounded-3xl border ${inputGroupStyle}`}>
               <PremiumSlider
                 value={groceryBudget}
                 onValueChange={setGroceryBudget}
                 max={150}
                 step={5}
                 variant="emerald"
-                className="py-2"
+                className="py-1 md:py-2"
               />
-              <div className="flex justify-between mt-3 px-1">
+              <div className="flex justify-between mt-2 md:mt-3 px-1">
                 <span className="text-[10px] uppercase font-bold text-zinc-400">0€</span>
                 <span className="text-[10px] uppercase font-bold text-zinc-400">150€ (Rich)</span>
               </div>
@@ -152,7 +152,7 @@ export function CoachGenerator({
                   {planDays[0]} <span className="text-sm font-bold text-zinc-400">{common.days}</span>
                 </span>
               </div>
-              <div className={`px-5 rounded-3xl border flex items-center h-[88px] ${inputGroupStyle}`}>
+              <div className={`px-5 rounded-3xl border flex items-center h-[64px] md:h-[88px] ${inputGroupStyle}`}>
                 <PremiumSlider
                   value={planDays}
                   onValueChange={setPlanDays}
@@ -173,7 +173,7 @@ export function CoachGenerator({
                 </div>
               </div>
 
-              <div className={`p-1.5 rounded-3xl border flex h-[88px] ${inputGroupStyle}`}>
+              <div className={`p-1.5 rounded-3xl border flex h-[64px] md:h-[88px] ${inputGroupStyle}`}>
                 <button
                   onClick={() => toggleMeal("lunch")}
                   className={`flex-1 flex flex-col items-center justify-center rounded-2xl text-sm font-bold transition-all duration-300 ${planMeals.includes("lunch")

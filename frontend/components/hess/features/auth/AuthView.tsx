@@ -154,7 +154,7 @@ export function AuthView({
             <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-emerald-400 to-cyan-500">
               <ShieldCheck className="w-6 h-6 text-white" />
             </div>
-            <span className={`text-3xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
+            <span className={`text-2xl md:text-3xl font-black tracking-tighter ${isLight ? "text-slate-900" : "text-white"}`}>
               Hess<span className="text-emerald-500">Protector</span>
             </span>
           </div>

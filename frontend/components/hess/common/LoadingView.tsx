@@ -5,7 +5,7 @@ export function LoadingView() {
     return (
         <div className="flex h-screen w-full items-center justify-center bg-zinc-950 text-white overflow-hidden relative">
             {/* Soft background glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250px] md:w-[500px] h-[250px] md:h-[500px] bg-emerald-500/10 rounded-full blur-[60px] md:blur-[100px] pointer-events-none" />
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
