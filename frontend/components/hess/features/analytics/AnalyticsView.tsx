@@ -374,7 +374,7 @@ export function AnalyticsView({
         </motion.div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         <motion.div variants={item} className="h-full relative">
           <div className={`absolute inset-0 border-0 ${cardGlass} z-0`} />
           <div className="relative z-10 p-6 flex flex-col justify-between h-full">
@@ -383,7 +383,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.income || "Revenus"}
               </p>
               <p
-                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                className={`text-2xl md:text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.income.toFixed(2)}€
               </p>
@@ -399,7 +399,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.expense || "Dépenses"}
               </p>
               <p
-                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                className={`text-2xl md:text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.expense.toFixed(2)}€
               </p>
@@ -415,7 +415,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.net || "Net"}
               </p>
               <p
-                className={`text-3xl font-black transition-all duration-500 ${stats.net >= 0 ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                className={`text-2xl md:text-3xl font-black transition-all duration-500 ${stats.net >= 0 ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.net.toFixed(2)}€
               </p>
@@ -431,7 +431,7 @@ export function AnalyticsView({
                 {t.analytics?.kpi.savings || "Épargne"}
               </p>
               <p
-                className={`text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                className={`text-2xl md:text-3xl font-black transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
               >
                 {stats.savings_rate.toFixed(1)}%
               </p>
@@ -442,7 +442,7 @@ export function AnalyticsView({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <motion.div variants={item} className="h-[420px] relative">
+        <motion.div variants={item} className="h-[320px] md:h-[420px] relative">
           <div className={`absolute inset-0 ${solidCard} z-0`} />
           <div className="relative z-10 h-full flex flex-col">
             <CardHeader className="pt-8 px-8 pb-2 shrink-0">
@@ -492,7 +492,7 @@ export function AnalyticsView({
           </div>
         </motion.div>
 
-        <motion.div variants={item} className="h-[420px] relative">
+        <motion.div variants={item} className="h-[380px] md:h-[420px] relative">
           <div className={`absolute inset-0 ${solidCard} z-0`} />
           <div className="relative z-10 h-full flex flex-col">
             <CardHeader className="pt-8 px-8 pb-2 shrink-0">

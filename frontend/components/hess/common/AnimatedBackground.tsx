@@ -98,25 +98,17 @@ export function AnimatedBackground({ themeId, isLight }: AnimatedBackgroundProps
 
     return (
         <div className={`fixed inset-0 -z-50 overflow-hidden pointer-events-none transition-colors duration-1000 ${baseClass}`}>
-            <motion.div
-                animate={{ scale: [1, 1.1, 1], rotate: [0, 90, 0] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className={`absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full blur-[120px] transition-colors duration-1000 ${blendMode} ${colors[0]}`}
+            <div
+                className={`absolute -top-[20%] -left-[10%] w-[80vw] h-[80vw] md:w-[60vw] md:h-[60vw] rounded-full blur-[80px] md:blur-[120px] transition-colors duration-1000 ${blendMode} ${colors[0]} animate-[spin_30s_linear_infinite] origin-bottom-right transform-gpu will-change-transform`}
             />
-            <motion.div
-                animate={{ scale: [1, 1.2, 1], rotate: [0, -60, 0], x: [0, -50, 0] }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 2 }}
-                className={`absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] transition-colors duration-1000 ${blendMode} ${colors[1]}`}
+            <div
+                className={`absolute -bottom-[20%] -right-[10%] w-[70vw] h-[70vw] md:w-[50vw] md:h-[50vw] rounded-full blur-[80px] md:blur-[100px] transition-colors duration-1000 ${blendMode} ${colors[1]} animate-[spin_40s_linear_infinite_reverse] origin-top-left transform-gpu will-change-transform`}
             />
-            <motion.div
-                animate={{ scale: [1.1, 1, 1.1], y: [0, -50, 0] }}
-                transition={{ duration: 18, repeat: Infinity, ease: "linear", delay: 1 }}
-                className={`absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full blur-[100px] transition-colors duration-1000 ${blendMode} ${colors[2]}`}
+            <div
+                className={`absolute top-[20%] right-[10%] w-[50vw] h-[50vw] md:w-[40vw] md:h-[40vw] rounded-full blur-[60px] md:blur-[100px] transition-colors duration-1000 ${blendMode} ${colors[2]} animate-[pulse_10s_ease-in-out_infinite] transform-gpu will-change-transform`}
             />
-            <motion.div
-                animate={{ scale: [1, 1.3, 1], x: [0, 50, 0] }}
-                transition={{ duration: 22, repeat: Infinity, ease: "linear", delay: 3 }}
-                className={`absolute bottom-[10%] left-[20%] w-[45vw] h-[45vw] rounded-full blur-[110px] transition-colors duration-1000 ${blendMode} ${colors[3]}`}
+            <div
+                className={`absolute bottom-[10%] left-[20%] w-[60vw] h-[60vw] md:w-[45vw] md:h-[45vw] rounded-full blur-[70px] md:blur-[110px] transition-colors duration-1000 ${blendMode} ${colors[3]} animate-[pulse_15s_ease-in-out_infinite] transform-gpu will-change-transform`}
             />
         </div>
     );

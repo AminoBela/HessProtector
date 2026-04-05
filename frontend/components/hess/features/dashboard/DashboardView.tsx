@@ -157,7 +157,7 @@ export function DashboardView({
         >
           <div className={`absolute inset-0 border-0 ${cardGlass} z-0`} />
           <div
-            className={`absolute top-0 right-0 w-[500px] h-[500px] rounded-full blur-[120px] -mr-32 -mt-32 pointer-events-none mix-blend-screen z-0 ${isLight ? "bg-emerald-500/10" : "bg-emerald-500/20"}`}
+            className={`absolute top-0 right-0 w-[250px] h-[250px] md:w-[500px] md:h-[500px] rounded-full blur-[80px] md:blur-[120px] -mr-16 -mt-16 md:-mr-32 md:-mt-32 pointer-events-none mix-blend-screen z-0 ${isLight ? "bg-emerald-500/10" : "bg-emerald-500/20"}`}
           ></div>
           <div className="relative z-10 p-6 flex flex-col justify-between h-full">
             <CardHeader className="p-0">
@@ -170,34 +170,39 @@ export function DashboardView({
             <CardContent className="p-0 mt-6">
               <div className="flex items-baseline gap-2">
                 <span
-                  className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter transition-all duration-500 ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : "blur-none"}`}
+                  className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter transition-all duration-500 ${bigNumberColor} ${isBlurred ? "blur-xl select-none" : "blur-none"}`}
                 >
                   {statsData ? statsData.net_result.toFixed(2) : "..."}
                 </span>
-                <span className="text-3xl text-emerald-400 font-thin">€</span>
+                <span className="text-2xl md:text-3xl text-emerald-400 font-thin">€</span>
               </div>
-              <div className="mt-8 flex flex-col md:flex-row gap-4 text-sm font-bold">
+              <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm font-bold">
                 <div
-                  className={`px-5 py-3 rounded-2xl border flex items-center gap-3 ${pillBg} ${pillText}`}
+                  className={`col-span-1 px-3 py-3 md:px-5 rounded-2xl border flex items-center justify-center md:justify-start gap-2 md:gap-3 ${pillBg} ${pillText}`}
                 >
-                  <TrendingUp className="w-5 h-5 text-emerald-500" />{" "}
-                  {t.incoming}:{" "}
-                  <span className={`transition-all duration-500 ${isBlurred ? "blur-sm" : "blur-none"}`}>
-                    {statsData ? statsData.total_income.toFixed(2) : 0}€
+                  <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-emerald-500 hidden md:block" />
+                  <span className="flex-1 text-center md:text-left">
+                    <span className="md:hidden block text-emerald-500 mb-1"><TrendingUp className="w-4 h-4 mx-auto" /></span>
+                    <span className={`transition-all duration-500 font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
+                      +{statsData ? statsData.total_income.toFixed(0) : 0}€
+                    </span>
                   </span>
                 </div>
                 <div
-                  className={`px-5 py-3 rounded-2xl border flex items-center gap-3 ${pillBg} ${pillText}`}
+                  className={`col-span-1 px-3 py-3 md:px-5 rounded-2xl border flex items-center justify-center md:justify-start gap-2 md:gap-3 ${pillBg} ${pillText}`}
                 >
-                  <Zap className="w-5 h-5 text-rose-500" /> {t.outgoing}:{" "}
-                  <span className={`transition-all duration-500 ${isBlurred ? "blur-sm" : "blur-none"}`}>
-                    {statsData ? statsData.total_expense.toFixed(2) : 0}€
+                  <Zap className="w-4 h-4 md:w-5 md:h-5 text-rose-500 hidden md:block" />
+                  <span className="flex-1 text-center md:text-left">
+                    <span className="md:hidden block text-rose-500 mb-1"><Zap className="w-4 h-4 mx-auto" /></span>
+                    <span className={`transition-all duration-500 font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
+                      -{statsData ? statsData.total_expense.toFixed(0) : 0}€
+                    </span>
                   </span>
                 </div>
                 <div
-                  className={`px-5 py-3 rounded-2xl border flex items-center gap-3 ${pillBg} ${statsData && statsData.net_result >= 0 ? "text-emerald-500" : "text-rose-500"}`}
+                  className={`col-span-2 md:col-span-1 px-4 py-3 md:px-5 rounded-2xl border flex items-center justify-center gap-2 md:gap-3 ${pillBg} ${statsData && statsData.net_result >= 0 ? "text-emerald-500" : "text-rose-500"}`}
                 >
-                  <Wallet className="w-5 h-5" /> {t.balance}:{" "}
+                  <Wallet className="w-5 h-5 hidden md:block" /> {t.balance}:{" "}
                   {statsData && statsData.net_result >= 0
                     ? t.surplus
                     : t.deficit}
@@ -222,7 +227,7 @@ export function DashboardView({
                   {t.safeBalance}
                 </h3>
                 <div
-                  className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
+                  className={`text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter transition-all duration-500 ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                 >
                   {data?.safe_balance?.toFixed(2)}€
                 </div>

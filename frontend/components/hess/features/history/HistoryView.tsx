@@ -109,7 +109,7 @@ export function HistoryView({
                   <motion.div
                     variants={item}
                     key={tx.id}
-                    className={`flex flex-col md:flex-row justify-between items-start md:items-center p-5 rounded-2xl border transition-colors duration-300 gap-4 ${itemBg}`}
+                    className={`flex flex-row justify-between items-center p-4 md:p-5 rounded-2xl border transition-colors duration-300 gap-2 md:gap-4 ${itemBg}`}
                   >
                     <div className="flex items-center gap-5">
                       <div
@@ -118,7 +118,7 @@ export function HistoryView({
                         <TrendingUp className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className={`font-bold text-lg ${bigTextColor}`}>
+                        <div className={`font-bold text-sm md:text-lg line-clamp-1 break-all ${bigTextColor}`}>
                           {tx.label}
                         </div>
                         <div
@@ -128,7 +128,7 @@ export function HistoryView({
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex items-center gap-2 md:gap-4 justify-end">
                       <span
                         className={`font-mono text-xl font-bold transition-all duration-300 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
                       >
@@ -142,15 +142,16 @@ export function HistoryView({
                           size="icon"
                           onClick={() => openEdit(tx)}
                         >
-                          <Pencil className={`w-5 h-5 ${editColor}`} />
+                          <Pencil className={`w-4 h-4 md:w-5 md:h-5 ${editColor}`} />
                         </Button>
 
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="w-8 h-8 md:w-10 md:h-10"
                           onClick={() => setDeletingTxId(tx.id)}
                         >
-                          <Trash2 className={`w-5 h-5 ${trashColor}`} />
+                          <Trash2 className={`w-4 h-4 md:w-5 md:h-5 ${trashColor}`} />
                         </Button>
                       </div>
                     </div>
