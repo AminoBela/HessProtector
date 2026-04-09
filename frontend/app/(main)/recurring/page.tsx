@@ -10,7 +10,7 @@ export default function RecurringPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
     const { data, loading } = useHessData(token);
-    const { recForm, setRecForm, addRecurring, deleteRecurring } = useRecurring(token);
+    const { recForm, setRecForm, addRecurring, deleteRecurring, updateRecurring } = useRecurring(token);
 
     if (loading || !data) {
         return (
@@ -27,6 +27,7 @@ export default function RecurringPage() {
             setRecForm={setRecForm}
             handleAddRec={addRecurring}
             handleDeleteRec={deleteRecurring}
+            handleUpdateRec={updateRecurring}
             language={language}
             theme={theme}
         />

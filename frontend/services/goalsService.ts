@@ -14,6 +14,10 @@ export const GoalsService = {
         return ApiService.post('/goals', goal, token);
     },
 
+    update: async (id: number, goal: Partial<GoalItem>, token: string) => {
+        return ApiService.patch(`/goals/${id}`, goal, token);
+    },
+
     delete: async (id: number, token: string) => {
         return ApiService.delete(`/goals/${id}`, token);
     }

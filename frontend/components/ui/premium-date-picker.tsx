@@ -1,6 +1,6 @@
 import * as React from "react"
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
+import { fr, es } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -12,6 +12,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
+const localeMap: Record<string, any> = { fr, es }
+
 interface PremiumDatePickerProps {
     date: Date | undefined
     setDate: (date: Date | undefined) => void
@@ -19,16 +21,21 @@ interface PremiumDatePickerProps {
     className?: string
     isLight?: boolean
     disabledDays?: (date: Date) => boolean
+    language?: string
 }
 
 export function PremiumDatePicker({
     date,
     setDate,
-    placeholder = "Sélectionner une date",
+    placeholder,
     className,
     isLight = false,
-    disabledDays
+    disabledDays,
+    language = "fr"
 }: PremiumDatePickerProps) {
+
+    const locale = localeMap[language] || fr
+    const defaultPlaceholder = language === "es" ? "Seleccionar fecha" : "Sélectionner une date"
 
     const buttonStyle = isLight
         ? "bg-white border-emerald-900/10 text-slate-800 hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500/50 transition-[border-color,box-shadow,background-color] shadow-inner font-medium"
@@ -51,7 +58,7 @@ export function PremiumDatePicker({
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4 text-emerald-500" />
-                    {date ? format(date, "PPP", { locale: fr }) : <span>{placeholder}</span>}
+                    {date ? format(date, "PPP", { locale }) : <span>{placeholder || defaultPlaceholder}</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className={cn("w-auto p-0 rounded-2xl overflow-hidden", popoverStyle)}>
@@ -61,7 +68,10 @@ export function PremiumDatePicker({
                     onSelect={setDate}
                     disabled={disabledDays}
                     initialFocus
-                    locale={fr}
+                    locale={locale}
+                    captionLayout="dropdown"
+                    fromYear={2020}
+                    toYear={2035}
                     className="p-3 pointer-events-auto"
                 />
             </PopoverContent>

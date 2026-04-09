@@ -36,6 +36,20 @@ export function useRecurring(token: string | null, refresh?: () => void) {
         }
     });
 
+    const updateMutation = useMutation({
+        mutationFn: async ({ id, data }: { id: number, data: Partial<RecurringItem> }) => {
+            if (!token) throw new Error("Missing token");
+            return await RecurringService.update(id, data, token);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            if (refresh) refresh();
+        },
+        onError: (err) => {
+            setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    });
+
     return {
         recForm,
         setRecForm,
@@ -45,7 +59,10 @@ export function useRecurring(token: string | null, refresh?: () => void) {
         deleteRecurring: async (id: number) => {
             try { await deleteMutation.mutateAsync(id); return true; } catch { return false; }
         },
-        loading: addMutation.isPending || deleteMutation.isPending,
+        updateRecurring: async (id: number, data: Partial<RecurringItem>) => {
+            try { await updateMutation.mutateAsync({ id, data }); return true; } catch { return false; }
+        },
+        loading: addMutation.isPending || deleteMutation.isPending || updateMutation.isPending,
         error
     };
 }

@@ -137,3 +137,14 @@ class GoalsRepository(BaseRepository):
         self.session.add(db_goal)
         self.session.commit()
         return True
+
+    def patch(self, id: int, fields: dict, user_id: int) -> bool:
+        db_goal = self.session.exec(select(Goal).where(Goal.id == id, Goal.user_id == user_id)).first()
+        if not db_goal:
+            return False
+        for key, value in fields.items():
+            setattr(db_goal, key, value)
+        self.session.add(db_goal)
+        self.session.commit()
+        return True
+

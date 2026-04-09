@@ -90,6 +90,32 @@ export const LEGAL_TEXT = {
 5. **Cookies**
    Nous utilisons uniquement des cookies techniques nécessaires au maintien de votre session.
     `,
+  privacy_es: `
+**Política de Privacidad - HessProtector**
+
+1. **Recopilación de Datos**
+   Solo recopilamos los datos necesarios para el funcionamiento de la aplicación:
+   - Transacciones financieras (monto, fecha, concepto)
+   - Preferencias alimentarias (para el Coach IA)
+   - Objetivos de ahorro
+   - Datos de autenticación (email cifrado)
+
+2. **Uso de los Datos**
+   Sus datos se utilizan para:
+   - Generar sus paneles financieros
+   - Alimentar la IA (Gemini) para coaching personalizado
+   - Guardar sus preferencias
+
+3. **Protección de Datos**
+   Todos los datos sensibles están cifrados. Nunca vendemos sus datos a terceros.
+
+4. **Sus Derechos (RGPD)**
+   Conforme al RGPD, usted tiene derecho de acceso, rectificación, portabilidad y supresión de sus datos.
+   Puede ejercer estos derechos directamente desde los ajustes de la aplicación.
+
+5. **Cookies**
+   Solo utilizamos cookies técnicas necesarias para mantener su sesión.
+    `,
   terms: `
 **Conditions Générales d'Utilisation**
 
@@ -107,5 +133,23 @@ export const LEGAL_TEXT = {
 
 5. **Modification**
    Nous nous réservons le droit de modifier ces conditions à tout moment. Les utilisateurs seront notifiés des changements importants.
+    `,
+  terms_es: `
+**Términos y Condiciones de Uso**
+
+1. **Aceptación**
+   Al utilizar HessProtector, usted acepta estos términos.
+
+2. **Servicio**
+   HessProtector es una herramienta de gestión financiera. Los consejos proporcionados por la IA son orientativos y no constituyen asesoramiento financiero profesional.
+
+3. **Responsabilidad**
+   No nos hacemos responsables de las decisiones financieras tomadas basándose en la información proporcionada por la aplicación.
+
+4. **Cuenta de Usuario**
+   Usted es responsable de la confidencialidad de sus credenciales. Toda acción realizada desde su cuenta se considerará realizada por usted.
+
+5. **Modificación**
+   Nos reservamos el derecho de modificar estos términos en cualquier momento. Los usuarios serán notificados de cambios importantes.
     `,
 };

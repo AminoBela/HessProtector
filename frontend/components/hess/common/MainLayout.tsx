@@ -433,7 +433,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className={`p-0 w-[320px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
-                <SheetTitle className="sr-only">Menu de Navigation</SheetTitle>
+                <SheetTitle className="sr-only">{t.common.navMenu}</SheetTitle>
                 <div className="flex flex-col h-full p-6 pt-10">
                   {SidebarContent()}
                 </div>
@@ -534,13 +534,13 @@ export function MainLayout({ children }: MainLayoutProps) {
                       <SelectValue placeholder={t.dialog.category} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Alimentation">Alimentation</SelectItem>
-                      <SelectItem value="Voiture">Voiture</SelectItem>
+                      <SelectItem value="Alimentation">{t.dialog.categories.food}</SelectItem>
+                      <SelectItem value="Voiture">{t.dialog.categories.car}</SelectItem>
                       <SelectItem value="Loyer/Charges">
-                        Loyer/Charges
+                        {t.dialog.categories.rent}
                       </SelectItem>
-                      <SelectItem value="Loisir">Loisir</SelectItem>
-                      <SelectItem value="Autre">Autre</SelectItem>
+                      <SelectItem value="Loisir">{t.dialog.categories.leisure}</SelectItem>
+                      <SelectItem value="Autre">{t.dialog.categories.other}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button

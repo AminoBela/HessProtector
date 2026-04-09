@@ -13,13 +13,20 @@ export const Translations = {
             update: "Mettre à jour",
             generating: "Génération...",
             success: "Succès",
-            days: "jours"
+            days: "jours",
+            skip: "Passer",
+            optional: "optionnel",
+            selectAll: "Tout sélectionner",
+            deselectAll: "Tout désélectionner",
+            deleteSelected: "Supprimer la sélection",
+            selected: "sélectionné(s)",
+            navMenu: "Menu de Navigation"
         },
         auth: {
             loginTitle: "Connexion",
             registerTitle: "Inscription",
             username: "Nom d'utilisateur",
-            email: "Email (Optionnel)",
+            email: "Email",
             password: "Mot de passe",
             confirmPassword: "Confirmation",
             loginBtn: "Se Connecter",
@@ -29,7 +36,21 @@ export const Translations = {
             welcome: "Bienvenue sur HessProtector",
             subtitle: "Gère ta thune comme un pro.",
             error: "Erreur",
-            success: "Succès"
+            success: "Succès",
+            slogans: [
+                "Gérez vos finances avec élégance.",
+                "Reprenez le contrôle de votre budget.",
+                "L'intelligence artificielle au service de votre portefeuille.",
+                "Analysez, économisez, prospérez."
+            ],
+            passwordMismatch: "Les mots de passe ne correspondent pas",
+            allFieldsRequired: "Tous les champs sont obligatoires",
+            invalidEmail: "Format d'email invalide",
+            weakPassword: "Faible",
+            mediumPassword: "Moyen",
+            strongPassword: "Fort",
+            loginFailed: "Identifiants incorrects",
+            registerFailed: "Inscription échouée"
         },
         sidebar: {
             dashboard: "Tableau de Bord",
@@ -144,7 +165,7 @@ export const Translations = {
             title: "Mes Objectifs",
             subtitle: "Épargne pour tes projets futurs.",
             newGoal: "Nouvel Objectif",
-            target: "Cible",
+            target: "Objectif",
             saved: "Épargné",
             add: "Ajouter",
             empty: "Aucun objectif défini. Commence maintenant !",
@@ -154,7 +175,13 @@ export const Translations = {
             high: "Haute",
             medium: "Moyenne",
             low: "Basse",
-            noDate: "Pas de date"
+            noDate: "Pas de date",
+            daysRemaining: "Reste {n} jours",
+            perMonth: "Mettre {amount}€ / mois",
+            creditGoal: "Créditer cet objectif",
+            addAmount: "Montant à ajouter (€)",
+            addingInProgress: "En cours...",
+            addToSavings: "Ajouter à l'épargne"
         },
         recurring: {
             title: "Charges Fixes",
@@ -170,7 +197,11 @@ export const Translations = {
             weekDays: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
             fixe: "Fixe",
             sub: "Abonnement",
-            labelPlace: "Nom (Netflix, Loyer)"
+            labelPlace: "Nom (Netflix, Loyer)",
+            noBill: "Aucun prélèvement",
+            billCount: "prélèvement(s)",
+            freeDay: "Jour libre",
+            more: "de plus"
         },
         history: {
             title: "Historique",
@@ -183,24 +214,30 @@ export const Translations = {
             tabs: {
                 general: "Général",
                 account: "Compte",
-                legal: "Légal & RGPD"
+                legal: "Légal & RGPD",
+                shield: "Bouclier"
             },
             general: {
                 supermarket: "Supermarché Préféré (pour les prix)",
                 diet: "Régime Alimentaire",
                 theme: "Thème",
                 language: "Langue",
-                save: "Enregistrer"
+                save: "Enregistrer",
+                preferences: "Préférences",
+                saving: "Enregistrement...",
+                saved: "Enregistré !"
             },
             account: {
                 title: "Sécurité du Compte",
                 email: "Email (Non modifiable)",
                 password: "Changer le mot de passe",
                 newPassword: "Nouveau mot de passe",
+                confirmNewPassword: "Confirmer le nouveau mot de passe",
                 delete: "Supprimer le compte",
                 deleteDesc: "Action irréversible. Toutes vos données seront effacées.",
                 deleteConfirm: "Êtes-vous sûr de vouloir supprimer votre compte ?,Cette action est définitive.",
-                logout: "Se déconnecter"
+                logout: "Se déconnecter",
+                passwordMismatch: "Les nouveaux mots de passe ne correspondent pas"
             },
             legal: {
                 title: "Données & Confidentialité",
@@ -208,7 +245,19 @@ export const Translations = {
                 exportDesc: "Téléchargez une copie complète de vos données.",
                 terms: "Conditions d'utilisation",
                 privacy: "Politique de confidentialité",
-                read: "Lire"
+                read: "Lire",
+                dataCompliance: "Données & Conformité",
+                dataComplianceDesc: "Gérez vos données personnelles et consultez nos documents légaux.",
+                downloadData: "Télécharger mes données",
+                exporting: "Exportation...",
+                legalDoc: "Document Légal",
+                conditions: "Conditions"
+            },
+            shield: {
+                title: "Bouclier Budgétaire",
+                category: "Catégorie",
+                limit: "Limite (€)",
+                noLimit: "Aucune limite définie."
             }
         },
         rank: {
@@ -227,7 +276,14 @@ export const Translations = {
             add: "Valider la transaction",
             scanTotal: "Total détecté",
             addToExpenses: "Ajouter aux dépenses ?",
-            expenseAdded: "Dépense ajoutée !"
+            expenseAdded: "Dépense ajoutée !",
+            categories: {
+                food: "Alimentation",
+                car: "Voiture",
+                rent: "Loyer/Charges",
+                leisure: "Loisir",
+                other: "Autre"
+            }
         },
         audit: {
             title: "Analyse du Coach",
@@ -245,14 +301,27 @@ export const Translations = {
             next: "Suivant",
             start: "Lancer HessProtector",
             billName: "Nom (ex: Loyer)",
-            billAmount: "€"
+            billAmount: "€",
+            configTitle: "Configuration Initiale",
+            initialBalance: "Solde Initial",
+            deductions: "Prélèvements",
+            remaining: "Reste à vivre (Mois)",
+            coachPrefs: "Préférences Coach",
+            favStore: "Enseigne Préférée",
+            dietLabel: "Régime Alimentaire",
+            stepOf: "Étape {n} de {total}",
+            step1Desc: "Entrez le montant exact de votre solde bancaire aujourd'hui. HessProtector l'utilisera comme point de départ.",
+            step2Desc: "Entrez vos charges fixes mensuelles (loyer, factures, abonnements) pour calculer votre véritable budget vital.",
+            step3Desc: "Dites au Coach IA où vous faites vos courses et s'il doit adapter ses recettes.",
+            noFixedExpense: "Aucune dépense fixe ajoutée",
+            notDefined: "Non défini"
         },
         fuel: {
             title: "Suivi Carburant",
             addBtn: "+ Ajouter un Plein",
             date: "Date du plein",
             liters: "Volume (Litres)",
-            cost: "Prix Payé (€)",
+            cost: "Coût Total (€)",
             odometer: "Kilométrage (km)",
             type: "Carburant",
             station: "Station (ex: Total, Leclerc...)",
@@ -260,6 +329,9 @@ export const Translations = {
             addSubmit: "Enregistrer le plein",
             history: "Historique des Pleins",
             empty: "Aucun plein enregistré pour le moment.",
+            activateForStats: "Activer pour des stats correctes",
+            partial: "Partiel",
+            fillRequired: "Veuillez remplir les champs obligatoires (Date, Litres, Coût).",
             kpi: {
                 avgConsumption: "Conso Moyenne",
                 costPerKm: "Coût au km",
@@ -292,13 +364,20 @@ export const Translations = {
             update: "Actualizar",
             generating: "Generando...",
             success: "Éxito",
-            days: "días"
+            days: "días",
+            skip: "Omitir",
+            optional: "opcional",
+            selectAll: "Seleccionar todo",
+            deselectAll: "Deseleccionar todo",
+            deleteSelected: "Eliminar selección",
+            selected: "seleccionado(s)",
+            navMenu: "Menú de Navegación"
         },
         auth: {
             loginTitle: "Iniciar Sesión",
             registerTitle: "Registro",
             username: "Nombre de usuario",
-            email: "Email (Opcional)",
+            email: "Email",
             password: "Contraseña",
             confirmPassword: "Confirmar Contraseña",
             loginBtn: "Entrar",
@@ -308,7 +387,21 @@ export const Translations = {
             welcome: "Bienvenido a HessProtector",
             subtitle: "Gestiona tu dinero como un pro.",
             error: "Error",
-            success: "Éxito"
+            success: "Éxito",
+            slogans: [
+                "Gestiona tus finanzas con elegancia.",
+                "Retoma el control de tu presupuesto.",
+                "Inteligencia artificial al servicio de tu cartera.",
+                "Analiza, ahorra, prospera."
+            ],
+            passwordMismatch: "Las contraseñas no coinciden",
+            allFieldsRequired: "Todos los campos son obligatorios",
+            invalidEmail: "Formato de email inválido",
+            weakPassword: "Débil",
+            mediumPassword: "Media",
+            strongPassword: "Fuerte",
+            loginFailed: "Credenciales incorrectas",
+            registerFailed: "Registro fallido"
         },
         nav: {
             dashboard: "Panel de Control",
@@ -443,7 +536,13 @@ export const Translations = {
             high: "Alta",
             medium: "Media",
             low: "Baja",
-            noDate: "Sin fecha"
+            noDate: "Sin fecha",
+            daysRemaining: "Quedan {n} días",
+            perMonth: "Ahorrar {amount}€ / mes",
+            creditGoal: "Abonar a esta meta",
+            addAmount: "Cantidad a añadir (€)",
+            addingInProgress: "En curso...",
+            addToSavings: "Añadir al ahorro"
         },
         recurring: {
             title: "Gastos Fijos",
@@ -459,7 +558,11 @@ export const Translations = {
             weekDays: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
             fixe: "Fijo",
             sub: "Suscripción",
-            labelPlace: "Nombre (Netflix, Alquiler)"
+            labelPlace: "Nombre (Netflix, Alquiler)",
+            noBill: "Sin cargo",
+            billCount: "cargo(s)",
+            freeDay: "Día libre",
+            more: "más"
         },
         history: {
             title: "Historial",
@@ -472,24 +575,30 @@ export const Translations = {
             tabs: {
                 general: "General",
                 account: "Cuenta",
-                legal: "Legal & RGPD"
+                legal: "Legal & RGPD",
+                shield: "Escudo"
             },
             general: {
                 supermarket: "Supermercado Favorito",
                 diet: "Dieta",
                 theme: "Tema",
                 language: "Idioma",
-                save: "Guardar Cambios"
+                save: "Guardar Cambios",
+                preferences: "Preferencias",
+                saving: "Guardando...",
+                saved: "¡Guardado!"
             },
             account: {
                 title: "Seguridad de la Cuenta",
                 email: "Email (No modificable)",
                 password: "Cambiar contraseña",
                 newPassword: "Nueva contraseña",
+                confirmNewPassword: "Confirmar nueva contraseña",
                 delete: "Eliminar cuenta",
                 deleteDesc: "Acción irreversible. Todos tus datos serán borrados.",
                 deleteConfirm: "¿Seguro que quieres eliminar tu cuenta?,Esta acción es definitiva.",
-                logout: "Cerrar sesión"
+                logout: "Cerrar sesión",
+                passwordMismatch: "Las nuevas contraseñas no coinciden"
             },
             legal: {
                 title: "Datos & Privacidad",
@@ -497,7 +606,19 @@ export const Translations = {
                 exportDesc: "Descarga una copia completa de tus datos.",
                 terms: "Términos de uso",
                 privacy: "Política de privacidad",
-                read: "Leer"
+                read: "Leer",
+                dataCompliance: "Datos y Cumplimiento",
+                dataComplianceDesc: "Gestiona tus datos personales y consulta nuestros documentos legales.",
+                downloadData: "Descargar mis datos",
+                exporting: "Exportando...",
+                legalDoc: "Documento Legal",
+                conditions: "Condiciones"
+            },
+            shield: {
+                title: "Escudo Presupuestario",
+                category: "Categoría",
+                limit: "Límite (€)",
+                noLimit: "Sin límites definidos."
             }
         },
         rank: {
@@ -516,7 +637,14 @@ export const Translations = {
             add: "Validar",
             scanTotal: "Total detectado",
             addToExpenses: "¿Añadir a gastos?",
-            expenseAdded: "¡Gasto añadido!"
+            expenseAdded: "¡Gasto añadido!",
+            categories: {
+                food: "Alimentación",
+                car: "Vehículo",
+                rent: "Alquiler/Gastos",
+                leisure: "Ocio",
+                other: "Otro"
+            }
         },
         audit: {
             title: "Análisis del Coach",
@@ -534,14 +662,27 @@ export const Translations = {
             next: "Siguiente",
             start: "Iniciar HessProtector",
             billName: "Nombre (ej: Alquiler)",
-            billAmount: "€"
+            billAmount: "€",
+            configTitle: "Configuración Inicial",
+            initialBalance: "Saldo Inicial",
+            deductions: "Deducciones",
+            remaining: "Disponible (Mes)",
+            coachPrefs: "Preferencias del Coach",
+            favStore: "Tienda Favorita",
+            dietLabel: "Dieta",
+            stepOf: "Paso {n} de {total}",
+            step1Desc: "Introduce el saldo exacto de tu cuenta bancaria hoy. HessProtector lo usará como punto de partida.",
+            step2Desc: "Introduce tus gastos fijos mensuales (alquiler, facturas, suscripciones) para calcular tu presupuesto real.",
+            step3Desc: "Dile al Coach IA dónde haces tus compras y si debe adaptar sus recetas.",
+            noFixedExpense: "Sin gastos fijos añadidos",
+            notDefined: "No definido"
         },
         fuel: {
             title: "Seguimiento Combustible",
             addBtn: "+ Añadir Repostaje",
             date: "Fecha del repostaje",
             liters: "Volumen (Litros)",
-            cost: "Precio Pagado (€)",
+            cost: "Coste Total (€)",
             odometer: "Kilometraje (km)",
             type: "Combustible",
             station: "Estación (ej: Repsol...)",
@@ -549,6 +690,9 @@ export const Translations = {
             addSubmit: "Registrar repostaje",
             history: "Historial de Repostajes",
             empty: "Aún no hay repostajes registrados.",
+            activateForStats: "Activar para estadísticas correctas",
+            partial: "Parcial",
+            fillRequired: "Rellene los campos obligatorios (Fecha, Litros, Coste).",
             kpi: {
                 avgConsumption: "Consumo Medio",
                 costPerKm: "Coste por km",

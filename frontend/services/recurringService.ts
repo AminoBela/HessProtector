@@ -13,6 +13,10 @@ export const RecurringService = {
         return ApiService.post('/recurring', rec, token);
     },
 
+    update: async (id: number, rec: Partial<RecurringItem>, token: string) => {
+        return ApiService.put(`/recurring/${id}`, rec, token);
+    },
+
     delete: async (id: number, token: string) => {
         return ApiService.delete(`/recurring/${id}`, token);
     }

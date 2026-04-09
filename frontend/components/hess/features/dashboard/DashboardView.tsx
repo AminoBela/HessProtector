@@ -15,7 +15,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { SurvivalGauge } from "./SurvivalGauge";
-import { AchievementsView } from "./AchievementsView";
+
 import { motion, Variants } from "framer-motion";
 import { usePrivacy } from "@/context/PrivacyContext";
 import { PanicModal } from "../../common/PanicModal";
@@ -81,7 +81,7 @@ export function DashboardView({
     if (active && payload && payload.length) {
       return (
         <div
-          className={`p-4 rounded-2xl border backdrop-blur-xl shadow-2xl ${isLight ? "bg-white/90 border-emerald-900/10" : "bg-black/80 border-white/10"}`}
+          className={`p-4 rounded-3xl border shadow-2xl backdrop-blur-3xl ${isLight ? "bg-white/70 border-slate-200/60 shadow-slate-300/50" : "bg-black/60 border-white/10 shadow-emerald-500/10"}`}
         >
           {label && (
             <p
@@ -289,6 +289,16 @@ export function DashboardView({
               {statsData ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={annualData}>
+                    <defs>
+                      <linearGradient id="colorDashIncome" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={isLight ? 0.8 : 1}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={isLight ? 0.2 : 0}/>
+                      </linearGradient>
+                      <linearGradient id="colorDashExpense" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={isLight ? 0.8 : 1}/>
+                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={isLight ? 0.2 : 0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke={chartGrid}
@@ -316,13 +326,13 @@ export function DashboardView({
                     />
                     <Bar
                       dataKey="income"
-                      fill="#10b981"
+                      fill="url(#colorDashIncome)"
                       radius={[4, 4, 0, 0]}
                       name={t.incoming}
                     />
                     <Bar
                       dataKey="expense"
-                      fill="#f43f5e"
+                      fill="url(#colorDashExpense)"
                       radius={[4, 4, 0, 0]}
                       name={t.outgoing}
                     />
@@ -391,20 +401,6 @@ export function DashboardView({
         </motion.div>
       </div>
 
-      {data.achievements && (
-        <motion.div variants={item}>
-          <h3
-            className={`text-xs font-black uppercase tracking-widest mb-6 ${subTextColor}`}
-          >
-            {t.achievements || "Salle des Trophées"}
-          </h3>
-          <AchievementsView
-            achievements={data.achievements}
-            isLight={isLight}
-            language={language}
-          />
-        </motion.div>
-      )}
     </motion.div>
   );
 }

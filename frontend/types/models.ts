@@ -60,10 +60,3 @@ export interface PlanItem {
     created_at: string
 }
 
-export interface Achievement {
-    id: string
-    icon: string
-    name: string
-    desc: string
-    locked?: boolean
-}

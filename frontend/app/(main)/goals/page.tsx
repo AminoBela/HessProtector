@@ -10,7 +10,7 @@ export default function GoalsPage() {
     const { token } = useAuth();
     const { theme, language } = useSettings();
     const { data, loading } = useHessData(token);
-    const { goalForm, setGoalForm, addGoal, deleteGoal } = useGoals(token);
+    const { goalForm, setGoalForm, addGoal, deleteGoal, updateGoal } = useGoals(token);
 
     if (loading || !data) {
         return (
@@ -27,6 +27,7 @@ export default function GoalsPage() {
             setGoalForm={setGoalForm}
             handleAddGoal={addGoal}
             handleDeleteGoal={deleteGoal}
+            handleUpdateGoal={updateGoal}
             language={language}
             theme={theme}
         />

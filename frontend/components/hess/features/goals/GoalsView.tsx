@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Target, Timer, Wallet } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Trash2, Target, Timer, Wallet, Plus } from "lucide-react";
 import { differenceInDays, startOfDay } from "date-fns";
 import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
@@ -42,6 +48,7 @@ interface GoalsViewProps {
   setGoalForm: (form: GoalForm) => void;
   handleAddGoal: () => void;
   handleDeleteGoal: (id: number) => void;
+  handleUpdateGoal?: (id: number, data: Partial<Goal>) => void;
   language: string;
   theme: string;
 }
@@ -52,11 +59,28 @@ export function GoalsView({
   setGoalForm,
   handleAddGoal,
   handleDeleteGoal,
+  handleUpdateGoal,
   language,
   theme,
 }: GoalsViewProps) {
   const { isBlurred } = usePrivacy();
   const isLight = theme === "light";
+  
+  const [addingGoalId, setAddingGoalId] = useState<number | null>(null);
+  const [addAmount, setAddAmount] = useState<string>("");
+  const [isSubmittingAmount, setIsSubmittingAmount] = useState(false);
+
+  const confirmAddMoney = async () => {
+    if (!addingGoalId || !addAmount || !handleUpdateGoal) return;
+    setIsSubmittingAmount(true);
+    const goalToUpdate = data.goals.find(g => g.id === addingGoalId);
+    if (goalToUpdate) {
+        await handleUpdateGoal(addingGoalId, { saved: goalToUpdate.saved + parseFloat(addAmount) });
+    }
+    setIsSubmittingAmount(false);
+    setAddingGoalId(null);
+    setAddAmount("");
+  };
 
   const cardGlass = isLight
     ? "card-glass card-glass-light"
@@ -155,6 +179,7 @@ export function GoalsView({
                   date={goalForm.deadline ? new Date(goalForm.deadline) : undefined}
                   setDate={(date) => setGoalForm({ ...goalForm, deadline: date ? date.toISOString().split("T")[0] : "" })}
                   isLight={isLight}
+                  language={language}
                   disabledDays={(date) => date < startOfDay(new Date())}
                 />
               </div>
@@ -229,9 +254,25 @@ export function GoalsView({
                       onClick={() => handleDeleteGoal(g.id)}
                     />
                   </div>
-                  <div className="mt-6 mb-2 flex justify-between text-sm font-bold">
-                    <span className={`${bigTextColor} ${isBlurred ? "blur-md select-none transition-all duration-300" : ""}`}>{g.saved.toFixed(2)}€</span>
-                    <span className={`${labelColor} ${isBlurred ? "blur-sm select-none transition-all duration-300" : ""}`}>{g.target.toFixed(2)}€</span>
+                  <div className="mt-6 mb-2 flex justify-between items-end text-sm font-bold">
+                    <div className="flex flex-col gap-1">
+                        <span className={`${labelColor} text-xs uppercase tracking-widest`}>{t.goals.saved}</span>
+                        <div className="flex items-center gap-2">
+                           <span className={`text-xl ${bigTextColor} ${isBlurred ? "blur-md select-none transition-all duration-300" : ""}`}>{g.saved.toFixed(2)}€</span>
+                           <Button 
+                                variant="outline" 
+                                size="icon" 
+                                className={`h-6 w-6 rounded-full border-dashed ${isLight ? "border-emerald-500/50 text-emerald-600 hover:bg-emerald-50" : "border-emerald-400/50 text-emerald-400 hover:bg-emerald-400/10"}`}
+                                onClick={() => setAddingGoalId(g.id)}
+                           >
+                               <Plus className="w-3 h-3" />
+                           </Button>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-1 text-right">
+                        <span className={`${labelColor} text-xs uppercase tracking-widest`}>{t.goals.target}</span>
+                        <span className={`text-xl ${labelColor} ${isBlurred ? "blur-sm select-none transition-all duration-300" : ""}`}>{g.target.toFixed(2)}€</span>
+                    </div>
                   </div>
                   <div className="relative group overflow-hidden rounded-full shadow-inner">
                     <Progress
@@ -252,10 +293,10 @@ export function GoalsView({
                     className={`mt-4 flex gap-4 text-xs font-medium p-3 rounded-lg border ${infoBoxStyle}`}
                   >
                     <div className="flex items-center gap-2">
-                      <Timer className="w-4 h-4" /> Reste {daysRemaining} jours
+                      <Timer className="w-4 h-4" /> {(t.goals as any).daysRemaining?.replace?.("{n}", String(daysRemaining)) || `Reste ${daysRemaining} jours`}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Wallet className="w-4 h-4" /> Mettre <span className={isBlurred ? "blur-sm select-none transition-all duration-300" : ""}>{perMonth}€</span> / mois
+                      <Wallet className="w-4 h-4" /> {(t.goals as any).perMonth?.replace?.("{amount}", String(perMonth)) || `Mettre ${perMonth}€ / mois`}
                     </div>
                   </div>
                 </CardContent>
@@ -264,6 +305,35 @@ export function GoalsView({
           );
         })}
       </div>
+
+      {/* Add Money Dialog */}
+      <Dialog open={addingGoalId !== null} onOpenChange={(open) => !open && setAddingGoalId(null)}>
+        <DialogContent className={isLight ? "bg-white/90 backdrop-blur-xl border-emerald-900/10" : "bg-black/90 backdrop-blur-xl border-white/10"}>
+            <DialogHeader>
+                <DialogTitle className={`text-xl font-black ${bigTextColor}`}>
+                    {(t.goals as any).creditGoal || "Créditer cet objectif"}
+                </DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 space-y-4">
+                <Input 
+                    type="number" 
+                    placeholder={(t.goals as any).addAmount || "Montant à ajouter (€)"}
+                    className={inputStyle}
+                    value={addAmount}
+                    onChange={(e) => setAddAmount(e.target.value)}
+                    autoFocus
+                />
+                <Button 
+                    variant="premium" 
+                    className="w-full h-14"
+                    disabled={!addAmount || isSubmittingAmount}
+                    onClick={confirmAddMoney}
+                >
+                    {isSubmittingAmount ? ((t.goals as any).addingInProgress || "En cours...") : ((t.goals as any).addToSavings || "Ajouter à l'épargne")}
+                </Button>
+            </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

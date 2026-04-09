@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, useEffect } from "react";
+import { useState, KeyboardEvent, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,23 @@ interface AuthViewProps {
   onRegister: (u: string, p: string, e: string) => Promise<boolean>;
   language: string;
   theme: string;
+}
+
+function getPasswordStrength(password: string): "weak" | "medium" | "strong" | null {
+  if (!password) return null;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  const length = password.length;
+
+  if (length >= 8 && hasUpper && hasLower && hasNumber && hasSpecial) return "strong";
+  if (length >= 6 && ((hasUpper && hasLower) || (hasNumber && (hasUpper || hasLower)))) return "medium";
+  return "weak";
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 export function AuthView({
@@ -34,11 +51,8 @@ export function AuthView({
 
   const t = Translations[language as keyof typeof Translations].auth;
 
-  const slogans = [
+  const slogans = (t as any).slogans || [
     t.subtitle || "Gérez vos finances avec élégance.",
-    "Reprenez le contrôle de votre budget.",
-    "L'intelligence artificielle au service de votre portefeuille.",
-    "Analysez, économisez, prospérez."
   ];
 
   useEffect(() => {
@@ -58,21 +72,38 @@ export function AuthView({
     setError(msg);
   };
 
+  // Real-time password mismatch
+  const passwordMismatch = regForm.confirm.length > 0 && regForm.password !== regForm.confirm;
+
+  // Password strength
+  const passwordStrength = useMemo(() => getPasswordStrength(regForm.password), [regForm.password]);
+
+  const strengthColor = passwordStrength === "strong" ? "bg-emerald-500" : passwordStrength === "medium" ? "bg-amber-500" : "bg-rose-500";
+  const strengthWidth = passwordStrength === "strong" ? "100%" : passwordStrength === "medium" ? "66%" : "33%";
+  const strengthLabel = passwordStrength === "strong" ? (t as any).strongPassword : passwordStrength === "medium" ? (t as any).mediumPassword : (t as any).weakPassword;
+
+  // Email validation in real-time
+  const emailInvalid = regForm.email.length > 0 && !isValidEmail(regForm.email);
+
   const handleLogin = async () => {
     setIsLoading(true);
     setError("");
     const success = await onLogin(loginForm.username, loginForm.password);
-    if (!success) triggerError(t.error || "Identifiants incorrects");
+    if (!success) triggerError((t as any).loginFailed || t.error || "Identifiants incorrects");
     setIsLoading(false);
   };
 
   const handleRegister = async () => {
     if (regForm.password !== regForm.confirm) {
-      triggerError("Les mots de passe ne correspondent pas");
+      triggerError((t as any).passwordMismatch || "Les mots de passe ne correspondent pas");
       return;
     }
     if (!regForm.username || !regForm.password || !regForm.email) {
-      triggerError("Tous les champs sont obligatoires");
+      triggerError((t as any).allFieldsRequired || "Tous les champs sont obligatoires");
+      return;
+    }
+    if (!isValidEmail(regForm.email)) {
+      triggerError((t as any).invalidEmail || "Format d'email invalide");
       return;
     }
     setIsLoading(true);
@@ -82,7 +113,7 @@ export function AuthView({
       regForm.password,
       regForm.email,
     );
-    if (!success) triggerError(t.error || "Inscription échouée");
+    if (!success) triggerError((t as any).registerFailed || t.error || "Inscription échouée");
     setIsLoading(false);
   };
 
@@ -95,6 +126,9 @@ export function AuthView({
       }
     }
   };
+
+  // Register button disabled: require email too
+  const registerDisabled = isLoading || !regForm.username || !regForm.password || !regForm.confirm || !regForm.email || passwordMismatch || emailInvalid;
 
   return (
     <div className={`relative flex min-h-screen w-full overflow-hidden ${isLight ? "bg-slate-50" : "bg-zinc-950"}`}>
@@ -127,7 +161,7 @@ export function AuthView({
               transition={{ delay: 0.2 }}
               className={`text-6xl xl:text-7xl font-black tracking-tight leading-[1.1] mb-6 ${isLight ? "text-slate-900" : "text-white"}`}
             >
-              Maîtrisez <br /> votre budget.
+              {language === "es" ? <>Controla <br /> tu presupuesto.</> : <>Maîtrisez <br /> votre budget.</>}
             </motion.h1>
             <div className="h-24 overflow-hidden relative">
               <AnimatePresence mode="wait">
@@ -260,7 +294,7 @@ export function AuthView({
                     animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, x: -20, filter: "blur(10px)" }}
                     transition={{ duration: 0.3 }}
-                    className="flex flex-col gap-10 absolute inset-0 pt-2"
+                    className="flex flex-col gap-8 absolute inset-0 pt-2"
                   >
                     <div className="relative group min-h-[4rem]">
                       <Input
@@ -278,16 +312,19 @@ export function AuthView({
 
                     <div className="relative group min-h-[4rem]">
                       <Input
-                        className={`peer ${inputStyle}`}
+                        className={`peer ${inputStyle} ${emailInvalid ? "!border-rose-500" : ""}`}
                         placeholder=" "
                         value={regForm.email}
                         onKeyDown={handleKeyDown}
                         onChange={(e) => setRegForm({ ...regForm, email: e.target.value })}
                       />
                       <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.email ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
-                        {t.email}
+                        {t.email} <span className="text-rose-500">*</span>
                       </label>
-                      <Mail className={`absolute right-2 top-4 w-6 h-6 transition-colors ${isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`} />
+                      <Mail className={`absolute right-2 top-4 w-6 h-6 transition-colors ${emailInvalid ? "text-rose-500" : isLight ? "text-slate-300 group-focus-within:text-emerald-500" : "text-zinc-600 group-focus-within:text-emerald-500"}`} />
+                      {emailInvalid && (
+                        <p className="absolute -bottom-5 left-2 text-xs font-bold text-rose-500">{(t as any).invalidEmail}</p>
+                      )}
                     </div>
 
                     <div className="flex gap-6 min-h-[4rem]">
@@ -303,18 +340,29 @@ export function AuthView({
                         <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.password ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
                           {t.password}
                         </label>
+                        {/* Password strength indicator */}
+                        {passwordStrength && (
+                          <div className="absolute -bottom-6 left-0 right-0 flex items-center gap-2">
+                            <div className={`h-1.5 rounded-full transition-all duration-500 ${isLight ? "bg-slate-200" : "bg-white/10"}`} style={{ width: "100%" }}>
+                              <div className={`h-full rounded-full transition-all duration-500 ${strengthColor}`} style={{ width: strengthWidth }} />
+                            </div>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${passwordStrength === "strong" ? "text-emerald-500" : passwordStrength === "medium" ? "text-amber-500" : "text-rose-500"}`}>
+                              {strengthLabel}
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="relative w-1/2 group">
                         <Input
                           type={showPassword ? "text" : "password"}
-                          className={`peer ${inputStyle}`}
+                          className={`peer ${inputStyle} ${passwordMismatch ? "!border-rose-500" : regForm.confirm && !passwordMismatch ? "!border-emerald-500" : ""}`}
                           placeholder=" "
                           value={regForm.confirm}
                           onKeyDown={handleKeyDown}
                           onChange={(e) => setRegForm({ ...regForm, confirm: e.target.value })}
                         />
                         <label className={`pointer-events-none absolute left-2 transition-all peer-focus:-top-7 peer-focus:text-sm peer-focus:text-emerald-500 ${regForm.confirm ? "-top-7 text-sm text-emerald-500" : "top-2 text-xl " + (isLight ? "text-slate-400" : "text-zinc-500")}`}>
-                          Confirmer
+                          {t.confirmPassword}
                         </label>
                         <button
                           type="button"
@@ -323,13 +371,19 @@ export function AuthView({
                         >
                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                         </button>
+                        {/* Real-time password mismatch */}
+                        {passwordMismatch && (
+                          <p className="absolute -bottom-5 left-0 text-[10px] font-bold text-rose-500 whitespace-nowrap">
+                            {(t as any).passwordMismatch}
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     <Button
                       onClick={handleRegister}
-                      disabled={isLoading || !regForm.username || !regForm.password || !regForm.confirm}
-                      className="w-full h-16 rounded-2xl bg-emerald-500 text-white hover:bg-slate-900 dark:hover:bg-white dark:hover:text-black transition-all font-black mt-2 text-xl tracking-wide group"
+                      disabled={registerDisabled}
+                      className={`w-full h-16 rounded-2xl bg-emerald-500 text-white hover:bg-slate-900 dark:hover:bg-white dark:hover:text-black transition-all font-black mt-4 text-xl tracking-wide group ${registerDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <span className="flex items-center justify-center">
                         {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <> {t.registerBtn} <ArrowRight className="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform" /> </>}

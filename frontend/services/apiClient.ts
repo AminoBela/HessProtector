@@ -77,6 +77,30 @@ export const ApiService = {
         return res.json();
     },
 
+    async patch(endpoint: string, data: any, token: string | null) {
+        const headers: HeadersInit = {
+            "Content-Type": "application/json",
+        };
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "PATCH",
+            headers,
+            credentials: 'include',
+            cache: 'no-store',
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) {
+            if (res.status === 401) {
+                window.dispatchEvent(new Event('hess:logout'));
+                throw new Error("Unauthorized");
+            }
+            throw new Error(`API Error: ${res.statusText}`);
+        }
+        return res.json();
+    },
+
     async delete(endpoint: string, token: string | null) {
         const headers: HeadersInit = {
             "Content-Type": "application/json",

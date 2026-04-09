@@ -1,4 +1,4 @@
-import { Transaction, PantryItem, RecurringItem, GoalItem, Profile, Achievement } from './models'
+import { Transaction, PantryItem, RecurringItem, GoalItem, Profile } from './models'
 
 export interface DashboardData {
     transactions: Transaction[]
@@ -17,7 +17,6 @@ export interface DashboardData {
     rank: string
     next_rank_xp: number
     prediction: PredictionData
-    achievements: Achievement[]
     is_setup: boolean
 }
 

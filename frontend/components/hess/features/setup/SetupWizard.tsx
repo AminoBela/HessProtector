@@ -37,7 +37,8 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
     type: "Fixe",
   });
 
-  const t = Translations.fr.setup;
+  const tSetup = Translations[language as keyof typeof Translations]?.setup || Translations.fr.setup;
+  const tCommon = Translations[language as keyof typeof Translations]?.common || Translations.fr.common;
 
   const cardGlass = isLight
     ? "bg-white/80 backdrop-blur-3xl border-white/50 shadow-2xl shadow-emerald-500/10"
@@ -77,9 +78,9 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
   };
 
   const steps = [
-    { id: 0, title: t.step1, icon: Coins, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { id: 1, title: t.step2, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { id: 2, title: t.step3, icon: Utensils, color: "text-amber-500", bg: "bg-amber-500/10" }
+    { id: 0, title: tSetup.step1, icon: Coins, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { id: 1, title: tSetup.step2, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { id: 2, title: tSetup.step3, icon: Utensils, color: "text-amber-500", bg: "bg-amber-500/10" }
   ];
 
   const totalBills = setupBills.reduce((acc, curr) => acc + curr.amount, 0);
@@ -110,12 +111,12 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
 
           <div className="flex-1 max-w-lg mt-10">
             <h1 className={`text-5xl xl:text-6xl font-black tracking-tight leading-[1.1] mb-8 ${isLight ? "text-slate-900" : "text-white"}`}>
-              Configuration <br /> Initiale
+              {tSetup.configTitle.split(" ").slice(0, 1).join(" ")} <br /> {tSetup.configTitle.split(" ").slice(1).join(" ")}
             </h1>
 
             <div className="space-y-10 relative z-10">
               <div className="space-y-2">
-                <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>Solde Initial</p>
+                <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{tSetup.initialBalance}</p>
                 <div className="flex items-end gap-2">
                   <span className={`text-5xl font-black ${setupBalance ? (isLight ? "text-slate-800" : "text-white") : (isLight ? "text-slate-300" : "text-zinc-700")}`}>
                     {setupBalance ? parseFloat(setupBalance).toFixed(2) : "0.00"}
@@ -126,7 +127,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
 
               <div className="space-y-2 w-full max-w-md">
                 <div className="flex justify-between items-center">
-                  <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>Prélèvements ({setupBills.length})</p>
+                  <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{tSetup.deductions} ({setupBills.length})</p>
                   <span className="text-2xl font-black text-rose-500">-{totalBills.toFixed(2)} €</span>
                 </div>
                 {setupBills.length > 0 && (
@@ -141,7 +142,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
               </div>
 
               <div className="space-y-2">
-                <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>Reste à vivre (Mois)</p>
+                <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{tSetup.remaining}</p>
                 <div className="flex items-end gap-2">
                   <span className={`text-5xl font-black ${remainingBudget > 0 ? "text-emerald-500" : (remainingBudget < 0 ? "text-rose-500" : (isLight ? "text-slate-300" : "text-zinc-700"))}`}>
                     {setupBalance ? remainingBudget.toFixed(2) : "0.00"}
@@ -160,14 +161,14 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                     <div className={`p-2 rounded-lg ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
                       <Bot className="w-5 h-5" />
                     </div>
-                    <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{language === "es" ? "Preferencias del Coach" : "Préférences Coach"}</p>
+                    <p className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{tSetup.coachPrefs}</p>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className={`p-4 rounded-2xl ${isLight ? "bg-slate-200 text-slate-500" : "bg-white/5 text-zinc-400"}`}>
                       <Utensils className="w-6 h-6" />
                     </div>
                     <div>
-                      <p className={`text-xl font-bold ${isLight ? "text-slate-700" : "text-zinc-300"}`}>{setupProfile.supermarket || "Non défini"}</p>
+                      <p className={`text-xl font-bold ${isLight ? "text-slate-700" : "text-zinc-300"}`}>{setupProfile.supermarket || tSetup.notDefined}</p>
                       <p className={`text-sm uppercase font-bold tracking-widest ${isLight ? "text-slate-400" : "text-zinc-500"}`}>{setupProfile.diet}</p>
                     </div>
                   </div>
@@ -213,7 +214,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                 </motion.div>
                 <div>
                   <h3 className={`text-sm font-black uppercase tracking-widest mb-1 ${steps[setupStep].color}`}>
-                    Étape {setupStep + 1} de 3
+                    {tSetup.stepOf.replace("{n}", String(setupStep + 1)).replace("{total}", "3")}
                   </h3>
                   <h2 className={`text-2xl md:text-3xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
                     {steps[setupStep].title}
@@ -221,9 +222,9 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                 </div>
               </div>
               <p className={`text-lg md:text-xl font-medium mt-4 ${isLight ? "text-slate-500" : "text-zinc-400"}`}>
-                {setupStep === 0 && "Entrez le montant exact de votre solde bancaire aujourd'hui. HessProtector l'utilisera comme point de départ."}
-                {setupStep === 1 && "Entrez vos charges fixes mensuelles (loyer, factures, abonnements) pour calculer votre véritable budget vital."}
-                {setupStep === 2 && "Dites au Coach IA où vous faites vos courses et s'il doit adapter ses recettes."}
+                {setupStep === 0 && tSetup.step1Desc}
+                {setupStep === 1 && tSetup.step2Desc}
+                {setupStep === 2 && tSetup.step3Desc}
               </p>
             </div>
 
@@ -270,7 +271,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                       <div className="grid grid-cols-12 gap-4">
                         <div className="col-span-12 lg:col-span-5">
                           <Input
-                            placeholder={t.billName + " (ex: Loyer)"}
+                            placeholder={tSetup.billName}
                             className={inputStyle}
                             value={tempBill.label}
                             onChange={(e) =>
@@ -281,7 +282,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                         <div className="col-span-12 lg:col-span-7 flex gap-4">
                           <Input
                             type="number"
-                            placeholder={t.billAmount + " (€)"}
+                            placeholder={tSetup.billAmount + " (€)"}
                             className={inputStyle}
                             value={tempBill.amount}
                             onChange={(e) =>
@@ -304,7 +305,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                           {setupBills.length === 0 ? (
                             <div className="h-[200px] flex flex-col items-center justify-center opacity-50 space-y-4">
                               <Wallet className="w-16 h-16 mb-2 opacity-50" />
-                              <p className="text-xl font-bold">Aucune dépense fixe ajoutée</p>
+                              <p className="text-xl font-bold">{tSetup.noFixedExpense}</p>
                             </div>
                           ) : (
                             <div className="space-y-3 p-2">
@@ -355,7 +356,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                     <div className="space-y-10 max-w-xl mx-auto w-full">
                       <div className="space-y-4">
                         <label className={`text-sm font-black uppercase tracking-widest pl-2 block ${isLight ? "text-slate-400" : "text-zinc-400"}`}>
-                          Enseigne Préférée
+                          {tSetup.favStore}
                         </label>
                         <div className="relative">
                           <Utensils className={`absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 z-10 ${isLight ? "text-slate-400" : "text-zinc-500"}`} />
@@ -375,7 +376,7 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
 
                       <div className="space-y-4">
                         <label className={`text-sm font-black uppercase tracking-widest pl-2 block ${isLight ? "text-slate-400" : "text-zinc-400"}`}>
-                          Régime Alimentaire
+                          {tSetup.dietLabel}
                         </label>
                         <Select
                           value={setupProfile.diet}
@@ -417,9 +418,9 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                   <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300" />
                   <span className="relative flex items-center justify-center gap-3">
                     {setupStep === 2 ? (
-                      <><Rocket className="w-6 h-6 animate-pulse" /> {t.start}</>
+                      <> {tSetup.start} <Rocket className="w-6 h-6 animate-pulse" /></>
                     ) : (
-                      <>{t.next} <ArrowRight className="w-6 h-6" /></>
+                      <>{tSetup.next} <ArrowRight className="w-6 h-6" /></>
                     )}
                   </span>
                 </Button>
@@ -430,15 +431,24 @@ export function SetupWizard({ onFinish, bg }: SetupWizardProps) {
                       initial={{ opacity: 0, height: 0, marginTop: 0 }}
                       animate={{ opacity: 1, height: "auto", marginTop: 8 }}
                       exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      className="w-full flex justify-center overflow-hidden"
+                      className="w-full flex justify-center overflow-hidden gap-3"
                     >
                       <Button
                         variant="ghost"
                         onClick={() => setSetupStep(Math.max(0, setupStep - 1))}
-                        className={`w-full h-14 rounded-2xl text-lg font-bold border-0 ${isLight ? "bg-transparent hover:bg-slate-100 text-slate-500 hover:!text-slate-900" : "bg-transparent hover:bg-white/5 text-zinc-400 hover:!text-white"}`}
+                        className={`flex-1 h-14 rounded-2xl text-lg font-bold border-0 ${isLight ? "bg-transparent hover:bg-slate-100 text-slate-500 hover:!text-slate-900" : "bg-transparent hover:bg-white/5 text-zinc-400 hover:!text-white"}`}
                       >
-                        Retour
+                        {tCommon.back}
                       </Button>
+                      {setupStep === 2 && (
+                        <Button
+                          variant="ghost"
+                          onClick={onFinish}
+                          className={`flex-1 h-14 rounded-2xl text-lg font-bold border-0 border-dashed ${isLight ? "bg-transparent hover:bg-amber-50 text-amber-600 hover:!text-amber-700 border border-amber-200" : "bg-transparent hover:bg-amber-500/10 text-amber-400 hover:!text-amber-300 border border-amber-500/20"}`}
+                        >
+                          {tCommon.skip} →
+                        </Button>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>

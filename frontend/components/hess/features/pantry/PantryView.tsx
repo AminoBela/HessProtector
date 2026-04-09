@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,6 +121,33 @@ export function PantryView({
   const cats = t.pantry.categories;
 
   const [addStatus, setAddStatus] = useState<"idle" | "success">("idle");
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [selectMode, setSelectMode] = useState(false);
+
+  const allIds = useMemo(() => (data?.pantry || []).map((p: PantryItem) => p.id), [data?.pantry]);
+  const allSelected = allIds.length > 0 && selectedIds.size === allIds.length;
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(allIds));
+    }
+  };
+
+  const handleBatchDelete = () => {
+    selectedIds.forEach(id => handleDeletePantry(id));
+    setSelectedIds(new Set());
+    setSelectMode(false);
+  };
 
   const handleConfirmExpense = () => {
     if (!scannedTotal) return;
@@ -243,6 +270,7 @@ export function PantryView({
                 date={pantryForm.expiry ? new Date(pantryForm.expiry) : undefined}
                 setDate={(date) => setPantryForm({ ...pantryForm, expiry: date ? date.toISOString().split("T")[0] : "" })}
                 isLight={isLight}
+                language={language}
               />
             </div>
             <Button
@@ -259,10 +287,46 @@ export function PantryView({
 
       <div className="md:col-span-8">
         <Card className={`border-0 ${cardGlass} h-full`}>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl font-black uppercase tracking-wider">
               {t.pantry.title}
             </CardTitle>
+            <div className="flex items-center gap-2">
+              {selectMode && selectedIds.size > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBatchDelete}
+                  className="h-9 rounded-xl font-bold text-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                  {t.common.deleteSelected} ({selectedIds.size})
+                </Button>
+              )}
+              {selectMode && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                  className={`h-9 rounded-xl font-bold text-xs ${isLight ? "border-slate-200" : "border-white/10"}`}
+                >
+                  {allSelected ? t.common.deselectAll : t.common.selectAll}
+                </Button>
+              )}
+              {(data?.pantry || []).length > 0 && (
+                <Button
+                  variant={selectMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setSelectMode(!selectMode);
+                    if (selectMode) setSelectedIds(new Set());
+                  }}
+                  className={`h-9 rounded-xl font-bold text-xs ${selectMode ? "bg-emerald-500 text-white" : isLight ? "border-slate-200" : "border-white/10"}`}
+                >
+                  {selectMode ? t.common.cancel : t.common.edit}
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[600px] pr-4">
@@ -304,7 +368,9 @@ export function PantryView({
                             return (
                               <motion.div variants={item} initial="hidden" animate="show" layout key={p.id}>
                                 <div
-                                  className={`flex justify-between items-center p-5 rounded-2xl border group relative overflow-hidden ${
+                                  onClick={() => selectMode && toggleSelect(p.id)}
+                                  className={`flex justify-between items-center p-5 rounded-2xl border group relative overflow-hidden ${selectMode ? "cursor-pointer" : ""} ${
+                                    selectedIds.has(p.id) ? (isLight ? "bg-emerald-50 border-emerald-300 ring-2 ring-emerald-500/30" : "bg-emerald-500/10 border-emerald-500/30 ring-2 ring-emerald-500/30") :
                                     isExpired 
                                     ? (isLight ? "bg-rose-50/50 border-rose-200" : "bg-rose-950/20 border-rose-900/50") 
                                     : (isLight ? "bg-white/40 border-emerald-900/5 hover:bg-white/80 transition-colors" : "bg-white/5 border-white/5 hover:bg-white/10 transition-colors")
@@ -317,6 +383,13 @@ export function PantryView({
                                     <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-600" />
                                   )}
                                   <div className="flex items-center gap-5">
+                                    {selectMode && (
+                                      <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
+                                        selectedIds.has(p.id) ? "bg-emerald-500 border-emerald-500" : isLight ? "border-slate-300" : "border-white/20"
+                                      }`}>
+                                        {selectedIds.has(p.id) && <Check className="w-4 h-4 text-white" />}
+                                      </div>
+                                    )}
                                     <div
                                       className={`p-4 rounded-xl ${isLight ? "bg-emerald-100/50" : "bg-black/40"}`}
                                     >
@@ -343,14 +416,16 @@ export function PantryView({
                                       </div>
                                     </div>
                                   </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleDeletePantry(p.id)}
-                                    className="text-zinc-600 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl"
-                                  >
-                                    <Trash2 className="w-5 h-5" />
-                                  </Button>
+                                  {!selectMode && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleDeletePantry(p.id)}
+                                      className="text-zinc-600 hover:text-rose-400 hover:bg-rose-950/30 rounded-xl"
+                                    >
+                                      <Trash2 className="w-5 h-5" />
+                                    </Button>
+                                  )}
                                 </div>
                               </motion.div>
                             );
@@ -397,7 +472,7 @@ export function PantryView({
             >
               {addStatus === "success" ? (
                 <>
-                  <Check className="w-4 h-4 mr-2" /> Ajouté !
+                  <Check className="w-4 h-4 mr-2" /> {t.dialog.expenseAdded}
                 </>
               ) : (
                 <>

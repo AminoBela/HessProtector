@@ -41,7 +41,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
     const handleSubmit = async () => {
         setError(null);
         if (!form.date || !form.liters || !form.total_cost) {
-            setError("Veuillez remplir les champs obligatoires (Date, Litres, Coût).");
+            setError(t.fuel.fillRequired);
             return;
         }
 
@@ -135,7 +135,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                         <CardContent className="space-y-6">
                             <div className="space-y-1.5">
                                 <label className={labelStyle}>{t.fuel.date}</label>
-                                <PremiumDatePicker date={form.date ? new Date(form.date) : undefined} setDate={(d) => setForm({ ...form, date: d ? d.toISOString().split("T")[0] : "" })} isLight={isLight} />
+                                <PremiumDatePicker date={form.date ? new Date(form.date) : undefined} setDate={(d) => setForm({ ...form, date: d ? d.toISOString().split("T")[0] : "" })} isLight={isLight} language={language} />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -150,7 +150,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className={labelStyle}>{t.fuel.odometer} <span className="normal-case opacity-50 ml-1">(optionnel)</span></label>
+                                <label className={labelStyle}>{t.fuel.odometer} <span className="normal-case opacity-50 ml-1">({t.common.optional})</span></label>
                                 <Input type="number" className={inputStyle} value={form.odometer || ""} onChange={e => setForm({ ...form, odometer: parseFloat(e.target.value) })} />
                             </div>
 
@@ -178,7 +178,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                             <div className={`flex items-center justify-between p-5 rounded-2xl border transition-all ${isLight ? "bg-white border-emerald-900/10 shadow-sm" : "bg-zinc-950/50 border-emerald-500/20 shadow-inner"}`}>
                                 <div className="space-y-1">
                                     <label className="text-sm font-black uppercase tracking-wider">{t.fuel.isFullTank}</label>
-                                    <p className="text-[10px] font-bold opacity-50 uppercase">Activez pour une stat correcte</p>
+                                    <p className="text-[10px] font-bold opacity-50 uppercase">{t.fuel.activateForStats}</p>
                                 </div>
                                 <input
                                     type="checkbox"
@@ -245,7 +245,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                                                             )}
                                                             {!entry.is_full_tank && (
                                                                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-orange-500/10 text-orange-500 border border-orange-500/20">
-                                                                    Partiel
+                                                                    {t.fuel.partial}
                                                                 </span>
                                                             )}
                                                         </div>
@@ -324,7 +324,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
                     <DialogHeader>
                         <DialogTitle className={`text-2xl font-black uppercase tracking-wider mb-2 ${isLight ? "text-slate-900" : "text-white"}`}>{t.common.confirm}</DialogTitle>
                         <DialogDescription className={`text-lg font-medium opacity-80 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
-                            {language === "es" ? "¿Seguro que quieres eliminar este repostaje? Las estadísticas se recalcularán." : "Es-tu sûr de vouloir supprimer ce relevé ? Les statistiques de consommation seront recalculées."}
+                            {language === "es" ? "¿Seguro que quieres eliminar este repostaje? Las estadísticas se recalcularán." : "Supprimer ce relevé ? Les statistiques de consommation seront recalculées."}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-8 gap-3 sm:gap-0">

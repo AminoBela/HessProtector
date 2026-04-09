@@ -40,6 +40,20 @@ export function useGoals(token: string | null, refresh?: () => void) {
         }
     });
 
+    const updateMutation = useMutation({
+        mutationFn: async ({ id, data }: { id: number, data: Partial<GoalItem> }) => {
+            if (!token) throw new Error("Missing token");
+            return await GoalsService.update(id, data, token);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            if (refresh) refresh();
+        },
+        onError: (err) => {
+            setError(err instanceof Error ? err.message : "Unknown error");
+        }
+    });
+
     return {
         goalForm,
         setGoalForm,
@@ -49,7 +63,10 @@ export function useGoals(token: string | null, refresh?: () => void) {
         deleteGoal: async (id: number) => {
             try { await deleteMutation.mutateAsync(id); return true; } catch { return false; }
         },
-        loading: addMutation.isPending || deleteMutation.isPending,
+        updateGoal: async (id: number, data: Partial<GoalItem>) => {
+            try { await updateMutation.mutateAsync({ id, data }); return true; } catch { return false; }
+        },
+        loading: addMutation.isPending || deleteMutation.isPending || updateMutation.isPending,
         error
     };
 }

@@ -34,7 +34,7 @@ import { Translations } from "@/lib/i18n";
 import { LegalModal, LEGAL_TEXT } from "../../common/LegalModals";
 import { AccountService } from "@/services/accountService";
 import { ApiService } from "@/services/apiClient";
-import { useEffect } from "react";
+import { useEffect, useState as useStateReact } from "react";
 import { motion } from "framer-motion";
 import { container } from "@/lib/animations";
 
@@ -48,40 +48,7 @@ interface SettingsViewProps {
   logout: () => void;
 }
 
-interface SettingsTranslations {
-  title: string;
-  subtitle: string;
-  tabs: {
-    general: string;
-    account: string;
-    legal: string;
-  };
-  general: {
-    supermarket: string;
-    diet: string;
-    theme: string;
-    language: string;
-    save: string;
-  };
-  account: {
-    title: string;
-    email: string;
-    password: string;
-    newPassword: string;
-    delete: string;
-    deleteDesc: string;
-    deleteConfirm: string;
-    logout: string;
-  };
-  legal: {
-    title: string;
-    export: string;
-    exportDesc: string;
-    terms: string;
-    privacy: string;
-    read: string;
-  };
-}
+// Use the full translations object instead of a typed subset
 
 export function SettingsView({
   settingsForm,
@@ -93,15 +60,16 @@ export function SettingsView({
   logout,
 }: SettingsViewProps) {
   const isLight = theme === "light";
-  const t = Translations[language as keyof typeof Translations]
-    .settings as unknown as SettingsTranslations;
+  const fullT = Translations[language as keyof typeof Translations];
+  const t = fullT.settings as any;
 
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success">(
     "idle",
   );
   const [activeTab, setActiveTab] = useState("general");
 
-  const [pwdForm, setPwdForm] = useState({ old: "", new: "" });
+  const [pwdForm, setPwdForm] = useState({ old: "", new: "", confirm: "" });
+  const [userEmail, setUserEmail] = useState("");
   const [pwdStatus, setPwdStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -121,6 +89,14 @@ export function SettingsView({
         .catch(console.error);
     }
   }, [token, activeTab]);
+
+  useEffect(() => {
+    if (token) {
+      ApiService.get("/account/me", token)
+        .then((res: any) => setUserEmail(res.email || ""))
+        .catch(console.error);
+    }
+  }, [token]);
 
   const handleSaveLimit = async () => {
     if (!token || !limitForm.category || !limitForm.amount) return;
@@ -185,8 +161,11 @@ export function SettingsView({
     }
   };
 
+  const pwdMismatch = pwdForm.confirm.length > 0 && pwdForm.new !== pwdForm.confirm;
+
   const handleChangePassword = async () => {
-    if (!token || !pwdForm.old || !pwdForm.new) return;
+    if (!token || !pwdForm.old || !pwdForm.new || !pwdForm.confirm) return;
+    if (pwdForm.new !== pwdForm.confirm) return;
     setPwdStatus("loading");
     try {
       await AccountService.changePassword(
@@ -194,7 +173,7 @@ export function SettingsView({
         token,
       );
       setPwdStatus("success");
-      setPwdForm({ old: "", new: "" });
+      setPwdForm({ old: "", new: "", confirm: "" });
       setTimeout(() => setPwdStatus("idle"), 3000);
     } catch (e) {
       console.error(e);
@@ -269,7 +248,7 @@ export function SettingsView({
                 <TabsTrigger value="budget" className={tabTriggerStyle}>
                   <Shield className="w-4 h-4 mr-2" />
                   <p className="font-medium text-[10px] md:text-sm">
-                  {language === "es" ? "Escudo" : "Bouclier"}
+                  {t.tabs.shield}
                 </p></TabsTrigger>
               </TabsList>
             </div>
@@ -285,7 +264,7 @@ export function SettingsView({
                       className={`text-sm font-bold uppercase tracking-wider mb-4 opacity-70 flex items-center gap-2 ${isLight ? "text-slate-900" : "text-white"}`}
                     >
                       <span className="flex items-center gap-2">
-                      <Settings className="w-4 h-4" /> {language === "es" ? "Preferencias" : "Préférences"}
+                      <Settings className="w-4 h-4" /> {t.general.preferences}
                     </span>
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -355,9 +334,9 @@ export function SettingsView({
                     )}
                     {saveStatus === "idle" && <Save className="w-5 h-5 mr-2" />}
                     {saveStatus === "saving"
-                      ? "Enregistrement..."
+                      ? t.general.saving
                       : saveStatus === "success"
-                        ? "Enregistré !"
+                        ? t.general.saved
                         : t.general.save}
                   </Button>
                 </div>
@@ -374,7 +353,7 @@ export function SettingsView({
                         {t.account.email}
                       </label>
                       <Input
-                        value="user@example.com"
+                        value={userEmail || "..."}
                         disabled
                         className={`${inputStyle} opacity-70 cursor-not-allowed`}
                       />
@@ -405,35 +384,51 @@ export function SettingsView({
                         <label className="text-sm font-medium opacity-80 ml-1">
                           {t.account.newPassword}
                         </label>
-                        <div className="flex gap-3">
-                          <Input
-                            type="password"
-                            className={inputStyle}
-                            placeholder="••••••••"
-                            value={pwdForm.new}
-                            onChange={(e) =>
-                              setPwdForm({ ...pwdForm, new: e.target.value })
-                            }
-                          />
-                          <Button
-                            onClick={handleChangePassword}
-                            disabled={
-                              pwdStatus === "loading" ||
-                              !pwdForm.old ||
-                              !pwdForm.new
-                            }
-                            className={`h-14 px-8 rounded-xl font-bold transition-all ${pwdStatus === "success" ? "bg-emerald-500 text-white" : pwdStatus === "error" ? "bg-rose-500 text-white" : "bg-emerald-500 text-white hover:bg-emerald-600"}`}
-                          >
-                            {pwdStatus === "loading" ? (
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : pwdStatus === "success" ? (
-                              <Check className="w-5 h-5" />
-                            ) : (
-                              "OK"
-                            )}
-                          </Button>
-                        </div>
+                        <Input
+                          type="password"
+                          className={inputStyle}
+                          placeholder="••••••••"
+                          value={pwdForm.new}
+                          onChange={(e) =>
+                            setPwdForm({ ...pwdForm, new: e.target.value })
+                          }
+                        />
                       </div>
+                      <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium opacity-80 ml-1">
+                          {t.account.confirmNewPassword}
+                        </label>
+                        <Input
+                          type="password"
+                          className={`${inputStyle} ${pwdMismatch ? "!border-rose-500" : pwdForm.confirm && !pwdMismatch ? "!border-emerald-500" : ""}`}
+                          placeholder="••••••••"
+                          value={pwdForm.confirm}
+                          onChange={(e) =>
+                            setPwdForm({ ...pwdForm, confirm: e.target.value })
+                          }
+                        />
+                        {pwdMismatch && (
+                          <p className="text-xs font-bold text-rose-500 ml-1">{t.account.passwordMismatch}</p>
+                        )}
+                      </div>
+                      <Button
+                        onClick={handleChangePassword}
+                        disabled={
+                          pwdStatus === "loading" ||
+                          !pwdForm.old ||
+                          !pwdForm.new ||
+                          !pwdForm.confirm ||
+                          pwdMismatch
+                        }
+                        className={`h-14 rounded-xl font-bold transition-all ${pwdStatus === "success" ? "bg-emerald-500 text-white" : pwdStatus === "error" ? "bg-rose-500 text-white" : "bg-emerald-500 text-white hover:bg-emerald-600"}`}
+                      >
+                        {pwdStatus === "loading" ? (
+                          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        ) : pwdStatus === "success" ? (
+                          <Check className="w-5 h-5 mr-2" />
+                        ) : null}
+                        {pwdStatus === "success" ? fullT.common.success : fullT.common.update}
+                      </Button>
                     </div>
                   </div>
 
@@ -485,7 +480,7 @@ export function SettingsView({
                             disabled={isDeleting}
                             className={`flex-1 h-14 rounded-xl font-bold text-lg ${isLight ? "hover:bg-slate-100 border-slate-200" : "hover:bg-white/5 border-white/10"}`}
                           >
-                            Annuler
+                            {fullT.common.cancel}
                           </Button>
                           <Button
                             variant="destructive"
@@ -493,7 +488,7 @@ export function SettingsView({
                             disabled={isDeleting}
                             className="flex-1 h-14 rounded-xl font-black text-lg bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/20"
                           >
-                            {isDeleting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Confirmer"}
+                            {isDeleting ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : fullT.common.confirm}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -511,13 +506,12 @@ export function SettingsView({
                     <h3
                       className={`text-xl font-black uppercase tracking-tight mb-2 ${isLight ? "text-slate-800" : "text-white"}`}
                     >
-                      Données & Conformité
+                      {t.legal.dataCompliance}
                     </h3>
                     <p
                       className={`text-sm ${isLight ? "text-slate-500" : "text-zinc-400"}`}
                     >
-                      Gérez vos données personnelles et consultez nos documents
-                      légaux.
+                      {t.legal.dataComplianceDesc}
                     </p>
                   </div>
 
@@ -564,11 +558,11 @@ export function SettingsView({
                           {exportStatus === "loading" ? (
                             <span className="flex items-center gap-2">
                               <Loader2 className="w-5 h-5 animate-spin" />{" "}
-                              Exportation...
+                              {t.legal.exporting}
                             </span>
                           ) : (
                             <span className="flex items-center justify-between w-full px-2">
-                              Télécharger mes données
+                              {t.legal.downloadData}
                               <Download className="w-5 h-5 opacity-70" />
                             </span>
                           )}
@@ -602,7 +596,7 @@ export function SettingsView({
                                 <span
                                   className={`text-xs font-medium uppercase tracking-wider ${isLight ? "text-blue-600/60" : "text-blue-400/60"}`}
                                 >
-                                  Document Légal
+                                  {t.legal.legalDoc}
                                 </span>
                               </div>
                             </div>
@@ -613,7 +607,7 @@ export function SettingsView({
                             </div>
                           </button>
                         }
-                        content={LEGAL_TEXT.privacy}
+                        content={language === "es" ? (LEGAL_TEXT as any).privacy_es || LEGAL_TEXT.privacy : LEGAL_TEXT.privacy}
                         isLight={isLight}
                       />
 
@@ -642,7 +636,7 @@ export function SettingsView({
                                 <span
                                   className={`text-xs font-medium uppercase tracking-wider ${isLight ? "text-purple-600/60" : "text-purple-400/60"}`}
                                 >
-                                  Conditions
+                                  {t.legal.conditions}
                                 </span>
                               </div>
                             </div>
@@ -653,7 +647,7 @@ export function SettingsView({
                             </div>
                           </button>
                         }
-                        content={LEGAL_TEXT.terms}
+                        content={language === "es" ? (LEGAL_TEXT as any).terms_es || LEGAL_TEXT.terms : LEGAL_TEXT.terms}
                         isLight={isLight}
                       />
                     </div>
@@ -671,13 +665,13 @@ export function SettingsView({
                       className={`text-sm font-bold uppercase tracking-wider mb-4 opacity-70 flex items-center gap-2 ${isLight ? "text-slate-900" : "text-white"}`}
                     >
                       <span className="flex items-center gap-2">
-                      <Shield className="w-4 h-4" /> {language === "es" ? "Escudo Presupuestario" : "Bouclier Budgétaire"}
+                      <Shield className="w-4 h-4" /> {t.shield.title}
                     </span>
                     </h3>
                     <div className="flex gap-4 items-end mb-6">
                       <div className="flex-1 flex flex-col">
                         <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1 mb-3">
-                          Catégorie
+                          {t.shield.category}
                         </label>
                         <Input
                           className={inputStyle}
@@ -693,7 +687,7 @@ export function SettingsView({
                       </div>
                       <div className="w-32 flex flex-col">
                         <label className="text-xs font-bold uppercase tracking-wider opacity-60 ml-1 mb-3">
-                          Limite (€)
+                          {t.shield.limit}
                         </label>
                         <Input
                           type="number"
@@ -735,7 +729,7 @@ export function SettingsView({
                       ))}
                       {limits.length === 0 && (
                         <div className="text-center opacity-50 text-sm py-4">
-                          Aucune limite définie.
+                           {t.shield.noLimit}
                         </div>
                       )}
                     </div>

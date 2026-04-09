@@ -12,6 +12,13 @@ class PasswordChangeRequest(BaseModel):
     old_password: str
     new_password: str
 
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return {
+        "username": current_user.get("username"),
+        "email": current_user.get("email", ""),
+    }
+
 @router.get("/export")
 async def export_data(current_user: dict = Depends(get_current_user), session: Session = Depends(get_session)):
     user_id = current_user["id"]
@@ -19,12 +26,18 @@ async def export_data(current_user: dict = Depends(get_current_user), session: S
     def fetch_table(model_class):
         try:
             rows = session.exec(select(model_class).where(model_class.user_id == user_id)).all()
-            return [row.model_dump() for row in rows]
+            cleaned = []
+            for row in rows:
+                d = row.model_dump()
+                d.pop("id", None)
+                d.pop("user_id", None)
+                cleaned.append(d)
+            return cleaned
         except Exception:
             return []
 
     data = {
-        "user": {k: v for k, v in dict(current_user).items() if k != "hashed_password"},
+        "user": {k: v for k, v in dict(current_user).items() if k not in ("hashed_password", "id")},
         "profile": fetch_table(Profile),
         "transactions": fetch_table(Transaction),
         "pantry": fetch_table(PantryItem),
