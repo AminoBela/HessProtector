@@ -100,9 +100,7 @@ export default function FuelView({ isLight, isBlurred }: { isLight: boolean, isB
 
     return (
         <motion.div variants={container} initial="hidden" animate="show" className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
-            <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
-                {t.fuel.title}
-            </h1>
+
 
             {/* KPI Section */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

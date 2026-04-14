@@ -38,6 +38,9 @@ def _migrate_columns():
 
     migrations = [
         ("profile", "xp_spent", "INTEGER DEFAULT 0"),
+        ("sport_profile", "experience_level", "VARCHAR DEFAULT 'intermediaire'"),
+        ("sport_profile", "injuries", "VARCHAR"),
+        ("sport_profile", "equipment", "VARCHAR"),
     ]
 
     conn = sqlite3.connect(db_path)

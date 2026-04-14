@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routes import dashboard, transactions, pantry, recurring, goals, coach, settings, analytics, auth, account_routes, market, fuel
+from app.routes import dashboard, transactions, pantry, recurring, goals, coach, settings, analytics, auth, account_routes, market, fuel, sport
 
 app = FastAPI()
 
@@ -43,3 +43,4 @@ app.include_router(analytics.router, prefix="/api")
 app.include_router(account_routes.router, prefix="/api")
 app.include_router(market.router, prefix="/api")
 app.include_router(fuel.router, prefix="/api")
+app.include_router(sport.router, prefix="/api")

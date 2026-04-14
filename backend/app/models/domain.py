@@ -17,6 +17,8 @@ class User(SQLModel, table=True):
     budget_limits: List["BudgetLimit"] = Relationship(back_populates="user")
     themes: List["UserTheme"] = Relationship(back_populates="user")
     fuel_entries: List["FuelEntry"] = Relationship(back_populates="user")
+    sport_profile: Optional["SportProfile"] = Relationship(back_populates="user")
+    sport_plans: List["SportPlan"] = Relationship(back_populates="user")
 
 class Transaction(SQLModel, table=True):
     __tablename__ = "transactions"
@@ -119,3 +121,39 @@ class FuelEntry(SQLModel, table=True):
     user_id: Optional[int] = Field(default=None, foreign_key="users.id")
 
     user: Optional[User] = Relationship(back_populates="fuel_entries")
+
+class SportProfile(SQLModel, table=True):
+    __tablename__ = "sport_profile"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    height_cm: Optional[float] = None
+    weight_kg: Optional[float] = None
+    fitness_goal: str = Field(default="maintain")
+    preferred_sports: str = Field(default="Salles de sport")
+    experience_level: str = Field(default="intermediaire")
+    injuries: Optional[str] = None
+    equipment: Optional[str] = None
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id", unique=True)
+
+    user: Optional[User] = Relationship(back_populates="sport_profile")
+    logs: list["SportLog"] = Relationship(back_populates="profile")
+
+class SportLog(SQLModel, table=True):
+    __tablename__ = "sport_logs"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    date: str
+    weight_kg_recorded: Optional[float] = None
+    fatigue_level: int = Field(default=5)  # 1 to 10
+    notes: Optional[str] = None
+    sport_profile_id: Optional[int] = Field(default=None, foreign_key="sport_profile.id")
+
+    profile: Optional[SportProfile] = Relationship(back_populates="logs")
+
+class SportPlan(SQLModel, table=True):
+    __tablename__ = "sport_plans"
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    content_json: str
+    created_at: str
+    user_id: Optional[int] = Field(default=None, foreign_key="users.id")
+
+    user: Optional[User] = Relationship(back_populates="sport_plans")

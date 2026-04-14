@@ -20,7 +20,10 @@ export const Translations = {
             deselectAll: "Tout désélectionner",
             deleteSelected: "Supprimer la sélection",
             selected: "sélectionné(s)",
-            navMenu: "Menu de Navigation"
+            navMenu: "Menu de Navigation",
+            selectDate: "Sélectionner une date",
+            emptyTitle: "Vide",
+            emptyDesc: "Aucune donnée"
         },
         auth: {
             loginTitle: "Connexion",
@@ -35,6 +38,8 @@ export const Translations = {
             switchRegister: "Pas de compte ? S'inscrire",
             welcome: "Bienvenue sur HessProtector",
             subtitle: "Gère ta thune comme un pro.",
+            heroTitle1: "Maîtrisez",
+            heroTitle2: "votre budget.",
             error: "Erreur",
             success: "Succès",
             slogans: [
@@ -60,8 +65,11 @@ export const Translations = {
             goals: "Épargne",
             history: "Historique",
             fuel: "Carburant",
+            sport: "Coach Sportif",
             settings: "Paramètres",
-            analytics: "Analyses"
+            analytics: "Analyses",
+            darkTheme: "Thème sombre",
+            lightTheme: "Thème clair"
         },
         analytics: {
             title: "Analyses",
@@ -87,7 +95,10 @@ export const Translations = {
             goals: "Objectifs & Épargne",
             history: "Historique des Flux",
             settings: "Configuration",
-            analytics: "Analyses & Audit"
+            analytics: "Analyses & Audit",
+            hideBalances: "Masquer les soldes",
+            logout: "Déconnexion",
+            preferences: "Préférences"
         },
         dashboard: {
             netBalance: "Solde Net",
@@ -108,7 +119,15 @@ export const Translations = {
             bank: "Banque",
             toPay: "À payer ce mois",
             safeBalance: "Solde de sécurité",
-            incomeVsExpense: "Revenus vs Dépenses"
+            incomeVsExpense: "Revenus vs Dépenses",
+            safeBalanceDesc: "Reste à vivre réel après charges fixes",
+            addDataDesc: "Ajoutez des transactions pour voir l'évolution",
+            noActivities: "Aucune activité pour l'instant",
+            activitiesDesc: "Vos transactions apparaîtront ici",
+            oracleTitle: "Mode Oracle",
+            oracleSafe: "Survie Probable",
+            oracleDanger: "Mort Financière",
+            oracleBurn: "Dépense/jour"
         },
         coach: {
             title: "Coach Cuisine",
@@ -133,7 +152,18 @@ export const Translations = {
             deleteDesc: "Cette action est irréversible.",
             successSave: "Plan enregistré avec succès !",
             emptyState: "Laisse l'IA gérer tes repas et ton budget.",
-            accessSaved: "Retrouve tes anciens plans via l'historique."
+            accessSaved: "Retrouve tes anciens plans via l'historique.",
+            dietLabel: "Régime",
+            budgetDesc: "Définis la limite de dépense totale.",
+            lunchShort: "Midi",
+            dinnerShort: "Soir",
+            chefCooking: "Le Chef cogite...",
+            difficulty: "Facile",
+            prepTime: "20-30 min",
+            ingredients: "Ingrédients",
+            or: "Ou :",
+            preparation: "Préparation",
+            chefTip: "Le Mot du Chef"
         },
         pantry: {
             title: "Mon Frigo",
@@ -181,7 +211,9 @@ export const Translations = {
             creditGoal: "Créditer cet objectif",
             addAmount: "Montant à ajouter (€)",
             addingInProgress: "En cours...",
-            addToSavings: "Ajouter à l'épargne"
+            addToSavings: "Ajouter à l'épargne",
+            emptyTitle: "Aucun objectif pour le moment",
+            emptyDesc: "Ajoutez votre premier objectif financier dans le formulaire."
         },
         recurring: {
             title: "Charges Fixes",
@@ -347,7 +379,46 @@ export const Translations = {
                 sp98: "SP98",
                 e85: "Superéthanol E85",
                 e10: "SP95-E10"
-            }
+            },
+            deleteConfirmMsg: "Supprimer ce relevé ? Les statistiques de consommation seront recalculées."
+        },
+        sport: {
+            title: "Coach Sportif IA",
+            subtitle: "Un programme sur-mesure pour tes objectifs.",
+            profile: "Mon Profil Physique",
+            height: "Taille (cm)",
+            weight: "Poids (kg)",
+            goal: "Objectif Principal",
+            goalMaintain: "Maintien",
+            goalLoseWeight: "Perte de Poids",
+            goalMuscle: "Prise de Muscle",
+            goalEndurance: "Endurance & Cardio",
+            preferred: "Sports & Matériel",
+            preferredDesc: "Ex: Salle de sport, piscine, poids du corps...",
+            saveProfile: "Mettre à jour le profil",
+            profileSaved: "Profil enregistré avec succès",
+            generate: "Générer un Plan",
+            days: "Durée du plan (jours)",
+            workoutTitle: "Mon Programme Sportif",
+            rest: "Repos",
+            sets: "Séries",
+            reps: "Répétitions",
+            notes: "Conseil",
+            analysis: "Analyse Profil",
+            activity: "Activité",
+            emptyState: "Définis ton profil et laisse l'IA créer ton programme.",
+            accessSaved: "Ou accède à tes anciens programmes sportifs.",
+            duration: "Durée",
+            experience: "Niveau d'expérience",
+            levelBeginner: "Débutant",
+            levelIntermediate: "Intermédiaire",
+            levelAdvanced: "Avancé",
+            injuries: "Blessures / Contraintes",
+            injuriesDesc: "Ex: Douleur au genou, asthme...",
+            equipment: "Équipement disponible",
+            equipmentDesc: "Ex: Haltères, élastiques, rien...",
+            weeks: "Durée (Semaines)",
+            readapt: "Réadapter mon programme"
         }
     },
     es: {
@@ -371,7 +442,10 @@ export const Translations = {
             deselectAll: "Deseleccionar todo",
             deleteSelected: "Eliminar selección",
             selected: "seleccionado(s)",
-            navMenu: "Menú de Navegación"
+            navMenu: "Menú de Navegación",
+            selectDate: "Seleccionar fecha",
+            emptyTitle: "Vacío",
+            emptyDesc: "Sin datos"
         },
         auth: {
             loginTitle: "Iniciar Sesión",
@@ -386,6 +460,8 @@ export const Translations = {
             switchRegister: "¿No tienes cuenta? Registrarse",
             welcome: "Bienvenido a HessProtector",
             subtitle: "Gestiona tu dinero como un pro.",
+            heroTitle1: "Controla",
+            heroTitle2: "tu presupuesto.",
             error: "Error",
             success: "Éxito",
             slogans: [
@@ -421,8 +497,11 @@ export const Translations = {
             goals: "Metas",
             history: "Historial",
             fuel: "Combustible",
+            sport: "Entrenador Deportivo",
             settings: "Ajustes",
-            analytics: "Análisis"
+            analytics: "Análisis",
+            darkTheme: "Tema oscuro",
+            lightTheme: "Tema claro"
         },
         analytics: {
             title: "Análisis",
@@ -448,7 +527,10 @@ export const Translations = {
             goals: "Estrategia de Ahorro",
             history: "Historial de Movimientos",
             settings: "Configuración Global",
-            analytics: "Análisis y Auditoría"
+            analytics: "Análisis y Auditoría",
+            hideBalances: "Ocultar saldos",
+            logout: "Cerrar sesión",
+            preferences: "Preferencias"
         },
         dashboard: {
             netBalance: "Saldo Neto",
@@ -469,7 +551,15 @@ export const Translations = {
             bank: "Banco",
             toPay: "A pagar este mes",
             safeBalance: "Saldo Seguro",
-            incomeVsExpense: "Ingresos vs Gastos"
+            incomeVsExpense: "Ingresos vs Gastos",
+            safeBalanceDesc: "Dinero real disponible tras gastos fijos",
+            addDataDesc: "Añade transacciones para ver la evolución",
+            noActivities: "Aún no hay actividades",
+            activitiesDesc: "Tus transacciones aparecerán aquí",
+            oracleTitle: "Modo Oráculo",
+            oracleSafe: "Supervivencia Probable",
+            oracleDanger: "Muerte Financiera",
+            oracleBurn: "Gasto/día"
         },
         coach: {
             title: "Chef de Cocina",
@@ -494,7 +584,18 @@ export const Translations = {
             deleteDesc: "Esta acción no se puede deshacer.",
             successSave: "¡Plan guardado!",
             emptyState: "Deja que la IA organice tus comidas.",
-            accessSaved: "Accede a tus planes anteriores en el historial."
+            accessSaved: "Accede a tus planes anteriores en el historial.",
+            dietLabel: "Dieta",
+            budgetDesc: "Define el límite de gasto total.",
+            lunchShort: "Almuerzo",
+            dinnerShort: "Cena",
+            chefCooking: "El Chef está pensando...",
+            difficulty: "Fácil",
+            prepTime: "20-30 min",
+            ingredients: "Ingredientes",
+            or: "O:",
+            preparation: "Preparación",
+            chefTip: "Consejo del Chef"
         },
         pantry: {
             title: "Mi Despensa",
@@ -542,7 +643,9 @@ export const Translations = {
             creditGoal: "Abonar a esta meta",
             addAmount: "Cantidad a añadir (€)",
             addingInProgress: "En curso...",
-            addToSavings: "Añadir al ahorro"
+            addToSavings: "Añadir al ahorro",
+            emptyTitle: "Sin objetivos aún",
+            emptyDesc: "Añade tu primer objetivo financiero en el formulario."
         },
         recurring: {
             title: "Gastos Fijos",
@@ -708,7 +811,46 @@ export const Translations = {
                 sp98: "Gasolina 98",
                 e85: "Bioetanol E85",
                 e10: "Gasolina 95-E10"
-            }
+            },
+            deleteConfirmMsg: "¿Seguro que quieres eliminar este repostaje? Las estadísticas se recalcularán."
+        },
+        sport: {
+            title: "Entrenador Deportivo IA",
+            subtitle: "Un programa a medida para tus objetivos.",
+            profile: "Mi Perfil Físico",
+            height: "Altura (cm)",
+            weight: "Peso (kg)",
+            goal: "Objetivo Principal",
+            goalMaintain: "Mantener",
+            goalLoseWeight: "Pérdida de Peso",
+            goalMuscle: "Ganancia Muscular",
+            goalEndurance: "Resistencia y Cardio",
+            preferred: "Deportes y Material",
+            preferredDesc: "Ej: Gimnasio, piscina, peso corporal...",
+            saveProfile: "Actualizar perfil",
+            profileSaved: "Perfil guardado correctamente",
+            generate: "Generar Plan",
+            days: "Duración del plan (días)",
+            workoutTitle: "Mi Programa Deportivo",
+            rest: "Descanso",
+            sets: "Series",
+            reps: "Repeticiones",
+            notes: "Consejo",
+            analysis: "Análisis del Perfil",
+            activity: "Actividad",
+            emptyState: "Define tu perfil y deja que la IA cree tu programa.",
+            accessSaved: "O accede a tus programas deportivos anteriores.",
+            duration: "Duración",
+            experience: "Nivel de experiencia",
+            levelBeginner: "Principiante",
+            levelIntermediate: "Intermedio",
+            levelAdvanced: "Avanzado",
+            injuries: "Lesiones / Limitaciones",
+            injuriesDesc: "Ej: Dolor de rodilla, asma...",
+            equipment: "Equipamiento disponible",
+            equipmentDesc: "Ej: Mancuernas, elásticos, nada...",
+            weeks: "Duración (Semanas)",
+            readapt: "Readaptar mi programa"
         }
     }
 }

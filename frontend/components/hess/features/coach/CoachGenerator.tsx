@@ -9,6 +9,8 @@ import {
   History,
   ChefHat,
   Info,
+  Cpu,
+  Leaf
 } from "lucide-react";
 import { Translations } from "@/lib/i18n";
 import { motion } from "framer-motion";
@@ -81,173 +83,180 @@ export function CoachGenerator({
       variants={container}
       initial="hidden"
       animate="show"
-      className="flex flex-col items-center justify-center min-h-[600px] w-full max-w-2xl mx-auto px-4 relative z-10"
+      className="w-full max-w-6xl mx-auto px-4 md:px-8 py-4 relative z-10"
     >
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-emerald-500/5 via-indigo-500/5 to-purple-500/5 blur-3xl rounded-full -z-10" />
+      {/* Dynamic Background */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-zinc-900/0 to-transparent blur-3xl rounded-full -z-10 pointer-events-none" />
 
-      {/* Header Section */}
-      <motion.div className="text-center mb-8 space-y-3">
-        <div className={`inline-flex items-center justify-center p-4 rounded-3xl mb-2 shadow-lg backdrop-blur-sm ${isLight ? "bg-gradient-to-tr from-emerald-100 to-teal-50 text-emerald-600 border border-emerald-100" : "bg-gradient-to-tr from-emerald-500/20 to-teal-500/10 text-emerald-400 border border-emerald-500/20"}`}>
-          <ChefHat className="w-10 h-10 drop-shadow-sm" />
+      {/* Bento Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6 md:gap-8">
+
+        {/* Bento 1: Budget (Massive Card) */}
+        <motion.div variants={item} className={`md:col-span-6 lg:col-span-3 rounded-[3rem] p-8 md:p-12 relative overflow-hidden flex flex-col justify-between border hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 group ${panelStyle}`}>
+          {/* Decorative Icon */}
+          <div className="absolute -right-8 -top-8 opacity-[0.03] group-hover:opacity-[0.05] group-hover:-rotate-6 transition-all duration-700 pointer-events-none">
+            <Wallet className="w-64 h-64" />
+          </div>
+
+          <div className="space-y-2 mb-16 relative z-10">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
+              <Wallet className="w-6 h-6" />
+            </div>
+            <h2 className={`text-xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
+              {t.budget}
+            </h2>
+            <p className={`text-sm font-medium ${isLight ? "text-slate-500" : "text-zinc-400"}`}>
+              {language === 'es' ? "Define el límite de gasto total." : "Définis la limite de dépense totale."}
+            </p>
+          </div>
+
+          <div className="relative z-10">
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className={`text-6xl md:text-8xl font-black tracking-tighter ${isLight ? "text-emerald-600" : "text-emerald-400 drop-shadow-[0_0_20px_rgba(52,211,153,0.3)]"}`}>
+                {groceryBudget[0]}
+              </span>
+              <span className={`text-2xl md:text-3xl font-bold ${isLight ? "text-slate-400" : "text-zinc-500"}`}>€</span>
+            </div>
+            <div className={`p-4 md:p-6 rounded-[2rem] border ${inputGroupStyle}`}>
+              <PremiumSlider value={groceryBudget} onValueChange={setGroceryBudget} max={150} step={5} variant="emerald" />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Column for Days & Meals */}
+        <div className="md:col-span-6 lg:col-span-3 flex flex-col gap-6 md:gap-8">
+          
+          {/* Bento 2: Days */}
+          <motion.div variants={item} className={`flex-1 rounded-[3rem] p-8 md:p-10 relative overflow-hidden border hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 group ${panelStyle}`}>
+            <div className="absolute -right-4 -top-4 opacity-[0.03] group-hover:opacity-[0.05] group-hover:rotate-6 transition-all duration-700 pointer-events-none">
+              <Calendar className="w-48 h-48" />
+            </div>
+            
+            <div className="flex justify-between items-start mb-8 relative z-10">
+              <div>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 shadow-lg ${isLight ? "bg-indigo-100 text-indigo-600" : "bg-indigo-500/20 text-indigo-400"}`}>
+                  <Calendar className="w-6 h-6" />
+                </div>
+                <h2 className={`text-xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
+                  {t.days}
+                </h2>
+              </div>
+              <div className="text-right">
+                <span className={`text-5xl font-black tracking-tighter ${isLight ? "text-indigo-600" : "text-indigo-400"}`}>
+                  {planDays[0]}
+                </span>
+                <span className={`text-lg font-bold block -mt-1 ${isLight ? "text-slate-400" : "text-zinc-500"}`}>
+                  {common.days.toLowerCase()}
+                </span>
+              </div>
+            </div>
+
+            <div className={`px-6 rounded-[2rem] border flex items-center h-[80px] ${inputGroupStyle} relative z-10`}>
+              <PremiumSlider value={planDays} onValueChange={setPlanDays} min={1} max={7} step={1} variant="indigo" />
+            </div>
+          </motion.div>
+
+          {/* Bento 3: Meals */}
+          <motion.div variants={item} className={`flex-1 rounded-[3rem] p-8 md:p-10 relative overflow-hidden border hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 group ${panelStyle}`}>
+            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.05] group-hover:-rotate-12 transition-all duration-700 pointer-events-none">
+              <Utensils className="w-48 h-48" />
+            </div>
+            
+            <div className="flex items-center gap-4 mb-6 relative z-10">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shrink-0 ${isLight ? "bg-orange-100 text-orange-600" : "bg-orange-500/20 text-orange-400"}`}>
+                <Utensils className="w-6 h-6" />
+              </div>
+              <h2 className={`text-xl font-black uppercase tracking-widest ${isLight ? "text-slate-800" : "text-white"}`}>
+                Repas
+              </h2>
+            </div>
+
+            <div className={`p-2 rounded-[2rem] border flex gap-2 items-center h-[90px] ${inputGroupStyle} relative z-10`}>
+              <button
+                onClick={() => toggleMeal("lunch")}
+                className={`flex-1 h-full flex flex-col items-center justify-center rounded-3xl text-sm font-bold transition-all duration-300 ${planMeals.includes("lunch")
+                  ? "bg-gradient-to-br from-orange-400 to-red-500 text-white shadow-xl shadow-orange-500/30 scale-[1.02]"
+                  : "text-zinc-400 hover:text-zinc-600 hover:bg-black/5"
+                }`}
+              >
+                <span className="text-[10px] opacity-80 font-black uppercase tracking-widest mb-1">{language === 'es' ? 'Almuerzo' : 'Midi'}</span>
+                {t.lunch}
+              </button>
+              <div className="w-px h-12 bg-zinc-500/10" />
+              <button
+                onClick={() => toggleMeal("dinner")}
+                className={`flex-1 h-full flex flex-col items-center justify-center rounded-3xl text-sm font-bold transition-all duration-300 ${planMeals.includes("dinner")
+                  ? "bg-gradient-to-br from-indigo-400 to-purple-600 text-white shadow-xl shadow-indigo-500/30 scale-[1.02]"
+                  : "text-zinc-400 hover:text-zinc-600 hover:bg-black/5"
+                }`}
+              >
+                <span className="text-[10px] opacity-80 font-black uppercase tracking-widest mb-1">{language === 'es' ? 'Cena' : 'Soir'}</span>
+                {t.dinner}
+              </button>
+            </div>
+          </motion.div>
         </div>
-        <h1 className={`text-3xl md:text-5xl font-extrabold tracking-tight ${isLight ? "text-transparent bg-clip-text bg-gradient-to-br from-zinc-900 to-zinc-600" : "text-white"}`}>
-          {t.title}
-        </h1>
-        <p className={`text-base font-medium flex items-center justify-center gap-2 ${isLight ? "text-zinc-500" : "text-zinc-400"}`}>
-          <span className={`px-2 py-0.5 rounded-md text-xs font-bold uppercase tracking-wider ${isLight ? "bg-zinc-100 text-zinc-600" : "bg-white/10 text-zinc-300"}`}>
-            IA v2.5
-          </span>
-          {t.subtitle(diet)}
-        </p>
-      </motion.div>
 
-      {/* Main Control Panel */}
-      <motion.div className={`w-full rounded-[2.5rem] p-8 md:p-10 border transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.1)] ${panelStyle}`}>
-        <div className="space-y-10">
-
-          {/* Budget Control */}
-          <div className="space-y-5">
-            <div className="flex justify-between items-end">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Wallet className={`w-5 h-5 ${isLight ? "text-emerald-500" : "text-emerald-400"}`} />
-                  <span className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-zinc-400" : "text-zinc-500"}`}>{t.budget}</span>
-                </div>
-                <p className={`text-xs ${isLight ? "text-zinc-400" : "text-zinc-500"}`}>Budget total pour les courses</p>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-4xl font-black tracking-tighter ${isLight ? "text-emerald-600" : "text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]"}`}>
-                  {groceryBudget[0]}
-                </span>
-                <span className={`text-lg font-bold ${isLight ? "text-zinc-400" : "text-zinc-500"}`}>€</span>
-              </div>
+        {/* Bento Bottom Row: Info & Actions */}
+        <motion.div variants={item} className="md:col-span-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-6 mt-2">
+          
+          {/* Bento 4: Diet Info */}
+          <div className={`sm:col-span-1 lg:col-span-4 rounded-[2.5rem] p-6 relative overflow-hidden flex items-center justify-between border hover:shadow-xl transition-all duration-300 ${panelStyle}`}>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg relative z-10 ${isLight ? "bg-emerald-100 text-emerald-600" : "bg-emerald-500/20 text-emerald-400"}`}>
+               <Leaf className="w-6 h-6" />
             </div>
-
-            <div className={`p-4 md:p-6 rounded-3xl border ${inputGroupStyle}`}>
-              <PremiumSlider
-                value={groceryBudget}
-                onValueChange={setGroceryBudget}
-                max={150}
-                step={5}
-                variant="emerald"
-                className="py-1 md:py-2"
-              />
-              <div className="flex justify-between mt-2 md:mt-3 px-1">
-                <span className="text-[10px] uppercase font-bold text-zinc-400">0€</span>
-                <span className="text-[10px] uppercase font-bold text-zinc-400">150€ (Rich)</span>
-              </div>
+            <div className="text-right relative z-10">
+                <span className={`text-[10px] font-black uppercase tracking-widest block mb-1 ${isLight ? "text-slate-400" : "text-zinc-500"}`}>
+                    {language === 'es' ? 'Dieta' : 'Régime'}
+                </span>
+                <p className={`text-base md:text-lg font-black leading-none ${isLight ? "text-slate-800" : "text-white"}`}>
+                    {diet || 'Standard'}
+                </p>
+            </div>
+            <div className="absolute -left-4 -bottom-4 opacity-5 pointer-events-none">
+              <Leaf className="w-32 h-32" />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Days Control */}
-            <div className="space-y-4 flex flex-col">
-              <div className="flex justify-between items-end px-1 h-12">
-                <div className="flex items-center gap-2">
-                  <Calendar className={`w-5 h-5 ${isLight ? "text-indigo-500" : "text-indigo-400"}`} />
-                  <span className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-zinc-500" : "text-zinc-400"}`}>{t.days}</span>
-                </div>
-                <span className={`text-2xl font-black ${isLight ? "text-indigo-600" : "text-indigo-400"}`}>
-                  {planDays[0]} <span className="text-sm font-bold text-zinc-400">{common.days}</span>
-                </span>
-              </div>
-              <div className={`px-5 rounded-3xl border flex items-center h-[64px] md:h-[88px] ${inputGroupStyle}`}>
-                <PremiumSlider
-                  value={planDays}
-                  onValueChange={setPlanDays}
-                  min={1}
-                  max={7}
-                  step={1}
-                  variant="indigo"
-                />
-              </div>
-            </div>
-
-            {/* Meal Type Toggle */}
-            <div className="space-y-4 flex flex-col">
-              <div className="flex justify-between items-end px-1 h-12">
-                <div className="flex items-center gap-2">
-                  <Utensils className={`w-5 h-5 ${isLight ? "text-orange-500" : "text-orange-400"}`} />
-                  <span className={`text-sm font-bold uppercase tracking-wider ${isLight ? "text-zinc-500" : "text-zinc-400"}`}>Repas</span>
-                </div>
-              </div>
-
-              <div className={`p-1.5 rounded-3xl border flex h-[64px] md:h-[88px] ${inputGroupStyle}`}>
-                <button
-                  onClick={() => toggleMeal("lunch")}
-                  className={`flex-1 flex flex-col items-center justify-center rounded-2xl text-sm font-bold transition-all duration-300 ${planMeals.includes("lunch")
-                    ? "bg-gradient-to-br from-orange-400 to-red-500 text-white shadow-lg shadow-orange-500/25 scale-[1.02]"
-                    : "text-zinc-400 hover:text-zinc-600 hover:bg-black/5"
-                    }`}
-                >
-                  <span className="text-[10px] opacity-80 font-medium uppercase tracking-wider mb-0.5">Midi</span>
-                  {t.lunch}
-                </button>
-                <div className="w-px bg-zinc-500/10 my-3 mx-1.5" />
-                <button
-                  onClick={() => toggleMeal("dinner")}
-                  className={`flex-1 flex flex-col items-center justify-center rounded-2xl text-sm font-bold transition-all duration-300 ${planMeals.includes("dinner")
-                    ? "bg-gradient-to-br from-indigo-400 to-purple-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]"
-                    : "text-zinc-400 hover:text-zinc-600 hover:bg-black/5"
-                    }`}
-                >
-                  <span className="text-[10px] opacity-80 font-medium uppercase tracking-wider mb-0.5">Soir</span>
-                  {t.dinner}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="pt-6 flex gap-4">
+          {/* Bento 5: Actions */}
+          <div className="sm:col-span-1 lg:col-span-8 flex gap-4">
             <Button
               variant="outline"
               onClick={onShowSaved}
-              className={`h-14 w-14 rounded-2xl border-2 p-0 shrink-0 transition-transform active:scale-95 ${isLight
-                ? "border-zinc-200 text-zinc-400 hover:border-zinc-300 hover:text-zinc-600 hover:bg-zinc-50"
-                : "border-white/10 text-zinc-500 hover:border-white/20 hover:text-zinc-300 hover:bg-white/5"}`}
+              className={`h-full min-h-[80px] w-full md:w-24 rounded-[2.5rem] border-2 p-0 shrink-0 transition-transform active:scale-95 flex items-center justify-center shadow-xl ${isLight
+                ? "border-zinc-200 text-zinc-400 hover:border-zinc-300 hover:text-zinc-600 hover:bg-white"
+                : "border-white/10 text-zinc-400 hover:border-white/20 hover:text-white hover:bg-zinc-900/50"}`}
             >
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <History className="w-6 h-6" />
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="font-bold">
-                    <p>{t.savedTitle}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <History className="w-7 h-7" />
             </Button>
 
             <Button
               onClick={onGenerate}
               disabled={updating}
-              className={`flex-1 h-14 text-base font-bold uppercase tracking-wider rounded-2xl shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] ${isLight
-                ? "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white hover:shadow-zinc-900/20"
-                : "bg-gradient-to-r from-white to-zinc-200 text-black hover:shadow-white/10"
+              className={`flex-1 h-full min-h-[80px] text-lg md:text-2xl font-black uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-[2.5rem] shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group ${isLight
+                ? "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white shadow-zinc-900/30"
+                : "bg-gradient-to-r from-white to-zinc-200 text-black shadow-white/10"
                 }`}
             >
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out" />
+              
               {updating ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin mr-3" />
-                  {common.generating}
+                  <div className="w-6 h-6 md:w-8 md:h-8 border-[3px] md:border-[4px] border-current border-t-transparent rounded-full animate-spin mr-3 md:mr-4" />
+                  <span className="text-sm md:text-2xl">{common.generating}</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 mr-3 animate-pulse" />
-                  {t.generate}
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 mr-3 md:mr-4 animate-pulse" />
+                  <span className="text-base md:text-2xl">{t.generate}</span>
                 </>
               )}
             </Button>
           </div>
-        </div>
-      </motion.div>
 
-      <motion.p className="mt-8 text-xs font-medium text-zinc-400 text-center max-w-sm opacity-60 hover:opacity-100 transition-opacity">
-        <Info className="w-3 h-3 inline mr-1.5 -mt-0.5" />
-        L'IA s'adapte à ton profil et crée une liste de courses optimisée pour ton budget.
-      </motion.p>
+        </motion.div>
+
+      </div>
     </motion.div>
   );
 }

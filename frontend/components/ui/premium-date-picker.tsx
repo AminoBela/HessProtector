@@ -11,6 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { Translations } from "@/lib/i18n"
 
 const localeMap: Record<string, any> = { fr, es }
 
@@ -35,7 +36,8 @@ export function PremiumDatePicker({
 }: PremiumDatePickerProps) {
 
     const locale = localeMap[language] || fr
-    const defaultPlaceholder = language === "es" ? "Seleccionar fecha" : "Sélectionner une date"
+    const t = Translations[language as keyof typeof Translations] || Translations.fr
+    const defaultPlaceholder = t.common.selectDate || (language === "es" ? "Seleccionar fecha" : "Sélectionner une date")
 
     const buttonStyle = isLight
         ? "bg-white border-emerald-900/10 text-slate-800 hover:bg-emerald-50 focus:ring-2 focus:ring-emerald-500/50 transition-[border-color,box-shadow,background-color] shadow-inner font-medium"

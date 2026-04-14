@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Clock, Flame, Dumbbell, ChefHat, Info, CheckCircle2 } from "lucide-react";
 import React, { useState } from "react";
 import { Recipe } from "./CoachResults";
+import { Translations } from "@/lib/i18n";
 
 interface RecipeModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
   language,
   theme,
 }) => {
+  const t = Translations[language as keyof typeof Translations] || Translations.fr;
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
 
   const toggleIngredient = (index: number) => {
@@ -44,7 +46,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
               <ChefHat className="w-12 h-12 animate-pulse" />
             </div>
             <h3 className={`text-2xl font-black mb-3 tracking-tight ${theme === "light" ? "text-slate-900" : "text-white"}`}>
-              {language === "fr" ? "Le Chef cogite..." : "The Chef is cooking..."}
+              {t.coach?.chefCooking || (language === "fr" ? "Le Chef cogite..." : "The Chef is cooking...")}
             </h3>
             <p className={`text-sm font-medium leading-relaxed ${theme === "light" ? "text-slate-500" : "text-zinc-400"}`}>
               {language === "fr"
@@ -97,11 +99,11 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
             <div className={`flex flex-wrap items-center gap-3 p-6 sm:px-8 border-b ${theme === "light" ? "bg-white border-slate-100" : "bg-zinc-900 border-white/5"}`}>
 
               <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${theme === "light" ? "bg-blue-50 text-blue-600" : "bg-blue-500/10 text-blue-400"}`}>
-                <Clock className="w-4 h-4" /> {recipe.time || (recipe as any).prep_time || (language === "fr" ? "20-30 min" : "20-30 min")}
+                <Clock className="w-4 h-4" /> {recipe.time || (recipe as any).prep_time || t.coach?.prepTime || (language === "fr" ? "20-30 min" : "20-30 min")}
               </div>
 
               <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${theme === "light" ? "bg-purple-50 text-purple-600" : "bg-purple-500/10 text-purple-400"}`}>
-                <Dumbbell className="w-4 h-4" /> {recipe.difficulty || (language === "fr" ? "Facile" : "Easy")}
+                <Dumbbell className="w-4 h-4" /> {recipe.difficulty || t.coach?.difficulty || (language === "fr" ? "Facile" : "Easy")}
               </div>
 
               <div className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold ${theme === "light" ? "bg-orange-50 text-orange-600" : "bg-orange-500/10 text-orange-400"}`}>
@@ -118,7 +120,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
                     <ChefHat className="w-5 h-5" />
                   </div>
                   <h3 className={`text-xl font-black uppercase tracking-widest ${theme === "light" ? "text-slate-800" : "text-zinc-100"}`}>
-                    {language === "fr" ? "Ingrédients" : "Ingredients"}
+                    {t.coach?.ingredients || (language === "fr" ? "Ingrédients" : "Ingredients")}
                   </h3>
                 </div>
 
@@ -155,7 +157,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
                         </span>
                         {ing.substitution && !checkedIngredients[i] && (
                           <span className={`block text-xs italic ${theme === "light" ? "text-amber-600" : "text-amber-400"}`}>
-                            {language === "fr" ? "Ou :" : "Or:"} {ing.substitution}
+                            {t.coach?.or || (language === "fr" ? "Ou :" : "Or:")} {ing.substitution}
                           </span>
                         )}
                       </div>
@@ -171,7 +173,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
                     <Clock className="w-5 h-5" />
                   </div>
                   <h3 className={`text-xl font-black uppercase tracking-widest ${theme === "light" ? "text-slate-800" : "text-zinc-100"}`}>
-                    {language === "fr" ? "Préparation" : "Preparation"}
+                    {t.coach?.preparation || (language === "fr" ? "Préparation" : "Preparation")}
                   </h3>
                 </div>
 
@@ -200,7 +202,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({
                 </div>
                 <div>
                   <h4 className="text-sm font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mb-1">
-                    {language === "fr" ? "Le Mot du Chef" : "Chef's Tip"}
+                    {t.coach?.chefTip || (language === "fr" ? "Le Mot du Chef" : "Chef's Tip")}
                   </h4>
                   <p className={`text-sm font-medium italic ${theme === "light" ? "text-emerald-800" : "text-emerald-200"}`}>
                     &quot;{recipe.chef_tip || (recipe as any).tips}&quot;

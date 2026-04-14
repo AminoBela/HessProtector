@@ -30,6 +30,7 @@ import {
   Home,
   Check,
   ThermometerSnowflake,
+  Utensils,
 } from "lucide-react";
 import { Translations } from "@/lib/i18n";
 import { motion, Variants } from "framer-motion";
@@ -337,8 +338,10 @@ export function PantryView({
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
               >
                 {(data?.pantry || []).length === 0 ? (
-                  <div className="col-span-2 text-center text-zinc-600 py-10 italic">
-                    {t.pantry.empty}
+                  <div className={`col-span-2 flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-3xl ${isLight ? "border-slate-300 bg-slate-50/50" : "border-white/10 bg-white/5"}`}>
+                    <Utensils className={`w-16 h-16 mb-4 ${isLight ? 'text-slate-300' : 'text-zinc-600'}`} />
+                    <h3 className={`text-xl font-black mb-2 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>{t.common?.emptyTitle || (language === "es" ? "Despensa vacía" : "Garde-manger vide")}</h3>
+                    <p className={`text-sm max-w-md ${isLight ? "text-slate-500" : "text-zinc-400"}`}>{t.pantry.empty || (language === "es" ? "Añade alimentos o escanea un ticket de compra." : "Ajoutez des aliments ou scannez un ticket.")}</p>
                   </div>
                 ) : (
                   <div className="col-span-1 md:col-span-2 space-y-8">

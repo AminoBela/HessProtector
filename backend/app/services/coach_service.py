@@ -7,6 +7,7 @@ from app.services.strategies import (
     EmergencyPromptStrategy,
     MealPlanPromptStrategy,
     RecipePromptStrategy,
+    SportPromptStrategy,
 )
 from app.core.singleton import Singleton
 from app.core.decorators import logged, timed, retry
@@ -27,6 +28,7 @@ class CoachService(metaclass=Singleton):
             "emergency": EmergencyPromptStrategy(),
             "meal_plan": MealPlanPromptStrategy(),
             "recipe": RecipePromptStrategy(),
+            "sport_plan": SportPromptStrategy(),
         }
 
     @logged

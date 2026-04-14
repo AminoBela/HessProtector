@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { TrendingDown, TrendingUp, Skull, PartyPopper } from "lucide-react";
 import { usePrivacy } from "@/context/PrivacyContext";
+import { Translations } from "@/lib/i18n";
 
 interface SurvivalGaugeProps {
   prediction: {
@@ -25,20 +26,14 @@ export function SurvivalGauge({
     Math.max(0, (prediction.projected_end + 500) / 10),
   );
 
-  const text =
-    language === "fr"
-      ? {
-        title: "Mode Oracle",
-        safe: "Survie Probable",
-        danger: "Mort Financière",
-        burn: "Dépense/jour",
-      }
-      : {
-        title: "Modo Oráculo",
-        safe: "Supervivencia Probable",
-        danger: "Muerte Financiera",
-        burn: "Gasto/día",
-      };
+  const t = Translations[language as keyof typeof Translations]?.dashboard || Translations.fr.dashboard;
+
+  const text = {
+    title: t.oracleTitle || "Mode Oracle",
+    safe: t.oracleSafe || "Survie Probable",
+    danger: t.oracleDanger || "Mort Financière",
+    burn: t.oracleBurn || "Dépense/jour",
+  };
 
   return (
     <div

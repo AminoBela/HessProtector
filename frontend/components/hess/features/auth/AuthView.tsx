@@ -161,7 +161,9 @@ export function AuthView({
               transition={{ delay: 0.2 }}
               className={`text-6xl xl:text-7xl font-black tracking-tight leading-[1.1] mb-6 ${isLight ? "text-slate-900" : "text-white"}`}
             >
-              {language === "es" ? <>Controla <br /> tu presupuesto.</> : <>Maîtrisez <br /> votre budget.</>}
+              <>
+                {(t as any).heroTitle1 || "Maîtrisez"} <br /> {(t as any).heroTitle2 || "votre budget."}
+              </>
             </motion.h1>
             <div className="h-24 overflow-hidden relative">
               <AnimatePresence mode="wait">

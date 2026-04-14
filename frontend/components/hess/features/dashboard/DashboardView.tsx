@@ -116,8 +116,19 @@ export function DashboardView({
 
   if (!data)
     return (
-      <div className="p-8 text-center text-emerald-500 animate-pulse">
-        {t.loading}...
+      <div className="space-y-8 animate-pulse">
+        <div className="flex justify-between items-center mb-6">
+          <div className={`h-10 w-32 rounded-xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+          <div className={`h-10 w-48 rounded-xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className={`md:col-span-2 h-[320px] rounded-3xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+          <div className={`md:col-span-1 h-[320px] rounded-3xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className={`h-[400px] rounded-3xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+          <div className={`h-[400px] rounded-3xl ${isLight ? 'bg-slate-200' : 'bg-white/5'}`}></div>
+        </div>
       </div>
     );
 
@@ -181,7 +192,7 @@ export function DashboardView({
                   className={`col-span-1 p-4 md:p-5 rounded-[24px] border flex flex-col justify-center items-center gap-1 transition-all ${pillBg} ${pillText}`}
                 >
                   <span className="text-[10px] md:text-xs uppercase font-black opacity-50 tracking-wider">
-                    {language === "es" ? "Ingresos" : "Entrées"}
+                    {t.incoming || (language === "es" ? "Ingresos" : "Entrées")}
                   </span>
                   <span className={`text-lg md:text-xl font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
                     +{statsData ? statsData.total_income.toFixed(0) : 0}€
@@ -191,7 +202,7 @@ export function DashboardView({
                   className={`col-span-1 p-4 md:p-5 rounded-[24px] border flex flex-col justify-center items-center gap-1 transition-all ${pillBg} ${pillText}`}
                 >
                   <span className="text-[10px] md:text-xs uppercase font-black opacity-50 tracking-wider">
-                    {language === "es" ? "Gastos" : "Sorties"}
+                    {t.outgoing || (language === "es" ? "Gastos" : "Sorties")}
                   </span>
                   <span className={`text-lg md:text-xl font-black ${isBlurred ? "blur-sm" : "blur-none"}`}>
                     -{statsData ? statsData.total_expense.toFixed(0) : 0}€
@@ -235,7 +246,7 @@ export function DashboardView({
                   <span className="text-3xl md:text-5xl font-bold opacity-50">€</span>
                 </div>
                 <p className={`text-[10px] md:text-xs font-bold uppercase mt-2 opacity-50 ${isLight ? "text-slate-600" : "text-zinc-400"}`}>
-                  {language === "es" ? "Dinero real disponible tras gastos fijos" : "Reste à vivre réel après charges fixes"}
+                  {t.safeBalanceDesc || (language === "es" ? "Dinero real disponible tras gastos fijos" : "Reste à vivre réel après charges fixes")}
                 </p>
               </div>
               <div
@@ -286,7 +297,7 @@ export function DashboardView({
             <CardContent
               className={`h-[300px] transition-all duration-500 ${isBlurred ? "blur-lg" : "blur-none"}`}
             >
-              {statsData ? (
+              {statsData && annualData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={annualData}>
                     <defs>
@@ -340,9 +351,11 @@ export function DashboardView({
                 </ResponsiveContainer>
               ) : (
                 <div
-                  className={`h-full flex items-center justify-center ${subTextColor}`}
+                  className={`h-full flex flex-col items-center justify-center text-center ${subTextColor}`}
                 >
-                  {t.loading}
+                  <TrendingUp className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="font-bold">{t.noData || (language === "es" ? "Sin datos disponibles" : "Aucune donnée disponible")}</p>
+                  <p className="text-xs opacity-60 mt-1">{t.addDataDesc || (language === "es" ? "Añade transacciones para ver la evolución" : "Ajoutez des transactions pour voir l'évolution")}</p>
                 </div>
               )}
             </CardContent>
@@ -360,41 +373,49 @@ export function DashboardView({
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[300px] pr-4">
-                <div className="space-y-3">
-                  {data.transactions.slice(0, 5).map((tx: any) => (
-                    <motion.div
-                      variants={item}
-                      key={tx.id}
-                      className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${itemBg}`}
-                    >
-                      <div className="flex items-center gap-5">
-                        <div
-                          className={`p-3 rounded-xl ${tx.type === "revenu" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}
-                        >
-                          <TrendingUp className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div
-                            className={`font-bold text-lg ${bigNumberColor}`}
-                          >
-                            {tx.label}
-                          </div>
-                          <div
-                            className={`text-xs uppercase font-bold tracking-wider ${subTextColor}`}
-                          >
-                            {tx.date} • {tx.category}
-                          </div>
-                        </div>
-                      </div>
-                      <span
-                        className={`font-mono text-xl font-bold transition-all duration-500 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-sm select-none" : "blur-none"}`}
+                {data.transactions && data.transactions.length > 0 ? (
+                  <div className="space-y-3">
+                    {data.transactions.slice(0, 5).map((tx: any) => (
+                      <motion.div
+                        variants={item}
+                        key={tx.id}
+                        className={`flex justify-between items-center p-5 rounded-2xl border transition-colors ${itemBg}`}
                       >
-                        {tx.type === "revenu" ? "+" : "-"}
-                        {parseFloat(tx.amount).toFixed(2)}€
-                      </span>
-                    </motion.div>
-                  ))}
-                </div>
+                        <div className="flex items-center gap-5">
+                          <div
+                            className={`p-3 rounded-xl ${tx.type === "revenu" ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"}`}
+                          >
+                            <TrendingUp className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div
+                              className={`font-bold text-lg ${bigNumberColor}`}
+                            >
+                              {tx.label}
+                            </div>
+                            <div
+                              className={`text-xs uppercase font-bold tracking-wider ${subTextColor}`}
+                            >
+                              {tx.date} • {tx.category}
+                            </div>
+                          </div>
+                        </div>
+                        <span
+                          className={`font-mono text-xl font-bold transition-all duration-500 ${tx.type === "revenu" ? "text-emerald-500" : "text-rose-500"} ${isBlurred ? "blur-sm select-none" : "blur-none"}`}
+                        >
+                          {tx.type === "revenu" ? "+" : "-"}
+                          {parseFloat(tx.amount).toFixed(2)}€
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`h-full flex flex-col items-center justify-center text-center py-10 ${subTextColor}`}>
+                    <Wallet className="w-12 h-12 mb-4 opacity-20" />
+                    <p className="font-bold">{t.noActivities || (language === "es" ? "Aún no hay actividades" : "Aucune activité pour l'instant")}</p>
+                    <p className="text-xs opacity-60 mt-1">{t.activitiesDesc || (language === "es" ? "Tus transacciones aparecerán aquí" : "Vos transactions apparaîtront ici")}</p>
+                  </div>
+                )}
               </ScrollArea>
             </CardContent>
           </div>

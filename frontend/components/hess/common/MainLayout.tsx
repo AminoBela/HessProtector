@@ -23,6 +23,7 @@ import {
   Menu,
   Fuel,
   ChevronDown,
+  Activity,
 } from "lucide-react";
 import {
   Sheet,
@@ -271,12 +272,14 @@ export function MainLayout({ children }: MainLayoutProps) {
               <button
                 onClick={() => setTheme("dark")}
                 className={`p-1.5 rounded-md transition-all ${theme === "dark" ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-black"}`}
+                title={t.sidebar.darkTheme || (language === "es" ? "Tema oscuro" : "Thème sombre")}
               >
                 <Moon className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setTheme("light")}
                 className={`p-1.5 rounded-md transition-all ${theme === "light" ? "bg-white text-orange-500 shadow-sm" : "text-zinc-500 hover:text-white"}`}
+                title={t.sidebar.lightTheme || (language === "es" ? "Tema claro" : "Thème clair")}
               >
                 <Sun className="w-4 h-4" />
               </button>
@@ -289,12 +292,14 @@ export function MainLayout({ children }: MainLayoutProps) {
               <button
                 onClick={() => setLanguage("fr")}
                 className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${language === "fr" ? "bg-emerald-500 text-white" : "text-zinc-500"}`}
+                title="Français"
               >
                 FR
               </button>
               <button
                 onClick={() => setLanguage("es")}
                 className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all ${language === "es" ? "bg-orange-500 text-white" : "text-zinc-500"}`}
+                title="Español"
               >
                 ES
               </button>
@@ -307,6 +312,7 @@ export function MainLayout({ children }: MainLayoutProps) {
               <button
                 onClick={toggleBlur}
                 className={`p-1.5 rounded-md transition-all ${isBlurred ? "bg-zinc-800 text-white shadow-sm" : isLight ? "text-zinc-400 hover:text-emerald-600" : "text-zinc-500 hover:text-white"}`}
+                title={t.header.hideBalances || (language === "es" ? "Ocultar saldos" : "Masquer les soldes")}
               >
                 {isBlurred ? (
                   <EyeOff className="w-4 h-4" />
@@ -328,6 +334,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             size="icon"
             onClick={logout}
             className="hover:text-red-500 hover:bg-red-500/10"
+            title={t.header.logout || (language === "es" ? "Cerrar sesión" : "Déconnexion")}
           >
             <LogOut className="w-5 h-5" />
           </Button>
@@ -373,6 +380,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           label={t.sidebar.history}
         />
         <SidebarItem id="fuel" icon={Fuel} label={t.sidebar.fuel} />
+        <SidebarItem id="sport" icon={Activity} label={t.sidebar.sport} />
         <SidebarItem id="market" icon={ShoppingBag} label="HessMarket" />
         <SidebarItem
           id="settings"
@@ -385,7 +393,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         onClick={() => setShowSettingsOnMobile(!showSettingsOnMobile)}
         className={`md:hidden mt-2 w-full flex items-center justify-between px-4 py-3 rounded-xl border ${isLight ? "bg-slate-50 border-slate-200 text-slate-700" : "bg-black/20 border-white/5 text-zinc-300"}`}
       >
-        <span className="text-xs font-bold uppercase tracking-wider">{language === "es" ? "Preferencias" : "Préférences"}</span>
+        <span className="text-xs font-bold uppercase tracking-wider">{t.header.preferences || (language === "es" ? "Preferencias" : "Préférences")}</span>
         <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showSettingsOnMobile ? "rotate-180" : ""}`} />
       </button>
 
@@ -416,7 +424,7 @@ export function MainLayout({ children }: MainLayoutProps) {
     >
       {bg}
       <aside
-        className={`hidden md:flex w-80 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}
+        className={`hidden md:flex w-72 flex-shrink-0 border-r border-white/5 backdrop-blur-2xl flex-col p-6 gap-2 z-20 transition-all ${sidebarBg}`}
       >
         {SidebarContent()}
       </aside>
@@ -432,7 +440,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   <Menu className="w-6 h-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className={`p-0 w-[320px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
+              <SheetContent side="left" className={`p-0 w-[288px] border-r flex flex-col ${isLight ? "bg-white/95" : "bg-zinc-950/95"}`}>
                 <SheetTitle className="sr-only">{t.common.navMenu}</SheetTitle>
                 <div className="flex flex-col h-full p-6 pt-10">
                   {SidebarContent()}

@@ -138,20 +138,7 @@ export function MarketView({
       className="space-y-8"
     >
       { }
-      <div className="flex justify-between items-end">
-        <div>
-          <h2
-            className={`text-2xl md:text-3xl font-black uppercase tracking-tighter ${isLight ? "text-slate-800" : "text-white"}`}
-          >
-            <ShoppingBag className="inline w-8 h-8 mr-2 -mt-1" />
-            {t.title}
-          </h2>
-          <p
-            className={`text-sm font-bold uppercase tracking-widest mt-1 ${isLight ? "text-slate-400" : "text-zinc-500"}`}
-          >
-            {t.subtitle}
-          </p>
-        </div>
+      <div className="flex justify-end items-end">
         <div
           className={`px-5 py-3 rounded-2xl flex items-center gap-3 font-black text-xl border transition-all duration-500 ${isLight ? "bg-white border-amber-200 text-amber-600 shadow-lg shadow-amber-100" : "bg-amber-900/20 border-amber-500/20 text-amber-400"} ${isBlurred ? "blur-md select-none" : "blur-none"}`}
         >

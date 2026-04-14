@@ -217,7 +217,14 @@ export function GoalsView({
         </Card>
       </div>
       <div className="md:col-span-8 space-y-4">
-        {(data?.goals || []).map((g: Goal) => {
+        {(!data?.goals || data.goals.length === 0) ? (
+          <div className={`flex flex-col items-center justify-center h-[300px] text-center border-2 border-dashed rounded-3xl ${isLight ? "border-slate-300 bg-slate-50/50" : "border-white/10 bg-white/5"}`}>
+            <Target className={`w-16 h-16 mb-4 ${isLight ? 'text-slate-300' : 'text-zinc-600'}`} />
+            <h3 className={`text-xl font-black mb-2 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>{t.goals.emptyTitle || (language === "es" ? "Sin objetivos aún" : "Aucun objectif pour le moment")}</h3>
+            <p className={`text-sm max-w-md ${labelColor}`}>{t.goals.emptyDesc || (language === "es" ? "Añade tu primer objetivo financiero en el formulario de la izquierda." : "Ajoutez votre premier objectif financier dans le formulaire.")}</p>
+          </div>
+        ) : (
+          (data?.goals || []).map((g: Goal) => {
           const daysRemaining = g.deadline
             ? differenceInDays(new Date(g.deadline), new Date())
             : 999;
@@ -303,7 +310,8 @@ export function GoalsView({
               </div>
             </motion.div>
           );
-        })}
+        })
+        )}
       </div>
 
       {/* Add Money Dialog */}
