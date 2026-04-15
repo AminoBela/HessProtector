@@ -2,7 +2,7 @@
 
 **HessProtector** est une application web moderne pour gérer ses finances, son frigo et sa nutrition, propulsée par l'Intelligence Artificielle (Gemini).
 
-## 🚀 Fonctionnalités
+##  Fonctionnalités
 - 💰 **Budget & Charges Fixes** : Suivi du "Reste à Vivre" par jour.
 - 🥘 **Frigo & Recettes** : Scan de tickets de caisse par IA et suggestions de recettes.
 - 🤖 **Coach Cuisine** : Génération de menus adaptés au budget.
